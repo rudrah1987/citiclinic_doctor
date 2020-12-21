@@ -1,0 +1,77 @@
+{
+  "project_info": {
+    "project_number": "708760383092",
+    "firebase_url": "https://city-clinic-cdb62.firebaseio.com",
+    "project_id": "city-clinic-cdb62",
+    "storage_bucket": "city-clinic-cdb62.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:708760383092:android:e6df4c7c77b2e1f3b8eb21",
+        "android_client_info": {
+          "package_name": "com.city_clinic_doctor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "708760383092-ld0kucpj97s3ptn9e98rc5opg80gr991.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDctNXfioic8KhVLoDW5O-rrP7FzrVsFjo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "708760383092-ld0kucpj97s3ptn9e98rc5opg80gr991.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:708760383092:android:f040c1c6c99a0252b8eb21",
+        "android_client_info": {
+          "package_name": "com.cityclinicuser.city_clinic_user"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "708760383092-fgphmt7rlf24009148k2vrt8c9b0k6da.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cityclinicuser.city_clinic_user",
+            "certificate_hash": "9fd3524c3ad246c25514bcd75be6423344c007cf"
+          }
+        },
+        {
+          "client_id": "708760383092-ld0kucpj97s3ptn9e98rc5opg80gr991.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDctNXfioic8KhVLoDW5O-rrP7FzrVsFjo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "708760383092-ld0kucpj97s3ptn9e98rc5opg80gr991.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
