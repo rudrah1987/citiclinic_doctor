@@ -140,7 +140,8 @@ class _DashboardPageState extends State<DashboardPage> {
         if (event) {
           AppUtils.showLoadingDialog(context);
         } else {
-          AppUtils.close();
+           AppUtils.close();
+          // AppUtils.closeWithContext(_globalKey.currentContext);
         }
       }
     });

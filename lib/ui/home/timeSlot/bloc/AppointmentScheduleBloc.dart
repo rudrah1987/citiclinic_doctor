@@ -44,7 +44,7 @@ class AddAppointmentBloc extends BaseBloc {
       String morning_time_end, String afternoon_time_start,
       String afternoon_time_end, String evening_time_start,
       String evening_time_end) async {
-    print("calling");
+    print("---addAppointmentSchedule calling---");
     if (isLoading) return;
     isLoading = true;
     _loadingStream.sink.add(true);

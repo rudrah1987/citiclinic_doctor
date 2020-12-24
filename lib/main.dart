@@ -17,6 +17,7 @@ import 'modal/auth/user.dart';
 
 void main() /*async*/{
   // await SharedPreferences.getInstance();
+  WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     systemNavigationBarColor: kPrimaryColor, // navigation bar color
     statusBarColor: kPrimaryColor, // status bar color
@@ -26,6 +27,7 @@ void main() /*async*/{
     DeviceOrientation.portraitDown,
   ]);
 
+  // ignore: invalid_use_of_visible_for_testing_member
   SharedPreferences.setMockInitialValues({});
   SystemChannels.textInput.invokeMethod('TextInput.hide');
   runApp(MaterialApp(
@@ -108,7 +110,6 @@ class SplashMainState extends State<SplashMain>{
                                 letterSpacing: 1.2,
                                 color: kSplashTextColor),
                           )
-
                         ],
                       ),
                     ),

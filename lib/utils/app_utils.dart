@@ -107,4 +107,8 @@ class AppUtils {
         break;
     }
   }
+
+  static void closeWithContext(BuildContext currentContext) {
+    Navigator.of(currentContext).pop();
+  }
 }

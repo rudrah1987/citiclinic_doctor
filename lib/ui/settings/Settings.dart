@@ -1,5 +1,6 @@
 import 'package:city_clinic_doctor/helper/DialogHelper.dart';
 import 'package:city_clinic_doctor/modal/auth/user.dart';
+import 'package:city_clinic_doctor/new/customs/custom_methods.dart';
 import 'package:city_clinic_doctor/preference/CCDoctorPrefs.dart';
 import 'package:city_clinic_doctor/preference/PreferenceKeys.dart';
 import 'package:city_clinic_doctor/ui/dialogs/LogoutDialog.dart';
@@ -20,6 +21,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../utils/SvgImages.dart';
+import '../../utils/SvgImages.dart';
 import 'ContactUsPage.dart';
 
 var globalContext;
@@ -214,10 +217,11 @@ class _SettingsState extends State<Settings> {
                             color: kPrimaryColor
                         ),),
                       onTap: (){
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => PrescriptionPage()));
+                        successDialog(context: context,svgName: successSignUp);
+                        // Navigator.push(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //         builder: (_) => PrescriptionPage()));
                       },
                     ),
                   ],

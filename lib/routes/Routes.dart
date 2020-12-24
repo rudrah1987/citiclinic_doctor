@@ -2,8 +2,9 @@ import 'package:city_clinic_doctor/ui/drawer/feeManagement/FeesManagement.dart';
 import 'package:city_clinic_doctor/ui/drawer/paymentManagement/PaymentManagementPage.dart';
 import 'package:city_clinic_doctor/ui/drawer/prescriptionManagement/PrescriptionPage.dart';
 import 'package:city_clinic_doctor/ui/drawer/statistics/StatisticsPage.dart';
-import 'file:///C:/Users/hp/Desktop/city_clinic_doctor/lib/ui/home/Chat/ChatPage.dart';
 import 'package:city_clinic_doctor/ui/settings/Settings.dart';
+
+import '../ui/home/Chat/ChatPage.dart';
 
 class Routes {
   static const String statistics = StatisticsPage.routeName;

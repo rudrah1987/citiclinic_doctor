@@ -1,3 +1,4 @@
+import 'package:city_clinic_doctor/new/customs/custom_methods.dart';
 import 'package:city_clinic_doctor/ui/home/appointmentRequest/AppointmentRequestPage.dart';
 import 'package:city_clinic_doctor/ui/home/consultationRequest/ConsultationRequestPage.dart';
 import 'package:city_clinic_doctor/ui/home/timeSlot/TimeSlotPage.dart';
@@ -6,6 +7,8 @@ import 'package:city_clinic_doctor/utils/SvgImages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+
+import 'timeSlot/TimeSlotPage.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -115,14 +118,15 @@ class _HomePageState extends State<HomePage> {
                   )
               ),
               onTap: (){
-                Fluttertoast.showToast(
-                    msg: 'Time Slot should be administrative duty',
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.CENTER,
-                    backgroundColor: Colors.red,
-                    textColor: Colors.white,
-                    fontSize: 16.0
-                );
+                tGotoPush(context, TimeSlotPage());
+                // Fluttertoast.showToast(
+                //     msg: 'Time Slot should be administrative duty',
+                //     toastLength: Toast.LENGTH_SHORT,
+                //     gravity: ToastGravity.CENTER,
+                //     backgroundColor: Colors.red,
+                //     textColor: Colors.white,
+                //     fontSize: 16.0
+                // );
                 /*Navigator.push(
                     context,
                     MaterialPageRoute(

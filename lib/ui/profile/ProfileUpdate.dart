@@ -6,6 +6,8 @@ import 'package:city_clinic_doctor/modal/profile/CityResponse.dart';
 import 'package:city_clinic_doctor/modal/profile/CountryResponse.dart';
 import 'package:city_clinic_doctor/modal/profile/DegreeListItem.dart';
 import 'package:city_clinic_doctor/modal/profile/SpecialityResponse.dart';
+import 'package:city_clinic_doctor/new/constants/string_constants.dart';
+import 'package:city_clinic_doctor/new/customs/custom_methods.dart';
 import 'package:city_clinic_doctor/preference/CCDoctorPrefs.dart';
 import 'package:city_clinic_doctor/preference/PreferenceKeys.dart';
 import 'package:city_clinic_doctor/ui/dialogs/CityDialog.dart';
@@ -140,6 +142,15 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
     });
 
     _profileImageBloc.loadingStream.listen((event) {
+      if (context != null) {
+        if (event) {
+          AppUtils.showLoadingDialog(context);
+        } else {
+          Navigator.of(context, rootNavigator: true).pop();
+        }
+      }
+    });
+    _profileUpdateBloc.loadingStream.listen((event) {
       if (context != null) {
         if (event) {
           AppUtils.showLoadingDialog(context);
@@ -382,7 +393,7 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                                   Positioned(
                                     child: Center(
                                       child: _profileImage != null
-                                          ? FittedBox(child: Image.file(_profileImage,), fit: BoxFit.cover,)
+                                          ? Image.file(_profileImage,)
                                           : SvgPicture.asset(home_account, height:48, width:48,),
                                     ),
                                   ),
@@ -1314,6 +1325,7 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                                   backgroundColor: kBackgroundColor,
                                   textColor: Colors.white);
                             }else{
+                              print('-------Profile Update Clicked-------');
                               _profileUpdateBloc.profileUpdate(_user.accessToken, _user.user_id,
                                   nameFieldController.text.toString(), genderValue, dobTextFieldController.text.toString(),
                                   experienceFieldController.text.toString(), _selectedSpecialityData.id, addressFieldController.text.toString(),
@@ -1321,7 +1333,14 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                                   cityFieldController.text.toString(), stateFieldController.text.toString(),
                                   countryFieldController.text.toString(),
                                   "SBI", accNameFieldController.text.toString(),
-                                  accNumberFieldController.text.toString(), ifscFieldController.text.toString());
+                                  accNumberFieldController.text.toString(), ifscFieldController.text.toString()).then((value) {
+                                    if(value){
+                                      Fluttertoast.showToast(msg: tUpdateSuccess);
+                                    }
+                                    // if(value)_settingModalBottomSheet(context);
+                                    // else Fluttertoast.showToast(msg: 'Something Went Wrong');
+
+                              });
                             }
                           }
 
@@ -1345,53 +1364,6 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
   }
 
 
-  void _settingModalBottomSheet(context) {
-    showModalBottomSheet(
-        context: context,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20.0),
-        ),
-        builder: (BuildContext bc) {
-          return Container(
-              height: 280.0,
-              padding: EdgeInsets.all(12),
-              decoration: new BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: new BorderRadius.only(
-                      topLeft: const Radius.circular(20.0),
-                      topRight: const Radius.circular(10.0))),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  SvgPicture.asset(successSignUp, height:100, width:100,),
-                  SizedBox(height: 10,),
-                  ListTile(
-                    contentPadding: EdgeInsets.all(0),
-                    title: Text(
-                      "Request Sent for Approval",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w700,
-                          color: Colors.black),
-                    ),
-                    subtitle: Text(
-                      "Admin will verify your account details once approved from our end we will send you an email for account approval that your account is being verified.",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 12,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w400,
-                          color: kAuthTextGreyColor),
-                    ),),
-                ],
-              )
-          );
-        }
-    );
-  }
 
   _imgFromCamera() async {
     File image = await ImagePicker.pickImage(
