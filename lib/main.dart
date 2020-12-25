@@ -27,9 +27,10 @@ void main() /*async*/{
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+  PreferenceHelper.getUser();
 
   // ignore: invalid_use_of_visible_for_testing_member
-  SharedPreferences.setMockInitialValues({});
+  // SharedPreferences.setMockInitialValues({});
   SystemChannels.textInput.invokeMethod('TextInput.hide');
   runApp(MaterialApp(
       theme: ThemeData(primaryColor: kPrimaryColor, accentColor: kAccentColor),
@@ -53,11 +54,14 @@ class SplashMainState extends State<SplashMain>{
     firebaseCloudMessagingListeners();
   }
 
-  getUserFromPreference() {
+  getUserFromPreference() async{
     print('------getUserFromPreference------');
-    PreferenceHelper.getUser().then((value){
-      print("userDataSplash -> ${value}");
-      print("userDataSplash -> ${value.accessToken}");
+    // PreferenceHelper.getString('token').then((value) => print('GETTOEN->$value'));
+    // print('---------');
+    // var k =await PreferenceHelper.getString('token');
+    await PreferenceHelper.getUser().then((value){
+      // print("userDataSplash -> ${value}");
+      //print("userDataSplash -> ${value.accessToken}");
       if(value != null){
         Timer(Duration(seconds: 2), () =>
             Navigator.of(context).pushReplacement(MaterialPageRoute(

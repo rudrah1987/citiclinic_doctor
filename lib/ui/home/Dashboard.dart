@@ -7,6 +7,7 @@ import 'package:city_clinic_doctor/new/utils/prefrence_helper.dart';
 import 'package:city_clinic_doctor/preference/CCDoctorPrefs.dart';
 import 'package:city_clinic_doctor/preference/PreferenceKeys.dart';
 import 'package:city_clinic_doctor/routes/Routes.dart';
+import 'package:city_clinic_doctor/ui/auth/bloc/LoginBloc.dart';
 import 'package:city_clinic_doctor/ui/dialogs/LogoutDialog.dart';
 import 'package:city_clinic_doctor/ui/drawer/feeManagement/FeesManagement.dart';
 import 'package:city_clinic_doctor/ui/drawer/paymentManagement/PaymentManagementPage.dart';
@@ -74,7 +75,6 @@ class _DashboardPageState extends State<DashboardPage> {
   LogoutBloc _logoutBloc = LogoutBloc();
   UserDetailBloc _userDetailBloc = UserDetailBloc();
   int _selectedIndex = 0;
-  User _user;
 
   List<String> _bottomPagesTitle = [
     "City Clinic", "My Chats", "Prescription Management", "Profile Details"
@@ -90,12 +90,16 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
-    _user = AppUtils.currentUser;
-    _userDetailBloc.userDetailData(_user.accessToken, _user.user_id);
+    PreferenceHelper.getUser().then((value) {
+      currentUser.value.user=value;
+      AppUtils.currentUser=value;
+      _userDetailBloc.userDetailData(value.accessToken, value.user_id);
+
+    });
     _logoutBloc.logoutStream.listen((event) {
       if (event.success == true) {
         print("LogoutMessage -> ${event.message}");
-        CCDoctorPrefs.deleteUser(userKeys);
+        PreferenceHelper.logout();
         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
             SplashMain()), (Route<dynamic> route) => false);
         AppUtils.showError(event.message, _globalKey);
@@ -190,6 +194,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 color: Colors.white,
               ),
               onPressed: () {
+                PreferenceHelper.getUser().then((value) => print('NITI-$value'));
                 Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -200,7 +205,7 @@ class _DashboardPageState extends State<DashboardPage> {
       drawer: Drawer(
         child: ListView(
           children: [
-            createHeader(context, _user.name),
+            createHeader(context, currentUser.value.user.name),
             createDrawerItems(context, "Home",(){
               Navigator.of(context).pop();
               setState(() {
@@ -301,7 +306,7 @@ class _DashboardPageState extends State<DashboardPage> {
     });
 
     if (returnVal == 'logout') {
-      _logoutBloc.logoutUser(_user.accessToken,  _user.user_id);
+      _logoutBloc.logoutUser(currentUser.value.user.accessToken,  currentUser.value.user.user_id);
     }
   }
 

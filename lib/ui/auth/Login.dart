@@ -60,6 +60,9 @@ class LoginState extends State<Login>{
       if (event.user != null) {
         AppUtils.currentUser = event.user;
         PreferenceHelper.saveUser(event.user);
+        // PreferenceHelper.saveString('token',event.user.accessToken);
+        // PreferenceHelper.getString('token').then((value) => print('GETTOEN->$value'));
+
         // CCDoctorPrefs.saveUser(userKeys, jsonEncode(event.user.toJson()));
         print("userAccessTokenAtLoginInit -> ${event.user.accessToken}");
         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>

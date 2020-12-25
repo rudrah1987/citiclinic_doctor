@@ -1,10 +1,22 @@
 import 'dart:convert';
 import 'package:city_clinic_doctor/modal/auth/user.dart';
 import 'package:city_clinic_doctor/new/customs/logger_global.dart';
+import 'package:city_clinic_doctor/ui/auth/bloc/LoginBloc.dart';
+import 'package:city_clinic_doctor/utils/app_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const String PREFERENCE_KEY='current_user';
 class PreferenceHelper {
+  static Future<String> getString(String key) async {
+    var prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString(key) ?? "";
+    print('NewTOKEN-$token');
+    return token;
+  }
+  static saveString(String key, String value) async {
+    var prefs = await SharedPreferences.getInstance();
+    prefs.setString(key, value);
+  }
   static saveUser(User user) async {
     print('PreferenceHelper SAVED-$user');
     final SharedPreferences _prefs = await SharedPreferences.getInstance();
@@ -32,8 +44,12 @@ class PreferenceHelper {
       print('getUser-${ss}');
       print('getUser-${s}');
     } catch (e) {
+      print("Exe $e");
       print(e);
     }
+    currentUser.value.user=User.fromJson(s);
+    currentUser.notifyListeners();
+    // AppUtils.currentUser=ss;
     return s == null ? null : User.fromJson(s);
   }
   static Future<bool> logout() async {

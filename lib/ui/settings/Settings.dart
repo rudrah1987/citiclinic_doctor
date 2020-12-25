@@ -2,6 +2,7 @@ import 'package:city_clinic_doctor/helper/DialogHelper.dart';
 import 'package:city_clinic_doctor/main.dart';
 import 'package:city_clinic_doctor/modal/auth/user.dart';
 import 'package:city_clinic_doctor/new/customs/custom_methods.dart';
+import 'package:city_clinic_doctor/new/utils/prefrence_helper.dart';
 import 'package:city_clinic_doctor/preference/CCDoctorPrefs.dart';
 import 'package:city_clinic_doctor/preference/PreferenceKeys.dart';
 import 'package:city_clinic_doctor/ui/dialogs/LogoutDialog.dart';
@@ -45,7 +46,8 @@ class _SettingsState extends State<Settings> {
     _user = AppUtils.currentUser;
     _logoutBloc.logoutStream.listen((event) {
       if (event.success == true) {
-        CCDoctorPrefs.deleteUser(userKeys);
+        // CCDoctorPrefs.deleteUser(userKeys);
+        PreferenceHelper.logout();
         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
             Splash2()), (Route<dynamic> route) => false);
         AppUtils.showError(event.message, _globalKey);
