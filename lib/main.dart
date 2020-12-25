@@ -14,6 +14,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'modal/auth/user.dart';
+import 'new/utils/prefrence_helper.dart';
 
 void main() /*async*/{
   // await SharedPreferences.getInstance();
@@ -53,10 +54,11 @@ class SplashMainState extends State<SplashMain>{
   }
 
   getUserFromPreference() {
-    CCDoctorPrefs.getLoggedUser(userKeys).then((value){
-      User _user = User.fromJson(value);
-      print("userDataSplash -> ${_user.accessToken}");
-      if(_user != null){
+    print('------getUserFromPreference------');
+    PreferenceHelper.getUser().then((value){
+      print("userDataSplash -> ${value}");
+      print("userDataSplash -> ${value.accessToken}");
+      if(value != null){
         Timer(Duration(seconds: 2), () =>
             Navigator.of(context).pushReplacement(MaterialPageRoute(
                 builder: (BuildContext context) => Dashboard())));

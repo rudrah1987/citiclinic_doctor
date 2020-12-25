@@ -5,7 +5,9 @@ class LoginResponse {
   String message;
   User user;
 
-  LoginResponse(this.success, this.message, this.user);
+  LoginResponse();
+
+  // LoginResponse(this.success, this.message, this.user);
 
   LoginResponse.fromJson(Map<String, dynamic> json) {
     this.success = json['success'];

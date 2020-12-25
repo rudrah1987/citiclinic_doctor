@@ -4,13 +4,14 @@ class User {
   String hospital_address, land_mark, availability_for_home_visit;
   String consultation_type, country, state, city, profile_image;
   String accessToken, appVersion, latitude, longitude,osType;
+  bool isLoggedIn=false;
 
   User(
       {this.user_id, this.name, this.phone_number, this.email,
         this.dob, this.gender, this.experience,this.hospital_address,
         this.land_mark, this.availability_for_home_visit, this.consultation_type,
         this.city, this.state, this.country, this.profile_image,
-        this.accessToken, this.appVersion, this.longitude, this.latitude, this.osType});
+        this.accessToken, this.appVersion, this.longitude, this.latitude, this.osType,this.isLoggedIn});
 
   User.fromJson(Map<String, dynamic> json) {
     user_id = json['user_id'] == null ? null : json['user_id'];

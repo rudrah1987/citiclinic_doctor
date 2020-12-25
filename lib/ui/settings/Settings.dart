@@ -1,4 +1,5 @@
 import 'package:city_clinic_doctor/helper/DialogHelper.dart';
+import 'package:city_clinic_doctor/main.dart';
 import 'package:city_clinic_doctor/modal/auth/user.dart';
 import 'package:city_clinic_doctor/new/customs/custom_methods.dart';
 import 'package:city_clinic_doctor/preference/CCDoctorPrefs.dart';

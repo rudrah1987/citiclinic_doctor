@@ -1,7 +1,9 @@
 import 'dart:collection';
 import 'dart:convert';
 
+import 'package:city_clinic_doctor/main.dart';
 import 'package:city_clinic_doctor/modal/auth/user.dart';
+import 'package:city_clinic_doctor/new/utils/prefrence_helper.dart';
 import 'package:city_clinic_doctor/preference/CCDoctorPrefs.dart';
 import 'package:city_clinic_doctor/preference/PreferenceKeys.dart';
 import 'package:city_clinic_doctor/routes/Routes.dart';
@@ -95,7 +97,7 @@ class _DashboardPageState extends State<DashboardPage> {
         print("LogoutMessage -> ${event.message}");
         CCDoctorPrefs.deleteUser(userKeys);
         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-            Splash2()), (Route<dynamic> route) => false);
+            SplashMain()), (Route<dynamic> route) => false);
         AppUtils.showError(event.message, _globalKey);
       } else {
         AppUtils.showError(event.message, _globalKey);
@@ -123,7 +125,8 @@ class _DashboardPageState extends State<DashboardPage> {
     _userDetailBloc.userDetailStream.listen((event) {
       if (event.user != null) {
         AppUtils.currentUser = event.user;
-        CCDoctorPrefs.saveUser(userKeys, jsonEncode(event.user.toJson()));
+        PreferenceHelper.saveUser(event.user);
+        // CCDoctorPrefs.saveUser(userKeys, jsonEncode(event.user.toJson()));
         print("userAccessToken -> ${event.user.accessToken}");
       } else {
         print(event.message);

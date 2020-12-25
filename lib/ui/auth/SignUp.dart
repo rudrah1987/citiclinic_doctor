@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:city_clinic_doctor/modal/auth/SignUpResponse.dart';
+import 'package:city_clinic_doctor/new/utils/prefrence_helper.dart';
 import 'package:city_clinic_doctor/preference/CCDoctorPrefs.dart';
 import 'package:city_clinic_doctor/preference/PreferenceKeys.dart';
 import 'package:city_clinic_doctor/ui/auth/Login.dart';
@@ -72,8 +73,9 @@ class SignUpState extends State<SignUp> {
     _verifyOtpBloc.otpVerifyStream.listen((event) {
       if (event.user != null) {
         AppUtils.currentUser = event.user;
-        CCDoctorPrefs.saveUser(userKeys, jsonEncode(event.user.toJson()));
-        print("userAccessToken -> ${event.user.accessToken}");
+        PreferenceHelper.saveUser(event.user);
+        // CCDoctorPrefs.saveUser(userKeys, jsonEncode(event.user.toJson()));
+        print("userAccessTokenSignUp -> ${event.user.accessToken}");
         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
             SuccessSignUpPage()), (Route<dynamic> route) => false);
       } else {

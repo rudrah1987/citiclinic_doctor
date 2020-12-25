@@ -6,7 +6,6 @@ import 'package:city_clinic_doctor/utils/Colors.dart';
 import 'package:city_clinic_doctor/utils/SvgImages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 import 'timeSlot/TimeSlotPage.dart';
 

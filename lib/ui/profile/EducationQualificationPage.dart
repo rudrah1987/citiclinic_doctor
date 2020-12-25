@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:city_clinic_doctor/modal/auth/user.dart';
 import 'package:city_clinic_doctor/modal/profile/DegreeListItem.dart';
+import 'package:city_clinic_doctor/new/utils/prefrence_helper.dart';
 import 'package:city_clinic_doctor/preference/CCDoctorPrefs.dart';
 import 'package:city_clinic_doctor/preference/PreferenceKeys.dart';
 import 'package:city_clinic_doctor/ui/dialogs/YearSelectionDialog.dart';
@@ -89,11 +90,11 @@ class _EducationQualificationPageState extends State<EducationQualificationPage>
 
   User _user;
   getUserFromPreference() {
-    CCDoctorPrefs.getLoggedUser(userKeys).then((value){
+    PreferenceHelper.getUser().then((value){
       setState(() {
-        _user = User.fromJson(value);
+        _user = value;
       });
-      print("userData -> ${_user.accessToken}");
+      print("userDataEducatuion Qualification -> ${_user.accessToken}");
     }).catchError((error) => print("Error -> $error"));
   }
 

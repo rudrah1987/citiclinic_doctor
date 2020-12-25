@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:city_clinic_doctor/modal/auth/ForgotPassData.dart';
 import 'package:city_clinic_doctor/modal/auth/ForgotPassResponse.dart';
+import 'package:city_clinic_doctor/new/utils/prefrence_helper.dart';
 import 'package:city_clinic_doctor/preference/CCDoctorPrefs.dart';
 import 'package:city_clinic_doctor/preference/PreferenceKeys.dart';
 import 'package:city_clinic_doctor/ui/auth/bloc/LoginBloc.dart';
@@ -58,8 +59,9 @@ class LoginState extends State<Login>{
     _loginBloc.loginStream.listen((event) {
       if (event.user != null) {
         AppUtils.currentUser = event.user;
-        CCDoctorPrefs.saveUser(userKeys, jsonEncode(event.user.toJson()));
-        print("userAccessToken -> ${event.user.accessToken}");
+        PreferenceHelper.saveUser(event.user);
+        // CCDoctorPrefs.saveUser(userKeys, jsonEncode(event.user.toJson()));
+        print("userAccessTokenAtLoginInit -> ${event.user.accessToken}");
         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
             Dashboard()), (Route<dynamic> route) => false);
       } else {
