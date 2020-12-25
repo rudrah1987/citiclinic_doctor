@@ -1,3 +1,5 @@
+import 'package:city_clinic_doctor/new/customs/custom_methods.dart';
+import 'package:city_clinic_doctor/ui/settings/myAppointments/items/upload_prescription.dart';
 import 'package:city_clinic_doctor/utils/Colors.dart';
 import 'package:city_clinic_doctor/utils/SvgImages.dart';
 import 'package:flutter/material.dart';
@@ -89,6 +91,7 @@ class _DoctorVisitMyAppointmentItemsState extends State<DoctorVisitMyAppointment
               ),
               color: Colors.white,
               onPressed: () {
+                tGotoPush(context, UploadPrescriptionPage());
               },
               height: 42,
               child: Text(

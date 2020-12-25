@@ -1,10 +1,8 @@
-import 'dart:io';
 
 import 'package:city_clinic_doctor/ui/auth/Login.dart';
 import 'package:city_clinic_doctor/ui/auth/SignUp.dart';
 import 'package:city_clinic_doctor/utils/SvgImages.dart';
 import 'package:city_clinic_doctor/utils/Colors.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';

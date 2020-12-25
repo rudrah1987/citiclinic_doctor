@@ -220,11 +220,11 @@ class _SettingsState extends State<Settings> {
                             color: kPrimaryColor
                         ),),
                       onTap: (){
-                        successDialog(context: context,svgName: successSignUp);
-                        // Navigator.push(
-                        //     context,
-                        //     MaterialPageRoute(
-                        //         builder: (_) => PrescriptionPage()));
+                        // successDialog(context: context,svgName: successSignUp);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => PrescriptionPage()));
                       },
                     ),
                   ],
