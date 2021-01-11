@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:city_clinic_doctor/modal/auth/ChangePassResponse.dart';
 import 'package:city_clinic_doctor/modal/auth/ForgotPassResponse.dart';
 import 'package:city_clinic_doctor/modal/auth/ForgotPassVerifyOtpResponse.dart';

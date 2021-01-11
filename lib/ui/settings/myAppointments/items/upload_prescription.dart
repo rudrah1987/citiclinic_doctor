@@ -23,7 +23,6 @@ class _UploadPrescriptionPageState extends State<UploadPrescriptionPage> {
             ),
           ),
           title: Text("Upload Prescription"),
-          //Ternery operator use for condition check
           elevation: defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
           centerTitle: false,
           leading: new IconButton(
@@ -155,7 +154,7 @@ class _UploadPrescriptionPageState extends State<UploadPrescriptionPage> {
                 color: kPrimaryColor,
                 onPressed: () {
                   Fluttertoast.showToast(
-                      msg: "Task is Pending",
+                      msg: "Task is still Pending",
                       toastLength: Toast.LENGTH_SHORT,
                       gravity: ToastGravity.BOTTOM,
                       timeInSecForIos: 1, // also possible "TOP" and "CENTER"
