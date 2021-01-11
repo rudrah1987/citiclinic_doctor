@@ -21,19 +21,25 @@ import 'package:dio/dio.dart';
 
 class ApiProvider {
   final Dio _dioClient = Dio(BaseOptions(
-      baseUrl: TESTING_BASE_URL,
-      connectTimeout: 5000,
-      receiveTimeout: 5000,
-      headers: {
-        'Appversion': '1.0',
-        'Ostype': Platform.isAndroid ? 'android' : 'ios'
-      },
+    baseUrl: TESTING_BASE_URL,
+    connectTimeout: 5000,
+    receiveTimeout: 5000,
+    headers: {
+      'Appversion': '1.0',
+      'Ostype': Platform.isAndroid ? 'android' : 'ios'
+    },
   ));
 
   //Authentication api call here...
 
-  Future<SignUpResponse> signUp(String name, String phone,
-      String email, String password, String  fb_token, String longitude, String latitude) async {
+  Future<SignUpResponse> signUp(
+      String name,
+      String phone,
+      String email,
+      String password,
+      String fb_token,
+      String longitude,
+      String latitude) async {
     final _map = Map();
     _map['name'] = name;
     _map['email'] = email;
@@ -53,9 +59,7 @@ class ApiProvider {
         if (json['success'] == true)
           return SignUpResponse.fromJson(json);
         else
-          return SignUpResponse.fromError(
-              json['message'], response.statusCode
-          );
+          return SignUpResponse.fromError(json['message'], response.statusCode);
       } else {
         return SignUpResponse.fromError("No data", 396);
       }
@@ -69,8 +73,8 @@ class ApiProvider {
     }
   }
 
-  Future<LoginResponse> login(String phone, String password, String longitude, String latitude, int roleType) async {
-
+  Future<LoginResponse> login(String phone, String password, String longitude,
+      String latitude, int roleType) async {
     Dio _dioClient = Dio(BaseOptions(
       baseUrl: TESTING_BASE_URL,
       connectTimeout: 5000,
@@ -87,7 +91,8 @@ class ApiProvider {
     _map['password'] = password;
     _map['longitude'] = longitude;
     _map['latitude'] = latitude;
-    print("phone -> $phone :: password -> $password :: longitude -> $longitude :: latitude -> $latitude");
+    print(
+        "phone -> $phone :: password -> $password :: longitude -> $longitude :: latitude -> $latitude");
 
     try {
       Response response = await _dioClient.post('login', data: _map);
@@ -99,11 +104,11 @@ class ApiProvider {
           return LoginResponse.fromJson(json);
         else
           return LoginResponse.fromError(
-              json['message']/*,
+              json['message'] /*,
             response.data['error_code'],*/
-          );
+              );
       } else {
-        return LoginResponse.fromError("No data"/*, 396*/);
+        return LoginResponse.fromError("No data" /*, 396*/);
       }
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
@@ -111,7 +116,7 @@ class ApiProvider {
       if (error is DioError) {
         e = getErrorMsg(e.type);
       }
-      return LoginResponse.fromError("$e"/*, 397*/);
+      return LoginResponse.fromError("$e" /*, 397*/);
     }
   }
 
@@ -131,11 +136,11 @@ class ApiProvider {
           return ForgotPassResponse.fromJson(json);
         else
           return ForgotPassResponse.fromError(
-              json['message']/*,
+              json['message'] /*,
             response.data['error_code'],*/
-          );
+              );
       } else {
-        return ForgotPassResponse.fromError("No data"/*, 396*/);
+        return ForgotPassResponse.fromError("No data" /*, 396*/);
       }
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
@@ -143,11 +148,12 @@ class ApiProvider {
       if (error is DioError) {
         e = getErrorMsg(e.type);
       }
-      return ForgotPassResponse.fromError("$e"/*, 397*/);
+      return ForgotPassResponse.fromError("$e" /*, 397*/);
     }
   }
 
-  Future<ResendOtpResponse> forgotPassResendOtp(String phone, int userID) async {
+  Future<ResendOtpResponse> forgotPassResendOtp(
+      String phone, int userID) async {
     final _map = Map();
     _map['user_cred'] = phone;
     _map['type'] = "phone";
@@ -165,7 +171,8 @@ class ApiProvider {
     ));
 
     try {
-      Response response = await _dioClient.post('userforgotresendotp', data: _map);
+      Response response =
+          await _dioClient.post('userforgotresendotp', data: _map);
       dynamic json = jsonDecode(response.toString());
       print(response.data);
       if (response.data != "") {
@@ -173,11 +180,9 @@ class ApiProvider {
         if (json['success'] == true)
           return ResendOtpResponse.fromJson(json);
         else
-          return ResendOtpResponse.fromError(
-              json['message']
-          );
+          return ResendOtpResponse.fromError(json['message']);
       } else {
-        return ResendOtpResponse.fromError("No data"/*, 396*/);
+        return ResendOtpResponse.fromError("No data" /*, 396*/);
       }
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
@@ -185,13 +190,17 @@ class ApiProvider {
       if (error is DioError) {
         e = getErrorMsg(e.type);
       }
-      return ResendOtpResponse.fromError("$e"/*, 397*/);
+      return ResendOtpResponse.fromError("$e" /*, 397*/);
     }
   }
 
-  Future<ForgotPassVerifyOtpResponse> verifyForgotPassOtp(String phone,
-      String otp, String userLogID, int userID) async {
-    final _map = {'otp': otp, 'user_cred': phone, 'result_forgot_log_id':userLogID};
+  Future<ForgotPassVerifyOtpResponse> verifyForgotPassOtp(
+      String phone, String otp, String userLogID, int userID) async {
+    final _map = {
+      'otp': otp,
+      'user_cred': phone,
+      'result_forgot_log_id': userLogID
+    };
 
     Dio _dioClient = Dio(BaseOptions(
       baseUrl: TESTING_BASE_URL,
@@ -205,7 +214,8 @@ class ApiProvider {
     ));
 
     try {
-      Response response = await _dioClient.post('userforgotverifyotp', data: _map);
+      Response response =
+          await _dioClient.post('userforgotverifyotp', data: _map);
       dynamic json = jsonDecode(response.toString());
       print(response.data);
       if (response.data != "") {
@@ -214,11 +224,11 @@ class ApiProvider {
           return ForgotPassVerifyOtpResponse.fromJson(json);
         else
           return ForgotPassVerifyOtpResponse.fromError(
-              json['message']/*,
+              json['message'] /*,
             response.data['error_code'],*/
-          );
+              );
       } else {
-        return ForgotPassVerifyOtpResponse.fromError("No data"/*, 396*/);
+        return ForgotPassVerifyOtpResponse.fromError("No data" /*, 396*/);
       }
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
@@ -226,7 +236,7 @@ class ApiProvider {
       if (error is DioError) {
         e = getErrorMsg(e.type);
       }
-      return ForgotPassVerifyOtpResponse.fromError("$e"/*, 397*/);
+      return ForgotPassVerifyOtpResponse.fromError("$e" /*, 397*/);
     }
   }
 
@@ -255,11 +265,11 @@ class ApiProvider {
           return ResetPassResponse.fromJson(json);
         else
           return ResetPassResponse.fromError(
-              json['message']/*,
+              json['message'] /*,
             response.data['error_code'],*/
-          );
+              );
       } else {
-        return ResetPassResponse.fromError("No data"/*, 396*/);
+        return ResetPassResponse.fromError("No data" /*, 396*/);
       }
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
@@ -267,13 +277,17 @@ class ApiProvider {
       if (error is DioError) {
         e = getErrorMsg(e.type);
       }
-      return ResetPassResponse.fromError("$e"/*, 397*/);
+      return ResetPassResponse.fromError("$e" /*, 397*/);
     }
   }
 
-  Future<VerifyOtpResponse> verifySignUpOtp(String phone,
-      String otp, String userLogID, int userID) async {
-    final _map = {'otp': otp, 'phone_number': phone, 'user_otp_log_id':userLogID};
+  Future<VerifyOtpResponse> verifySignUpOtp(
+      String phone, String otp, String userLogID, int userID) async {
+    final _map = {
+      'otp': otp,
+      'phone_number': phone,
+      'user_otp_log_id': userLogID
+    };
 
     print("map -> $_map :: userid -> $userID");
     Dio _dioClient = Dio(BaseOptions(
@@ -297,11 +311,11 @@ class ApiProvider {
           return VerifyOtpResponse.fromJson(json);
         else
           return VerifyOtpResponse.fromError(
-              json['message']/*,
+              json['message'] /*,
             response.data['error_code'],*/
-          );
+              );
       } else {
-        return VerifyOtpResponse.fromError("No data"/*, 396*/);
+        return VerifyOtpResponse.fromError("No data" /*, 396*/);
       }
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
@@ -309,12 +323,11 @@ class ApiProvider {
       if (error is DioError) {
         e = getErrorMsg(e.type);
       }
-      return VerifyOtpResponse.fromError("$e"/*, 397*/);
+      return VerifyOtpResponse.fromError("$e" /*, 397*/);
     }
   }
 
-  Future<ResendOtpResponse> resendSignUpOtp(String phone,
-      int userID) async {
+  Future<ResendOtpResponse> resendSignUpOtp(String phone, int userID) async {
     final _map = {'phone_number': phone};
 
     Dio _dioClient = Dio(BaseOptions(
@@ -338,11 +351,11 @@ class ApiProvider {
           return ResendOtpResponse.fromJson(json);
         else
           return ResendOtpResponse.fromError(
-              json['message']/*,
+              json['message'] /*,
             response.data['error_code'],*/
-          );
+              );
       } else {
-        return ResendOtpResponse.fromError("No data"/*, 396*/);
+        return ResendOtpResponse.fromError("No data" /*, 396*/);
       }
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
@@ -350,12 +363,12 @@ class ApiProvider {
       if (error is DioError) {
         e = getErrorMsg(e.type);
       }
-      return ResendOtpResponse.fromError("$e"/*, 397*/);
+      return ResendOtpResponse.fromError("$e" /*, 397*/);
     }
   }
 
   Future<ResendOtpResponse> resendOtp(String phone, int userID) async {
-    final _map = {'phone_number': phone, 'user_id':userID};
+    final _map = {'phone_number': phone, 'user_id': userID};
 
     Dio _dioClient = Dio(BaseOptions(
       baseUrl: TESTING_BASE_URL,
@@ -378,11 +391,11 @@ class ApiProvider {
           return ResendOtpResponse.fromJson(json);
         else
           return ResendOtpResponse.fromError(
-              json['message']/*,
+              json['message'] /*,
             response.data['error_code'],*/
-          );
+              );
       } else {
-        return ResendOtpResponse.fromError("No data"/*, 396*/);
+        return ResendOtpResponse.fromError("No data" /*, 396*/);
       }
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
@@ -390,19 +403,19 @@ class ApiProvider {
       if (error is DioError) {
         e = getErrorMsg(e.type);
       }
-      return ResendOtpResponse.fromError("$e"/*, 397*/);
+      return ResendOtpResponse.fromError("$e" /*, 397*/);
     }
   }
 
-  Future<UserDetailResponse> getUserDetails(String accessToken, int userID) async {
-    final Dio _dioClientHeader = Dio(BaseOptions(
-        baseUrl: TESTING_BASE_URL,
-        headers: {
-          'Appversion': '1.0',
-          'Ostype': Platform.isAndroid ? 'ANDRIOD' : 'ios',
-          'Userid' : userID,
-          'Accesstoken' : accessToken
-        }));
+  Future<UserDetailResponse> getUserDetails(
+      String accessToken, int userID) async {
+    final Dio _dioClientHeader =
+        Dio(BaseOptions(baseUrl: TESTING_BASE_URL, headers: {
+      'Appversion': '1.0',
+      'Ostype': Platform.isAndroid ? 'ANDRIOD' : 'ios',
+      'Userid': userID,
+      'Accesstoken': accessToken
+    }));
 
     print("User details :: $userID :: $accessToken");
     try {
@@ -414,11 +427,9 @@ class ApiProvider {
         if (json['success'] == true)
           return UserDetailResponse.fromJson(json);
         else
-          return UserDetailResponse.fromError(
-              json['message']
-          );
+          return UserDetailResponse.fromError(json['message']);
       } else {
-        return UserDetailResponse.fromError("No data"/*, 396*/);
+        return UserDetailResponse.fromError("No data" /*, 396*/);
       }
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
@@ -426,12 +437,13 @@ class ApiProvider {
       if (error is DioError) {
         e = getErrorMsg(e.type);
       }
-      return UserDetailResponse.fromError("$e"/*, 397*/);
+      return UserDetailResponse.fromError("$e" /*, 397*/);
     }
   }
 
   Future<SpecialityResponse> getSpeciality() async {
     try {
+      print('-------------getSpeciality Called');
       Response response = await _dioClient.get('getspecialities');
       dynamic json = jsonDecode(response.toString());
       print(response.data);
@@ -441,11 +453,11 @@ class ApiProvider {
           return SpecialityResponse.fromJson(json);
         else
           return SpecialityResponse.fromError(
-              json['message']/*,
+              json['message'] /*,
             response.data['error_code'],*/
-          );
+              );
       } else {
-        return SpecialityResponse.fromError("No data"/*, 396*/);
+        return SpecialityResponse.fromError("No data" /*, 396*/);
       }
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
@@ -454,16 +466,17 @@ class ApiProvider {
         e = getErrorMsg(e.type);
       }
       print("Error -> $e");
-      return SpecialityResponse.fromError("$e"/*, 397*/);
+      return SpecialityResponse.fromError("$e" /*, 397*/);
     }
   }
 
-  Future<ChangePassResponse> changePassword(String oldPass,
-      String newPass, String accessToken, int userID) async {
+  Future<ChangePassResponse> changePassword(
+      String oldPass, String newPass, String accessToken, int userID) async {
     final _map = Map();
     _map['old_password'] = oldPass;
     _map['new_password'] = newPass;
-    print("changePassword -> $_map :: userID -> $userID :: accessToken -> $accessToken");
+    print(
+        "changePassword -> $_map :: userID -> $userID :: accessToken -> $accessToken");
 
     Dio _dioClient = Dio(BaseOptions(
       baseUrl: TESTING_BASE_URL,
@@ -472,7 +485,7 @@ class ApiProvider {
       headers: {
         'Appversion': '1.0',
         'Ostype': Platform.isAndroid ? 'android' : 'ios',
-        'Accesstoken' : accessToken,
+        'Accesstoken': accessToken,
         'Userid': userID
       },
     ));
@@ -486,11 +499,9 @@ class ApiProvider {
         if (json['success'] == true)
           return ChangePassResponse.fromJson(json);
         else
-          return ChangePassResponse.fromError(
-              json['message']
-          );
+          return ChangePassResponse.fromError(json['message']);
       } else {
-        return ChangePassResponse.fromError("No data"/*, 396*/);
+        return ChangePassResponse.fromError("No data" /*, 396*/);
       }
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
@@ -498,7 +509,7 @@ class ApiProvider {
       if (error is DioError) {
         e = getErrorMsg(e.type);
       }
-      return ChangePassResponse.fromError("$e"/*, 397*/);
+      return ChangePassResponse.fromError("$e" /*, 397*/);
     }
   }
 
@@ -510,7 +521,7 @@ class ApiProvider {
       headers: {
         'Appversion': '1.0',
         'Ostype': Platform.isAndroid ? 'android' : 'ios',
-        'Accesstoken' : accessToken,
+        'Accesstoken': accessToken,
         'Userid': userID
       },
     ));
@@ -524,11 +535,9 @@ class ApiProvider {
         if (json['success'] == true)
           return LogoutResponse.fromJson(json);
         else
-          return LogoutResponse.fromError(
-              json['message']
-          );
+          return LogoutResponse.fromError(json['message']);
       } else {
-        return LogoutResponse.fromError("No data"/*, 396*/);
+        return LogoutResponse.fromError("No data" /*, 396*/);
       }
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
@@ -536,12 +545,12 @@ class ApiProvider {
       if (error is DioError) {
         e = getErrorMsg(e.type);
       }
-      return LogoutResponse.fromError("$e"/*, 397*/);
+      return LogoutResponse.fromError("$e" /*, 397*/);
     }
   }
 
-  Future<ProfileImageResponse> profileORCoverImage(String accessToken, int userID,
-      String keyword, File imageFile) async {
+  Future<ProfileImageResponse> profileORCoverImage(
+      String accessToken, int userID, String keyword, File imageFile) async {
     Dio _dioClient = Dio(BaseOptions(
       baseUrl: TESTING_BASE_URL,
       connectTimeout: 5000,
@@ -549,22 +558,26 @@ class ApiProvider {
       headers: {
         'Appversion': '1.0',
         'Ostype': Platform.isAndroid ? 'android' : 'ios',
-        'Accesstoken' : accessToken,
+        'Accesstoken': accessToken,
         'Userid': userID
       },
     ));
 
-    print("profileImage -> userID -> $userID :: accessToken -> $accessToken :: $keyword");
+    print(
+        "profileImage -> userID -> $userID :: accessToken -> $accessToken :: $keyword");
 
     String fileName = imageFile.path.split('/').last;
     FormData formData = FormData.fromMap({
-      "keyword" : keyword,
-      "image": await MultipartFile.fromFile(imageFile.path,
-        filename:fileName,),
+      "keyword": keyword,
+      "image": await MultipartFile.fromFile(
+        imageFile.path,
+        filename: fileName,
+      ),
     });
 
     try {
-      Response response = await _dioClient.post('doctorprofileimage', data: formData);
+      Response response =
+          await _dioClient.post('doctorprofileimage', data: formData);
       dynamic json = jsonDecode(response.toString());
       print(response.data);
       if (response.data != "") {
@@ -572,11 +585,9 @@ class ApiProvider {
         if (json['success'] == true)
           return ProfileImageResponse.fromJson(json);
         else
-          return ProfileImageResponse.fromError(
-              json['message']
-          );
+          return ProfileImageResponse.fromError(json['message']);
       } else {
-        return ProfileImageResponse.fromError("No data"/*, 396*/);
+        return ProfileImageResponse.fromError("No data" /*, 396*/);
       }
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
@@ -584,12 +595,17 @@ class ApiProvider {
       if (error is DioError) {
         e = getErrorMsg(e.type);
       }
-      return ProfileImageResponse.fromError("$e"/*, 397*/);
+      return ProfileImageResponse.fromError("$e" /*, 397*/);
     }
   }
 
-  Future<QualificationResponse> doctorQualification(String accessToken, int userID,
-      String degree, String university, String passingYear, File regProofFile) async {
+  Future<QualificationResponse> doctorQualification(
+      String accessToken,
+      int userID,
+      String degree,
+      String university,
+      String passingYear,
+      File regProofFile) async {
     Dio _dioClient = Dio(BaseOptions(
       baseUrl: TESTING_BASE_URL,
       connectTimeout: 5000,
@@ -597,23 +613,27 @@ class ApiProvider {
       headers: {
         'Appversion': '1.0',
         'Ostype': Platform.isAndroid ? 'android' : 'ios',
-        'Accesstoken' : accessToken,
+        'Accesstoken': accessToken,
         'Userid': userID
       },
     ));
 
-    print("doctorQualification -> userID -> $userID :: accessToken -> $accessToken");
+    print(
+        "doctorQualification -> userID -> $userID :: accessToken -> $accessToken");
     String fileName = regProofFile.path.split('/').last;
     FormData formData = FormData.fromMap({
-      "degree" : degree,
-      "university" : university,
-      "passing_year" : passingYear,
-      "image": await MultipartFile.fromFile(regProofFile.path,
-        filename:fileName,),
+      "degree": degree,
+      "university": university,
+      "passing_year": passingYear,
+      "image": await MultipartFile.fromFile(
+        regProofFile.path,
+        filename: fileName,
+      ),
     });
 
     try {
-      Response response = await _dioClient.post('doctorqualification', data: formData);
+      Response response =
+          await _dioClient.post('doctorqualification', data: formData);
       dynamic json = jsonDecode(response.toString());
       print(response.data);
       if (response.data != "") {
@@ -621,11 +641,9 @@ class ApiProvider {
         if (json['success'] == true)
           return QualificationResponse.fromJson(json);
         else
-          return QualificationResponse.fromError(
-              json['message']
-          );
+          return QualificationResponse.fromError(json['message']);
       } else {
-        return QualificationResponse.fromError("No data"/*, 396*/);
+        return QualificationResponse.fromError("No data" /*, 396*/);
       }
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
@@ -633,12 +651,17 @@ class ApiProvider {
       if (error is DioError) {
         e = getErrorMsg(e.type);
       }
-      return QualificationResponse.fromError("$e"/*, 397*/);
+      return QualificationResponse.fromError("$e" /*, 397*/);
     }
   }
 
-  Future<RegistrationResponse> doctorRegistration(String accessToken, int userID,
-      String regNumber, String regCouncil, String regDate, File regProofFile) async {
+  Future<RegistrationResponse> doctorRegistration(
+      String accessToken,
+      int userID,
+      String regNumber,
+      String regCouncil,
+      String regDate,
+      File regProofFile) async {
     Dio _dioClient = Dio(BaseOptions(
       baseUrl: TESTING_BASE_URL,
       connectTimeout: 5000,
@@ -646,26 +669,30 @@ class ApiProvider {
       headers: {
         'Appversion': '1.0',
         'Ostype': Platform.isAndroid ? 'android' : 'ios',
-        'Accesstoken' : accessToken,
+        'Accesstoken': accessToken,
         'Userid': userID
       },
     ));
 
     String fileName = regProofFile.path.split('/').last;
-    print("doctorRegistration -> :: userID -> $userID :: accessToken -> $accessToken"
+    print(
+        "doctorRegistration -> :: userID -> $userID :: accessToken -> $accessToken"
         ":: registration_number -> $regNumber :: registration_council -> "
         "$regCouncil :: registration_date -> $regDate :: image -> $fileName");
 
     FormData formData = FormData.fromMap({
-      "registration_number" : regNumber,
-      "registration_council" : regCouncil,
-      "registration_date" : regDate,
-      "image": await MultipartFile.fromFile(regProofFile.path,
-        filename:fileName,),
+      "registration_number": regNumber,
+      "registration_council": regCouncil,
+      "registration_date": regDate,
+      "image": await MultipartFile.fromFile(
+        regProofFile.path,
+        filename: fileName,
+      ),
     });
 
     try {
-      Response response = await _dioClient.post('doctorregistrationdeatils', data: formData);
+      Response response =
+          await _dioClient.post('doctorregistrationdeatils', data: formData);
       dynamic json = jsonDecode(response.toString());
       print(response.data);
       if (response.data != "") {
@@ -673,11 +700,9 @@ class ApiProvider {
         if (json['success'] == true)
           return RegistrationResponse.fromJson(json);
         else
-          return RegistrationResponse.fromError(
-              json['message']
-          );
+          return RegistrationResponse.fromError(json['message']);
       } else {
-        return RegistrationResponse.fromError("No data"/*, 396*/);
+        return RegistrationResponse.fromError("No data" /*, 396*/);
       }
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
@@ -685,19 +710,29 @@ class ApiProvider {
       if (error is DioError) {
         e = getErrorMsg(e.type);
       }
-      return RegistrationResponse.fromError("$e"/*, 397*/);
+      return RegistrationResponse.fromError("$e" /*, 397*/);
     }
   }
 
-  Future<ProfileUpdateResponse> profileUpdate(String accessToken, int userID,
-      String name, String gender, String dob, String exprience, int specialityID,
-      String hospital_address, String land_mark,
-      String availability_for_home_visit, String consultation_type,
-      String city_id, String state_id,
-      String country_id, String bank_name,
-      String account_holder_name,String account_number,
+  Future<ProfileUpdateResponse> profileUpdate(
+      String accessToken,
+      int userID,
+      String name,
+      String gender,
+      String dob,
+      String exprience,
+      int specialityID,
+      String hospital_address,
+      String land_mark,
+      String availability_for_home_visit,
+      String consultation_type,
+      String city_id,
+      String state_id,
+      String country_id,
+      String bank_name,
+      String account_holder_name,
+      String account_number,
       String ifsc_code) async {
-
     Dio _dioClient = Dio(BaseOptions(
       baseUrl: TESTING_BASE_URL,
       connectTimeout: 5000,
@@ -705,7 +740,7 @@ class ApiProvider {
       headers: {
         'Appversion': '1.0',
         'Ostype': Platform.isAndroid ? 'android' : 'ios',
-        'Accesstoken' : accessToken,
+        'Accesstoken': accessToken,
         'Userid': userID
       },
     ));
@@ -728,7 +763,8 @@ class ApiProvider {
     _map['account_number'] = account_number;
     _map['ifsc_code'] = ifsc_code;
 
-    print("profileUpdate -> $_map :: userID -> $userID :: accessToken -> $accessToken");
+    print(
+        "profileUpdate -> $_map :: userID -> $userID :: accessToken -> $accessToken");
 
     try {
       Response response = await _dioClient.post('doctorprofile', data: _map);
@@ -739,11 +775,9 @@ class ApiProvider {
         if (json['success'] == true)
           return ProfileUpdateResponse.fromJson(json);
         else
-          return ProfileUpdateResponse.fromError(
-              json['message']
-          );
+          return ProfileUpdateResponse.fromError(json['message']);
       } else {
-        return ProfileUpdateResponse.fromError("No data"/*, 396*/);
+        return ProfileUpdateResponse.fromError("No data" /*, 396*/);
       }
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
@@ -751,7 +785,7 @@ class ApiProvider {
       if (error is DioError) {
         e = getErrorMsg(e.type);
       }
-      return ProfileUpdateResponse.fromError("$e"/*, 397*/);
+      return ProfileUpdateResponse.fromError("$e" /*, 397*/);
     }
   }
 
@@ -766,11 +800,11 @@ class ApiProvider {
           return SpecialityResponse.fromJson(json);
         else
           return SpecialityResponse.fromError(
-              json['message']/*,
+              json['message'] /*,
             response.data['error_code'],*/
-          );
+              );
       } else {
-        return SpecialityResponse.fromError("No data"/*, 396*/);
+        return SpecialityResponse.fromError("No data" /*, 396*/);
       }
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
@@ -779,15 +813,19 @@ class ApiProvider {
         e = getErrorMsg(e.type);
       }
       print("Error -> $e");
-      return SpecialityResponse.fromError("$e"/*, 397*/);
+      return SpecialityResponse.fromError("$e" /*, 397*/);
     }
   }
 
   Future<AddAppointmentScheduleResponse> addAppointmentSchedule(
-      String accessToken, int userID,
-      String working_days, String morning_time_start,
-      String morning_time_end, String afternoon_time_start,
-      String afternoon_time_end, String evening_time_start,
+      String accessToken,
+      int userID,
+      String working_days,
+      String morning_time_start,
+      String morning_time_end,
+      String afternoon_time_start,
+      String afternoon_time_end,
+      String evening_time_start,
       String evening_time_end) async {
     Dio _dioClient = Dio(BaseOptions(
       baseUrl: TESTING_BASE_URL,
@@ -796,7 +834,7 @@ class ApiProvider {
       headers: {
         'Appversion': '1.0',
         'Ostype': Platform.isAndroid ? 'android' : 'ios',
-        'Accesstoken' : accessToken,
+        'Accesstoken': accessToken,
         'Userid': userID
       },
     ));
@@ -813,7 +851,8 @@ class ApiProvider {
     print("AddAppointment -> $_map");
 
     try {
-      Response response = await _dioClient.post('addappointmentschedule', data: _map);
+      Response response =
+          await _dioClient.post('addappointmentschedule', data: _map);
       dynamic json = jsonDecode(response.toString());
       print(response.data);
       if (response.data != "") {
@@ -821,11 +860,9 @@ class ApiProvider {
         if (json['success'] == true)
           return AddAppointmentScheduleResponse.fromJson(json);
         else
-          return AddAppointmentScheduleResponse.fromError(
-              json['message']
-          );
+          return AddAppointmentScheduleResponse.fromError(json['message']);
       } else {
-        return AddAppointmentScheduleResponse.fromError("No data"/*, 396*/);
+        return AddAppointmentScheduleResponse.fromError("No data" /*, 396*/);
       }
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
@@ -833,13 +870,16 @@ class ApiProvider {
       if (error is DioError) {
         e = getErrorMsg(e.type);
       }
-      return AddAppointmentScheduleResponse.fromError("$e"/*, 397*/);
+      return AddAppointmentScheduleResponse.fromError("$e" /*, 397*/);
     }
   }
 
   Future<AddAppointmentScheduleResponse> addAppointmentScheduleTesting(
-      String accessToken, int userID,
-      String working_days, String slotType, String time_start,
+      String accessToken,
+      int userID,
+      String working_days,
+      String slotType,
+      String time_start,
       String time_end) async {
     Dio _dioClient = Dio(BaseOptions(
       baseUrl: TESTING_BASE_URL,
@@ -848,7 +888,7 @@ class ApiProvider {
       headers: {
         'Appversion': '1.0',
         'Ostype': Platform.isAndroid ? 'android' : 'ios',
-        'Accesstoken' : accessToken,
+        'Accesstoken': accessToken,
         'Userid': userID
       },
     ));
@@ -861,7 +901,8 @@ class ApiProvider {
     print("AddAppointment -> $_map :: ${userID} :: ${accessToken}");
 
     try {
-      Response response = await _dioClient.post('addappointmentschedule', data: _map);
+      Response response =
+          await _dioClient.post('addappointmentschedule', data: _map);
       dynamic json = jsonDecode(response.toString());
       print(response.data);
       if (response.data != "") {
@@ -869,11 +910,9 @@ class ApiProvider {
         if (json['success'] == true)
           return AddAppointmentScheduleResponse.fromJson(json);
         else
-          return AddAppointmentScheduleResponse.fromError(
-              json['message']
-          );
+          return AddAppointmentScheduleResponse.fromError(json['message']);
       } else {
-        return AddAppointmentScheduleResponse.fromError("No data"/*, 396*/);
+        return AddAppointmentScheduleResponse.fromError("No data" /*, 396*/);
       }
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
@@ -881,7 +920,7 @@ class ApiProvider {
       if (error is DioError) {
         e = getErrorMsg(e.type);
       }
-      return AddAppointmentScheduleResponse.fromError("$e"/*, 397*/);
+      return AddAppointmentScheduleResponse.fromError("$e" /*, 397*/);
     }
   }
 

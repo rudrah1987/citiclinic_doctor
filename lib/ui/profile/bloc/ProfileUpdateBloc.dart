@@ -48,7 +48,7 @@ class ProfileUpdateBloc extends BaseBloc {
       String account_number,
       String ifsc_code) async {
     gLogger.i("profileUpdate calling");
-    var updateSuccess=false;
+    var updateSuccess = false;
     // if (isLoading) return;
     isLoading = true;
     _loadingStream.sink.add(true);
@@ -73,12 +73,13 @@ class ProfileUpdateBloc extends BaseBloc {
             account_number,
             ifsc_code)
         .then((value) {
+      print('profileUpdated Started-------${value.message}');
       gLogger.i(value.user.toJson());
       isLoading = false;
       _loadingStream.sink.add(isLoading);
       _profileUpdateStream.sink.add(value);
-      if(value.success){
-        updateSuccess=true;
+      if (value.success) {
+        updateSuccess = true;
       }
     }).catchError((error) {
       isLoading = false;
