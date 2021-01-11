@@ -1,11 +1,7 @@
 import 'dart:collection';
-import 'dart:convert';
 
 import 'package:city_clinic_doctor/main.dart';
-import 'package:city_clinic_doctor/modal/auth/user.dart';
 import 'package:city_clinic_doctor/new/utils/prefrence_helper.dart';
-import 'package:city_clinic_doctor/preference/CCDoctorPrefs.dart';
-import 'package:city_clinic_doctor/preference/PreferenceKeys.dart';
 import 'package:city_clinic_doctor/routes/Routes.dart';
 import 'package:city_clinic_doctor/ui/auth/bloc/LoginBloc.dart';
 import 'package:city_clinic_doctor/ui/dialogs/LogoutDialog.dart';
@@ -18,7 +14,6 @@ import 'package:city_clinic_doctor/ui/profile/ProfileUpdate.dart';
 import 'package:city_clinic_doctor/ui/settings/NotificationPage.dart';
 import 'package:city_clinic_doctor/ui/settings/Settings.dart';
 import 'package:city_clinic_doctor/ui/settings/bloc/LogoutBloc.dart';
-import 'package:city_clinic_doctor/ui/splash/Splash2.dart';
 import 'package:city_clinic_doctor/utils/DrawerWidgets.dart';
 import 'package:city_clinic_doctor/utils/SvgImages.dart';
 import 'package:city_clinic_doctor/utils/Colors.dart';
@@ -27,7 +22,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 import 'Chat/ChatPage.dart';
 import 'bloc/UserDetailBloc.dart';

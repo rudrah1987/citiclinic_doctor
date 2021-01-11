@@ -327,6 +327,8 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
 
   @override
   Widget build(BuildContext context) {
+    print(_user.accessToken);
+    print(_user.user_id);
     return Scaffold(
       key: _globalKey,
       body: SingleChildScrollView(

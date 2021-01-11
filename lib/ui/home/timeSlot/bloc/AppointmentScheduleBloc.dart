@@ -1,5 +1,4 @@
 import 'package:city_clinic_doctor/modal/home/AddAppointmentScheduleResponse.dart';
-import 'package:city_clinic_doctor/modal/profile/UserDetailResponse.dart';
 import 'package:city_clinic_doctor/repository/base.dart';
 import 'package:rxdart/rxdart.dart';
 
