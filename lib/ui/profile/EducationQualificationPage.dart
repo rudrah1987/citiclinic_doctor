@@ -1,10 +1,8 @@
 import 'dart:io';
 
 import 'package:city_clinic_doctor/modal/auth/user.dart';
-import 'package:city_clinic_doctor/modal/profile/DegreeListItem.dart';
+import 'package:city_clinic_doctor/modal/profile/UserDetailResponse.dart';
 import 'package:city_clinic_doctor/new/utils/prefrence_helper.dart';
-import 'package:city_clinic_doctor/preference/CCDoctorPrefs.dart';
-import 'package:city_clinic_doctor/preference/PreferenceKeys.dart';
 import 'package:city_clinic_doctor/ui/dialogs/YearSelectionDialog.dart';
 import 'package:city_clinic_doctor/ui/profile/bloc/DoctorQualificationBloc.dart';
 import 'package:city_clinic_doctor/utils/Colors.dart';
@@ -88,7 +86,7 @@ class _EducationQualificationPageState extends State<EducationQualificationPage>
     }
   }
 
-  User _user;
+  UserData _user;
   getUserFromPreference() {
     PreferenceHelper.getUser().then((value){
       setState(() {
@@ -290,7 +288,7 @@ class _EducationQualificationPageState extends State<EducationQualificationPage>
                         if(_formKey.currentState.validate()){
                           if(_qualificationImage != null){
                             _doctorQualificationBloc.doctorQualification(_user.accessToken,
-                                _user.user_id, _degreeController.text.toString(),
+                                _user.userId, _degreeController.text.toString(),
                                 _collegeController.text.toString(), yearFieldController.text.toString(), _qualificationImage);
                           }else{
                             Fluttertoast.showToast(

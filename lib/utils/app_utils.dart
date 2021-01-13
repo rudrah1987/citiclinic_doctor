@@ -1,15 +1,22 @@
 import 'package:city_clinic_doctor/modal/auth/user.dart';
+import 'package:city_clinic_doctor/modal/profile/UserDetailResponse.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
+import 'Colors.dart';
 import 'no_internet.dart';
 
 class AppUtils {
-  static User currentUser;
+  static UserData currentUser;
   static PublishSubject<bool> internetStream = PublishSubject();
 
+circulerLoading() {
+    return CircularProgressIndicator(
+      valueColor: new AlwaysStoppedAnimation<Color>(kPrimaryColor)
+    );
+  }
   dispose() {
     internetStream?.close();
   }
@@ -42,7 +49,7 @@ class AppUtils {
         });
   }
 
-  static close(){
+  static close() {
     Navigator.of(con).pop();
   }
 
@@ -111,4 +118,6 @@ class AppUtils {
   static void closeWithContext(BuildContext currentContext) {
     Navigator.of(currentContext).pop();
   }
+
+  
 }

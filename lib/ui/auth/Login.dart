@@ -295,14 +295,14 @@ class LoginState extends State<Login>{
                               });
                             })
                     ),
-                    validator: (v) {
-                      if (v.isEmpty) {
-                        return 'password is required';
-                      }else if(v.length < 8){
-                        return 'password should be atleast 8 characters';
-                      }
-                      return null;
-                    },
+                    // validator: (v) {
+                    //   if (v.isEmpty) {
+                    //     return 'password is required';
+                    //   }else if(v.length < 8){
+                    //     return 'password should be atleast 8 characters';
+                    //   }
+                    //   return null;
+                    // },
                   ),
                           SizedBox(height: 16,),
                   InkWell(

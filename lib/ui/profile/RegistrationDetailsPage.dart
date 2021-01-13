@@ -1,10 +1,8 @@
 import 'dart:io';
 
 import 'package:city_clinic_doctor/modal/auth/user.dart';
-import 'package:city_clinic_doctor/modal/profile/DegreeListItem.dart';
+import 'package:city_clinic_doctor/modal/profile/UserDetailResponse.dart';
 import 'package:city_clinic_doctor/new/utils/prefrence_helper.dart';
-import 'package:city_clinic_doctor/preference/CCDoctorPrefs.dart';
-import 'package:city_clinic_doctor/preference/PreferenceKeys.dart';
 import 'package:city_clinic_doctor/ui/dialogs/YearSelectionDialog.dart';
 import 'package:city_clinic_doctor/ui/profile/bloc/DoctorRegistrationBloc.dart';
 import 'package:city_clinic_doctor/utils/Colors.dart';
@@ -79,7 +77,7 @@ class _RegistrationDetailsPageState extends State<RegistrationDetailsPage> {
     });
   }
 
-  User _user;
+  UserData _user;
   getUserFromPreference() {
     PreferenceHelper.getUser().then((value){
       setState(() {
@@ -289,7 +287,7 @@ class _RegistrationDetailsPageState extends State<RegistrationDetailsPage> {
                         if(_formKey.currentState.validate()){
                           if(_qualificationImage != null){
                             _doctorRegistrationBloc.doctorRegistration(_user.accessToken,
-                                _user.user_id, _regNumberController.text.toString(),
+                                _user.userId, _regNumberController.text.toString(),
                                 _regCouncilController.text.toString(),
                                 _regYearController.text.toString(), _qualificationImage);
                           }else{

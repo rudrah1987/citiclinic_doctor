@@ -1,9 +1,7 @@
-import 'dart:convert';
 
 import 'package:city_clinic_doctor/modal/auth/SignUpResponse.dart';
 import 'package:city_clinic_doctor/new/utils/prefrence_helper.dart';
 import 'package:city_clinic_doctor/preference/CCDoctorPrefs.dart';
-import 'package:city_clinic_doctor/preference/PreferenceKeys.dart';
 import 'package:city_clinic_doctor/ui/auth/Login.dart';
 import 'package:city_clinic_doctor/ui/dialogs/VerifyOtpDialog.dart';
 import 'package:city_clinic_doctor/ui/dialogs/bloc/ResendOtpBloc.dart';

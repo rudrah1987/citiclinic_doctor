@@ -5,12 +5,13 @@ import 'package:city_clinic_doctor/modal/profile/RegistrationResponse.dart';
 import 'package:city_clinic_doctor/repository/base.dart';
 import 'package:rxdart/rxdart.dart';
 
-class DoctorQualificationBloc extends BaseBloc{
+class DoctorQualificationBloc extends BaseBloc {
   final _qualificationStream = PublishSubject<QualificationResponse>();
   final _loadingStream = PublishSubject<bool>();
   final _errorStream = PublishSubject<Error>();
 
-  Stream<QualificationResponse> get qualificationStream => _qualificationStream.stream;
+  Stream<QualificationResponse> get qualificationStream =>
+      _qualificationStream.stream;
 
   Stream<bool> get loadingStream => _loadingStream.stream;
 
@@ -25,17 +26,20 @@ class DoctorQualificationBloc extends BaseBloc{
     _errorStream?.close();
   }
 
-  void doctorQualification(String accessToken, int userID,
-      String degree, String university, String passingYear, File regProofFile) async {
-    print("calling");
+  void doctorQualification(String accessToken, int userID, String degree,
+      String university, String passingYear, File regProofFile) async {
+    print("calling------------doctorQualification");
     if (isLoading) return;
     isLoading = true;
     _loadingStream.sink.add(true);
-    await repository.doctorQualification(accessToken, userID, degree, university, passingYear, regProofFile).then((value){
+    await repository
+        .doctorQualification(
+            accessToken, userID, degree, university, passingYear, regProofFile)
+        .then((value) {
       isLoading = false;
       _loadingStream.sink.add(isLoading);
       _qualificationStream.sink.add(value);
-    }).catchError((error){
+    }).catchError((error) {
       isLoading = false;
       _loadingStream.sink.add(isLoading);
       _errorStream.add(error);

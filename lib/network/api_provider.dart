@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:city_clinic_doctor/modal/apointmentList/apointmentListResponse.dart';
 import 'package:city_clinic_doctor/modal/auth/ChangePassResponse.dart';
 import 'package:city_clinic_doctor/modal/auth/ForgotPassResponse.dart';
 import 'package:city_clinic_doctor/modal/auth/ForgotPassVerifyOtpResponse.dart';
@@ -73,7 +74,7 @@ class ApiProvider {
     }
   }
 
-  Future<LoginResponse> login(String phone, String password, String longitude,
+  Future<UserDetailResponse> login(String phone, String password, String longitude,
       String latitude, int roleType) async {
     Dio _dioClient = Dio(BaseOptions(
       baseUrl: TESTING_BASE_URL,
@@ -101,14 +102,14 @@ class ApiProvider {
       if (response.data != "") {
         print("dataValue :- ${json['success']}");
         if (json['success'] == true)
-          return LoginResponse.fromJson(json);
+          return UserDetailResponse.fromJson(json);
         else
-          return LoginResponse.fromError(
+          return UserDetailResponse.fromError(
               json['message'] /*,
             response.data['error_code'],*/
               );
       } else {
-        return LoginResponse.fromError("No data" /*, 396*/);
+        return UserDetailResponse.fromError("No data" /*, 396*/);
       }
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
@@ -116,7 +117,7 @@ class ApiProvider {
       if (error is DioError) {
         e = getErrorMsg(e.type);
       }
-      return LoginResponse.fromError("$e" /*, 397*/);
+      return UserDetailResponse.fromError("$e" /*, 397*/);
     }
   }
 
@@ -865,7 +866,7 @@ class ApiProvider {
         return AddAppointmentScheduleResponse.fromError("No data" /*, 396*/);
       }
     } catch (error, stacktrace) {
-      print("Exception occured: $error stackTrace: $stacktrace");
+      print("-------------Exception occured: $error stackTrace: $stacktrace");
       var e = error;
       if (error is DioError) {
         e = getErrorMsg(e.type);
@@ -947,6 +948,35 @@ class ApiProvider {
       default:
         return "Something went wrong";
         break;
+    }
+  }
+
+Future<AppointmentListResponse> getAppointments(int docId) async {
+    try {
+      print('-------------getAppointments Called--$docId');
+      Response response = await _dioClient.get('bookinglist?for=doctor&id=$docId');
+      dynamic json = jsonDecode(response.toString());
+      print(response.data);
+      if (response.data != "") {
+        print("dataValue :- ${json['success']}");
+        if (json['success'] == true)
+          return AppointmentListResponse.fromJson(json);
+        else
+          return AppointmentListResponse.fromError(
+              json['message'] /*,
+            response.data['error_code'],*/
+              );
+      } else {
+        return AppointmentListResponse.fromError("No data" /*, 396*/);
+      }
+    } catch (error, stacktrace) {
+      print("Exception occured: $error stackTrace: $stacktrace");
+      var e = error;
+      if (error is DioError) {
+        e = getErrorMsg(e.type);
+      }
+      print("Error -> $e");
+      return AppointmentListResponse.fromError("$e" /*, 397*/);
     }
   }
 }

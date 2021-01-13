@@ -1,10 +1,6 @@
-import 'package:city_clinic_doctor/helper/DialogHelper.dart';
-import 'package:city_clinic_doctor/main.dart';
 import 'package:city_clinic_doctor/modal/auth/user.dart';
-import 'package:city_clinic_doctor/new/customs/custom_methods.dart';
+import 'package:city_clinic_doctor/modal/profile/UserDetailResponse.dart';
 import 'package:city_clinic_doctor/new/utils/prefrence_helper.dart';
-import 'package:city_clinic_doctor/preference/CCDoctorPrefs.dart';
-import 'package:city_clinic_doctor/preference/PreferenceKeys.dart';
 import 'package:city_clinic_doctor/ui/dialogs/LogoutDialog.dart';
 import 'package:city_clinic_doctor/ui/drawer/prescriptionManagement/PrescriptionPage.dart';
 import 'package:city_clinic_doctor/ui/settings/ChangePasswordPage.dart';
@@ -36,7 +32,7 @@ class Settings extends StatefulWidget {
 
 class _SettingsState extends State<Settings> {
 
-  User _user;
+  UserData _user;
   LogoutBloc _logoutBloc = LogoutBloc();
   GlobalKey<ScaffoldState> _globalKey = GlobalKey();
 
@@ -125,7 +121,7 @@ class _SettingsState extends State<Settings> {
                             fontWeight: FontWeight.w600
                         ),),
                       SizedBox(height: 2,),
-                      Text("+91 ${_user.phone_number}",
+                      Text("+91 ${_user.phoneNumber}",
                         style: TextStyle(
                             fontSize: 14.0,
                             fontFamily: 'Poppins',
@@ -347,7 +343,7 @@ class _SettingsState extends State<Settings> {
     });
 
     if (returnVal == 'logout') {
-      _logoutBloc.logoutUser(_user.accessToken,  _user.user_id);
+      _logoutBloc.logoutUser(_user.accessToken,  _user.userId);
     }
   }
 }

@@ -87,7 +87,7 @@ class _DashboardPageState extends State<DashboardPage> {
     PreferenceHelper.getUser().then((value) {
       currentUser.value.user=value;
       AppUtils.currentUser=value;
-      _userDetailBloc.userDetailData(value.accessToken, value.user_id);
+      _userDetailBloc.userDetailData(value.accessToken, value.userId);
 
     });
     _logoutBloc.logoutStream.listen((event) {
@@ -300,7 +300,7 @@ class _DashboardPageState extends State<DashboardPage> {
     });
 
     if (returnVal == 'logout') {
-      _logoutBloc.logoutUser(currentUser.value.user.accessToken,  currentUser.value.user.user_id);
+      _logoutBloc.logoutUser(currentUser.value.user.accessToken,  currentUser.value.user.userId);
     }
   }
 

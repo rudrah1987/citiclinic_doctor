@@ -1,5 +1,6 @@
 import 'package:city_clinic_doctor/modal/auth/user.dart';
 import 'package:city_clinic_doctor/modal/home/DayWiseModal.dart';
+import 'package:city_clinic_doctor/modal/profile/UserDetailResponse.dart';
 import 'package:city_clinic_doctor/ui/home/timeSlot/bloc/AppointmentScheduleBloc.dart';
 import 'package:city_clinic_doctor/utils/Colors.dart';
 import 'package:city_clinic_doctor/utils/app_utils.dart';
@@ -17,10 +18,14 @@ class _AppointmentTSPageState extends State<AppointmentTSPage> {
   final GlobalKey<FormState> _formKey = GlobalKey();
   TimeOfDay _currentTime = new TimeOfDay.now();
   final dfTime = new intl.DateFormat('hh:mm:ss');
-  String fromMorningTime, toMorningTime, fromAfternoonTime,
-      toAfternoonTime, fromEveningTime, toEveningTime;
+  String fromMorningTime,
+      toMorningTime,
+      fromAfternoonTime,
+      toAfternoonTime,
+      fromEveningTime,
+      toEveningTime;
   int dayValue, sessionValue;
-  User _user;
+  UserData _user;
 
   List<DropdownMenuItem<DayWiseModal>> _dropDownDayWiseItem;
   DayWiseModal _selectedDayItem;
@@ -70,11 +75,13 @@ class _AppointmentTSPageState extends State<AppointmentTSPage> {
     _dropDownDayWiseItem = buildDayWiseList(_dropdownDayWiseList);
 
     _addAppointmentBloc.addAppointmentStream.listen((event) {
-      if (event.success) {
-        AppUtils.showError(event.message, _globalKey);
-      } else {
-        AppUtils.showError(event.message, _globalKey);
-        print(event.message);
+      if (event.success != null) {
+        if (event.success) {
+          AppUtils.showError(event.message, _globalKey);
+        } else {
+          AppUtils.showError(event.message, _globalKey);
+          print(event.message);
+        }
       }
     });
 
@@ -99,6 +106,7 @@ class _AppointmentTSPageState extends State<AppointmentTSPage> {
     super.dispose();
     _addAppointmentBloc?.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -112,13 +120,16 @@ class _AppointmentTSPageState extends State<AppointmentTSPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: 12),
-                  Padding(padding: EdgeInsets.only(left: 8),
-                    child: Text("Select Day",
+                  Padding(
+                    padding: EdgeInsets.only(left: 8),
+                    child: Text(
+                      "Select Day",
                       style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 17,
-                          fontFamily: 'Poppins'
-                      ),),),
+                          fontFamily: 'Poppins'),
+                    ),
+                  ),
                   SizedBox(height: 8),
                   Container(
                     width: double.infinity,
@@ -136,14 +147,14 @@ class _AppointmentTSPageState extends State<AppointmentTSPage> {
                           onChanged: (value) {
                             setState(() {
                               _selectedDayItem = value;
-                              print("DayValue :: ${_selectedDayItem.day} :: ${_selectedDayItem.dayValue}");
+                              print(
+                                  "DayValue :: ${_selectedDayItem.day} :: ${_selectedDayItem.dayValue}");
                             });
-                          }
-                      ),
+                          }),
                     ),
                   ),
                   SizedBox(height: 20),
-                /*  Padding(padding: EdgeInsets.only(left: 8),
+                  /*  Padding(padding: EdgeInsets.only(left: 8),
                     child: Text("Select Session",
                       style: TextStyle(
                           fontWeight: FontWeight.w600,
@@ -172,28 +183,39 @@ class _AppointmentTSPageState extends State<AppointmentTSPage> {
                         }),
                   ),
                 ),*/
-                  Padding(padding: EdgeInsets.only(left: 8),
-                    child: Text("Morning Session",
+                  Padding(
+                    padding: EdgeInsets.only(left: 8),
+                    child: Text(
+                      "Morning Session",
                       style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 17,
-                          fontFamily: 'Poppins'
-                      ),),),
-                  SizedBox(height: 20,),
+                          fontFamily: 'Poppins'),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
                   Row(
                     children: [
-                      Expanded(child: Column(
+                      Expanded(
+                          child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Padding(padding: EdgeInsets.only(left: 8),
-                            child: Text("From",
+                          Padding(
+                            padding: EdgeInsets.only(left: 8),
+                            child: Text(
+                              "From",
                               textAlign: TextAlign.left,
                               style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w400,
-                                  fontSize: 16
-                              ),),),
-                          SizedBox(height: 8,),
+                                  fontSize: 16),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
                           Container(
                             child: Stack(
                               alignment: Alignment.centerRight,
@@ -205,43 +227,54 @@ class _AppointmentTSPageState extends State<AppointmentTSPage> {
                                     style: Theme.of(context).textTheme.body1,
                                     // obscureText: true,
                                     decoration: InputDecoration(
-                                        contentPadding: const EdgeInsets.fromLTRB(12, 6, 48, 6),
+                                        contentPadding:
+                                            const EdgeInsets.fromLTRB(
+                                                12, 6, 48, 6),
                                         border: OutlineInputBorder(
                                           borderRadius: const BorderRadius.all(
                                             const Radius.circular(25.0),
                                           ),
                                         ),
                                         filled: true,
-                                        hintStyle: new TextStyle(color: Colors.grey[800]),
+                                        hintStyle: new TextStyle(
+                                            color: Colors.grey[800]),
                                         hintText: "Select time",
-                                        fillColor: Colors.white70)
-                                ),
+                                        fillColor: Colors.white70)),
                                 IconButton(
-                                  icon: Icon(Icons.timer_sharp, color: kPrimaryColor),
-                                  onPressed: () async{
-                                    FocusScope.of(context).requestFocus(new FocusNode());
+                                  icon: Icon(Icons.timer_sharp,
+                                      color: kPrimaryColor),
+                                  onPressed: () async {
+                                    FocusScope.of(context)
+                                        .requestFocus(new FocusNode());
                                     selectMorningFromTime(context);
                                   },
                                 ),
                               ],
                             ),
                           )
-
                         ],
                       )),
-                      SizedBox(width: 15,),
-                      Expanded(child: Column(
+                      SizedBox(
+                        width: 15,
+                      ),
+                      Expanded(
+                          child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Padding(padding: EdgeInsets.only(left: 8),
-                            child: Text("To",
+                          Padding(
+                            padding: EdgeInsets.only(left: 8),
+                            child: Text(
+                              "To",
                               textAlign: TextAlign.left,
                               style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w400,
-                                  fontSize: 16
-                              ),),),
-                          SizedBox(height: 8,),
+                                  fontSize: 16),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
                           Container(
                             child: Stack(
                               alignment: Alignment.centerRight,
@@ -253,21 +286,25 @@ class _AppointmentTSPageState extends State<AppointmentTSPage> {
                                     style: Theme.of(context).textTheme.body1,
                                     // obscureText: true,
                                     decoration: InputDecoration(
-                                        contentPadding: const EdgeInsets.fromLTRB(12, 6, 48, 6),
+                                        contentPadding:
+                                            const EdgeInsets.fromLTRB(
+                                                12, 6, 48, 6),
                                         border: OutlineInputBorder(
                                           borderRadius: const BorderRadius.all(
                                             const Radius.circular(25.0),
                                           ),
                                         ),
                                         filled: true,
-                                        hintStyle: new TextStyle(color: Colors.grey[800]),
+                                        hintStyle: new TextStyle(
+                                            color: Colors.grey[800]),
                                         hintText: "Select time",
-                                        fillColor: Colors.white70)
-                                ),
+                                        fillColor: Colors.white70)),
                                 IconButton(
-                                  icon: Icon(Icons.timer_sharp, color: kPrimaryColor),
-                                  onPressed: () async{
-                                    FocusScope.of(context).requestFocus(new FocusNode());
+                                  icon: Icon(Icons.timer_sharp,
+                                      color: kPrimaryColor),
+                                  onPressed: () async {
+                                    FocusScope.of(context)
+                                        .requestFocus(new FocusNode());
                                     selectMorningToTime(context);
                                   },
                                 ),
@@ -278,31 +315,49 @@ class _AppointmentTSPageState extends State<AppointmentTSPage> {
                       ))
                     ],
                   ),
-                  SizedBox(height: 20,),
-                  Divider(thickness: 1.5, color: Colors.grey[300],),
-                  SizedBox(height: 20,),
-                  Padding(padding: EdgeInsets.only(left: 8),
-                    child: Text("Afternoon Session",
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Divider(
+                    thickness: 1.5,
+                    color: Colors.grey[300],
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(left: 8),
+                    child: Text(
+                      "Afternoon Session",
                       style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 17,
-                          fontFamily: 'Poppins'
-                      ),),),
-                  SizedBox(height: 18,),
+                          fontFamily: 'Poppins'),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 18,
+                  ),
                   Row(
                     children: [
-                      Expanded(child: Column(
+                      Expanded(
+                          child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Padding(padding: EdgeInsets.only(left: 8),
-                            child: Text("From time",
+                          Padding(
+                            padding: EdgeInsets.only(left: 8),
+                            child: Text(
+                              "From time",
                               textAlign: TextAlign.left,
                               style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w400,
-                                  fontSize: 16
-                              ),),),
-                          SizedBox(height: 8,),
+                                  fontSize: 16),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
                           Container(
                             child: Stack(
                               alignment: Alignment.centerRight,
@@ -314,43 +369,54 @@ class _AppointmentTSPageState extends State<AppointmentTSPage> {
                                     style: Theme.of(context).textTheme.body1,
                                     // obscureText: true,
                                     decoration: InputDecoration(
-                                        contentPadding: const EdgeInsets.fromLTRB(12, 6, 48, 6),
+                                        contentPadding:
+                                            const EdgeInsets.fromLTRB(
+                                                12, 6, 48, 6),
                                         border: OutlineInputBorder(
                                           borderRadius: const BorderRadius.all(
                                             const Radius.circular(25.0),
                                           ),
                                         ),
                                         filled: true,
-                                        hintStyle: new TextStyle(color: Colors.grey[800]),
+                                        hintStyle: new TextStyle(
+                                            color: Colors.grey[800]),
                                         hintText: "Select time",
-                                        fillColor: Colors.white70)
-                                ),
+                                        fillColor: Colors.white70)),
                                 IconButton(
-                                  icon: Icon(Icons.timer_sharp, color: kPrimaryColor),
-                                  onPressed: () async{
-                                    FocusScope.of(context).requestFocus(new FocusNode());
+                                  icon: Icon(Icons.timer_sharp,
+                                      color: kPrimaryColor),
+                                  onPressed: () async {
+                                    FocusScope.of(context)
+                                        .requestFocus(new FocusNode());
                                     selectAfternoonFromTime(context);
                                   },
                                 ),
                               ],
                             ),
                           )
-
                         ],
                       )),
-                      SizedBox(width: 15,),
-                      Expanded(child: Column(
+                      SizedBox(
+                        width: 15,
+                      ),
+                      Expanded(
+                          child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Padding(padding: EdgeInsets.only(left: 8),
-                            child: Text("To time",
+                          Padding(
+                            padding: EdgeInsets.only(left: 8),
+                            child: Text(
+                              "To time",
                               textAlign: TextAlign.left,
                               style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w400,
-                                  fontSize: 16
-                              ),),),
-                          SizedBox(height: 8,),
+                                  fontSize: 16),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
                           Container(
                             child: Stack(
                               alignment: Alignment.centerRight,
@@ -362,21 +428,25 @@ class _AppointmentTSPageState extends State<AppointmentTSPage> {
                                     style: Theme.of(context).textTheme.body1,
                                     // obscureText: true,
                                     decoration: InputDecoration(
-                                        contentPadding: const EdgeInsets.fromLTRB(12, 6, 48, 6),
+                                        contentPadding:
+                                            const EdgeInsets.fromLTRB(
+                                                12, 6, 48, 6),
                                         border: OutlineInputBorder(
                                           borderRadius: const BorderRadius.all(
                                             const Radius.circular(25.0),
                                           ),
                                         ),
                                         filled: true,
-                                        hintStyle: new TextStyle(color: Colors.grey[800]),
+                                        hintStyle: new TextStyle(
+                                            color: Colors.grey[800]),
                                         hintText: "Select time",
-                                        fillColor: Colors.white70)
-                                ),
+                                        fillColor: Colors.white70)),
                                 IconButton(
-                                  icon: Icon(Icons.timer_sharp, color: kPrimaryColor),
-                                  onPressed: () async{
-                                    FocusScope.of(context).requestFocus(new FocusNode());
+                                  icon: Icon(Icons.timer_sharp,
+                                      color: kPrimaryColor),
+                                  onPressed: () async {
+                                    FocusScope.of(context)
+                                        .requestFocus(new FocusNode());
                                     selectAfternoonToTime(context);
                                   },
                                 ),
@@ -387,31 +457,49 @@ class _AppointmentTSPageState extends State<AppointmentTSPage> {
                       ))
                     ],
                   ),
-                  SizedBox(height: 20,),
-                  Divider(thickness: 1.5, color: Colors.grey[300],),
-                  SizedBox(height: 20,),
-                  Padding(padding: EdgeInsets.only(left: 8),
-                    child: Text("Evening Session",
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Divider(
+                    thickness: 1.5,
+                    color: Colors.grey[300],
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(left: 8),
+                    child: Text(
+                      "Evening Session",
                       style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 17,
-                          fontFamily: 'Poppins'
-                      ),),),
-                  SizedBox(height: 18,),
+                          fontFamily: 'Poppins'),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 18,
+                  ),
                   Row(
                     children: [
-                      Expanded(child: Column(
+                      Expanded(
+                          child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Padding(padding: EdgeInsets.only(left: 8),
-                            child: Text("From time",
+                          Padding(
+                            padding: EdgeInsets.only(left: 8),
+                            child: Text(
+                              "From time",
                               textAlign: TextAlign.left,
                               style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w400,
-                                  fontSize: 16
-                              ),),),
-                          SizedBox(height: 8,),
+                                  fontSize: 16),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
                           Container(
                             child: Stack(
                               alignment: Alignment.centerRight,
@@ -423,43 +511,54 @@ class _AppointmentTSPageState extends State<AppointmentTSPage> {
                                     style: Theme.of(context).textTheme.body1,
                                     // obscureText: true,
                                     decoration: InputDecoration(
-                                        contentPadding: const EdgeInsets.fromLTRB(12, 6, 48, 6),
+                                        contentPadding:
+                                            const EdgeInsets.fromLTRB(
+                                                12, 6, 48, 6),
                                         border: OutlineInputBorder(
                                           borderRadius: const BorderRadius.all(
                                             const Radius.circular(25.0),
                                           ),
                                         ),
                                         filled: true,
-                                        hintStyle: new TextStyle(color: Colors.grey[800]),
+                                        hintStyle: new TextStyle(
+                                            color: Colors.grey[800]),
                                         hintText: "Select time",
-                                        fillColor: Colors.white70)
-                                ),
+                                        fillColor: Colors.white70)),
                                 IconButton(
-                                  icon: Icon(Icons.timer_sharp, color: kPrimaryColor),
-                                  onPressed: () async{
-                                    FocusScope.of(context).requestFocus(new FocusNode());
+                                  icon: Icon(Icons.timer_sharp,
+                                      color: kPrimaryColor),
+                                  onPressed: () async {
+                                    FocusScope.of(context)
+                                        .requestFocus(new FocusNode());
                                     selectEveningFromTime(context);
                                   },
                                 ),
                               ],
                             ),
                           )
-
                         ],
                       )),
-                      SizedBox(width: 15,),
-                      Expanded(child: Column(
+                      SizedBox(
+                        width: 15,
+                      ),
+                      Expanded(
+                          child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Padding(padding: EdgeInsets.only(left: 8),
-                            child: Text("To time",
+                          Padding(
+                            padding: EdgeInsets.only(left: 8),
+                            child: Text(
+                              "To time",
                               textAlign: TextAlign.left,
                               style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w400,
-                                  fontSize: 16
-                              ),),),
-                          SizedBox(height: 8,),
+                                  fontSize: 16),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
                           Container(
                             child: Stack(
                               alignment: Alignment.centerRight,
@@ -471,21 +570,25 @@ class _AppointmentTSPageState extends State<AppointmentTSPage> {
                                     style: Theme.of(context).textTheme.body1,
                                     // obscureText: true,
                                     decoration: InputDecoration(
-                                        contentPadding: const EdgeInsets.fromLTRB(12, 6, 48, 6),
+                                        contentPadding:
+                                            const EdgeInsets.fromLTRB(
+                                                12, 6, 48, 6),
                                         border: OutlineInputBorder(
                                           borderRadius: const BorderRadius.all(
                                             const Radius.circular(25.0),
                                           ),
                                         ),
                                         filled: true,
-                                        hintStyle: new TextStyle(color: Colors.grey[800]),
+                                        hintStyle: new TextStyle(
+                                            color: Colors.grey[800]),
                                         hintText: "Select time",
-                                        fillColor: Colors.white70)
-                                ),
+                                        fillColor: Colors.white70)),
                                 IconButton(
-                                  icon: Icon(Icons.timer_sharp, color: kPrimaryColor),
-                                  onPressed: () async{
-                                    FocusScope.of(context).requestFocus(new FocusNode());
+                                  icon: Icon(Icons.timer_sharp,
+                                      color: kPrimaryColor),
+                                  onPressed: () async {
+                                    FocusScope.of(context)
+                                        .requestFocus(new FocusNode());
                                     selectEveningToTime(context);
                                   },
                                 ),
@@ -496,23 +599,25 @@ class _AppointmentTSPageState extends State<AppointmentTSPage> {
                       ))
                     ],
                   ),
-                  SizedBox(height: 60,),
+                  SizedBox(
+                    height: 60,
+                  ),
                   FlatButton(
                     minWidth: double.infinity,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25.0)
-                    ),
+                        borderRadius: BorderRadius.circular(25.0)),
                     color: kPrimaryColor,
                     onPressed: () {
-                      if(_selectedDayItem == null){
+                      if (_selectedDayItem == null) {
                         Fluttertoast.showToast(
                             msg: "Please select day",
                             toastLength: Toast.LENGTH_SHORT,
                             gravity: ToastGravity.BOTTOM,
-                            timeInSecForIos: 1, // also possible "TOP" and "CENTER"
+                            timeInSecForIos:
+                                1, // also possible "TOP" and "CENTER"
                             backgroundColor: kBackgroundColor,
                             textColor: Colors.white);
-                      }/*else if(_selectedSessionItem == null){
+                      } /*else if(_selectedSessionItem == null){
                         Fluttertoast.showToast(
                             msg: "Please select session",
                             toastLength: Toast.LENGTH_SHORT,
@@ -520,58 +625,72 @@ class _AppointmentTSPageState extends State<AppointmentTSPage> {
                             timeInSecForIos: 1, // also possible "TOP" and "CENTER"
                             backgroundColor: kBackgroundColor,
                             textColor: Colors.white);
-                      }*/else if(fromMorningTimeTextField.text.isEmpty){
+                      }*/
+                      else if (fromMorningTimeTextField.text.isEmpty) {
                         Fluttertoast.showToast(
                             msg: "Please select morning from time",
                             toastLength: Toast.LENGTH_SHORT,
                             gravity: ToastGravity.BOTTOM,
-                            timeInSecForIos: 1, // also possible "TOP" and "CENTER"
+                            timeInSecForIos:
+                                1, // also possible "TOP" and "CENTER"
                             backgroundColor: kBackgroundColor,
                             textColor: Colors.white);
-                      }else if(toMorningTimeTextField.text.isEmpty){
+                      } else if (toMorningTimeTextField.text.isEmpty) {
                         Fluttertoast.showToast(
                             msg: "Please select morning to time",
                             toastLength: Toast.LENGTH_SHORT,
                             gravity: ToastGravity.BOTTOM,
-                            timeInSecForIos: 1, // also possible "TOP" and "CENTER"
+                            timeInSecForIos:
+                                1, // also possible "TOP" and "CENTER"
                             backgroundColor: kBackgroundColor,
                             textColor: Colors.white);
-                      }else if(fromAfternoonTimeTextField.text.isEmpty){
+                      } else if (fromAfternoonTimeTextField.text.isEmpty) {
                         Fluttertoast.showToast(
                             msg: "Please select afternoon from time",
                             toastLength: Toast.LENGTH_SHORT,
                             gravity: ToastGravity.BOTTOM,
-                            timeInSecForIos: 1, // also possible "TOP" and "CENTER"
+                            timeInSecForIos:
+                                1, // also possible "TOP" and "CENTER"
                             backgroundColor: kBackgroundColor,
                             textColor: Colors.white);
-                      }else if(toAfternoonTimeTextField.text.isEmpty){
+                      } else if (toAfternoonTimeTextField.text.isEmpty) {
                         Fluttertoast.showToast(
                             msg: "Please select afternoon to time",
                             toastLength: Toast.LENGTH_SHORT,
                             gravity: ToastGravity.BOTTOM,
-                            timeInSecForIos: 1, // also possible "TOP" and "CENTER"
+                            timeInSecForIos:
+                                1, // also possible "TOP" and "CENTER"
                             backgroundColor: kBackgroundColor,
                             textColor: Colors.white);
-                      }else if(fromEveningTimeTextField.text.isEmpty){
+                      } else if (fromEveningTimeTextField.text.isEmpty) {
                         Fluttertoast.showToast(
                             msg: "Please select evening from time",
                             toastLength: Toast.LENGTH_SHORT,
                             gravity: ToastGravity.BOTTOM,
-                            timeInSecForIos: 1, // also possible "TOP" and "CENTER"
+                            timeInSecForIos:
+                                1, // also possible "TOP" and "CENTER"
                             backgroundColor: kBackgroundColor,
                             textColor: Colors.white);
-                      }else if(toEveningTimeTextField.text.isEmpty){
+                      } else if (toEveningTimeTextField.text.isEmpty) {
                         Fluttertoast.showToast(
                             msg: "Please select evening to time",
                             toastLength: Toast.LENGTH_SHORT,
                             gravity: ToastGravity.BOTTOM,
-                            timeInSecForIos: 1, // also possible "TOP" and "CENTER"
+                            timeInSecForIos:
+                                1, // also possible "TOP" and "CENTER"
                             backgroundColor: kBackgroundColor,
                             textColor: Colors.white);
-                      }else {
-                        _addAppointmentBloc.addAppointmentSchedule(_user.accessToken, _user.user_id,
-                            _selectedDayItem.day, fromMorningTime, toMorningTime,
-                            fromAfternoonTime, toAfternoonTime, fromEveningTime, toEveningTime);
+                      } else {
+                        _addAppointmentBloc.addAppointmentSchedule(
+                            _user.accessToken,
+                            _user.userId,
+                            _selectedDayItem.day,
+                            fromMorningTime,
+                            toMorningTime,
+                            fromAfternoonTime,
+                            toAfternoonTime,
+                            fromEveningTime,
+                            toEveningTime);
                       }
                     },
                     height: 50,
@@ -587,7 +706,8 @@ class _AppointmentTSPageState extends State<AppointmentTSPage> {
     );
   }
 
-  List<DropdownMenuItem<SessionWiseModal>> buildSessionWiseList(List listItems) {
+  List<DropdownMenuItem<SessionWiseModal>> buildSessionWiseList(
+      List listItems) {
     List<DropdownMenuItem<SessionWiseModal>> items = List();
     for (SessionWiseModal listItem in listItems) {
       items.add(
@@ -645,7 +765,8 @@ class _AppointmentTSPageState extends State<AppointmentTSPage> {
           alwaysUse24HourFormat: false);
       if (formattedTime != null) {
         setState(() {
-          print("SelectedFromTime :: $formattedTime :: ${selectedTime.hour} : ${selectedTime.minute}");
+          print(
+              "SelectedFromTime :: $formattedTime :: ${selectedTime.hour} : ${selectedTime.minute}");
           fromMorningTimeTextField.text = formattedTime;
           fromMorningTime = "${selectedTime.hour}:${selectedTime.minute}:00";
         });
@@ -685,7 +806,8 @@ class _AppointmentTSPageState extends State<AppointmentTSPage> {
           alwaysUse24HourFormat: false);
       if (formattedTime != null) {
         setState(() {
-          print("SelectedFromTime :: $formattedTime :: ${selectedTime.hour} : ${selectedTime.minute}");
+          print(
+              "SelectedFromTime :: $formattedTime :: ${selectedTime.hour} : ${selectedTime.minute}");
           fromAfternoonTimeTextField.text = formattedTime;
           fromAfternoonTime = "${selectedTime.hour}:${selectedTime.minute}:00";
         });
@@ -725,7 +847,8 @@ class _AppointmentTSPageState extends State<AppointmentTSPage> {
           alwaysUse24HourFormat: false);
       if (formattedTime != null) {
         setState(() {
-          print("SelectedFromTime :: $formattedTime :: ${selectedTime.hour} : ${selectedTime.minute}");
+          print(
+              "SelectedFromTime :: $formattedTime :: ${selectedTime.hour} : ${selectedTime.minute}");
           fromEveningTimeTextField.text = formattedTime;
           fromEveningTime = "${selectedTime.hour}:${selectedTime.minute}:00";
         });

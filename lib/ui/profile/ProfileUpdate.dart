@@ -6,6 +6,7 @@ import 'package:city_clinic_doctor/modal/profile/CityResponse.dart';
 import 'package:city_clinic_doctor/modal/profile/CountryResponse.dart';
 import 'package:city_clinic_doctor/modal/profile/DegreeListItem.dart';
 import 'package:city_clinic_doctor/modal/profile/SpecialityResponse.dart';
+import 'package:city_clinic_doctor/modal/profile/UserDetailResponse.dart';
 import 'package:city_clinic_doctor/network/api_provider.dart';
 import 'package:city_clinic_doctor/new/constants/string_constants.dart';
 import 'package:city_clinic_doctor/ui/dialogs/CityDialog.dart';
@@ -159,7 +160,7 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
     });
     _fetchUserData() {
       _apiProvider
-          .getUserDetails(_user.accessToken, _user.user_id)
+          .getUserDetails(_user.accessToken, _user.userId)
           .then((value) => _user = value.user);
     }
 
@@ -171,11 +172,11 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
       _consultRadioValue = "video";
       _fetchUserData();
       di.text = _user.name;
-      phoneFieldController.text = _user.phone_number;
+      phoneFieldController.text = _user.phoneNumber;
       emailFieldController.text = _user.email;
       // accNumberFieldController.text=_user.
-      _profileImageUrl = _user.profile_image;
-      print('profileImgUrl---------${_user.profile_image})');
+      _profileImageUrl = _user.profileImage;
+      print('profileImgUrl---------${_user.profileImage})');
       // _profileImageUrl = _user.;
       // _profileImageBloc.prof
       countryFieldController.text = _user.country;
@@ -185,7 +186,7 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
     });
   }
 
-  User _user;
+  UserData _user;
   Future<String> _loadFromAsset() async {
     return await rootBundle.loadString("assets/country.json");
   }
@@ -327,8 +328,8 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
 
   @override
   Widget build(BuildContext context) {
-    print(_user.accessToken);
-    print(_user.user_id);
+    // print(_user.accessToken);
+    // print(_user.user_id);
     return Scaffold(
       key: _globalKey,
       body: SingleChildScrollView(
@@ -1479,7 +1480,7 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                               _profileUpdateBloc
                                   .profileUpdate(
                                       _user.accessToken,
-                                      _user.user_id,
+                                      _user.userId,
                                       di.text.toString(),
                                       genderValue,
                                       dobTextFieldController.text.toString(),
@@ -1534,12 +1535,12 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
         _profileImage = image;
         Navigator.pop(context);
         _profileImageBloc.profileORCoverImage(
-            _user.accessToken, _user.user_id, PROFILE_IMAGE, _profileImage);
+            _user.accessToken, _user.userId, PROFILE_IMAGE, _profileImage);
       } else {
         _coverImage = image;
         Navigator.pop(context);
         _profileImageBloc.profileORCoverImage(
-            _user.accessToken, _user.user_id, COVER_IMAGE, _coverImage);
+            _user.accessToken, _user.userId, COVER_IMAGE, _coverImage);
       }
     });
   }
@@ -1553,12 +1554,12 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
         _profileImage = image;
         Navigator.pop(context);
         _profileImageBloc.profileORCoverImage(
-            _user.accessToken, _user.user_id, PROFILE_IMAGE, _profileImage);
+            _user.accessToken, _user.userId, PROFILE_IMAGE, _profileImage);
       } else {
         _coverImage = image;
         Navigator.pop(context);
         _profileImageBloc.profileORCoverImage(
-            _user.accessToken, _user.user_id, COVER_IMAGE, _coverImage);
+            _user.accessToken, _user.userId, COVER_IMAGE, _coverImage);
       }
     });
   }

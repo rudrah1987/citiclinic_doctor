@@ -1,7 +1,6 @@
 import 'package:city_clinic_doctor/modal/auth/user.dart';
+import 'package:city_clinic_doctor/modal/profile/UserDetailResponse.dart';
 import 'package:city_clinic_doctor/new/utils/prefrence_helper.dart';
-import 'package:city_clinic_doctor/preference/CCDoctorPrefs.dart';
-import 'package:city_clinic_doctor/preference/PreferenceKeys.dart';
 import 'package:city_clinic_doctor/ui/dialogs/SuccessTaskDialog.dart';
 import 'package:city_clinic_doctor/ui/settings/bloc/ChangePassBloc.dart';
 import 'package:city_clinic_doctor/utils/Colors.dart';
@@ -17,7 +16,7 @@ class ChangePasswordPage extends StatefulWidget {
 
 class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
-  User _user;
+  UserData _user;
   ChangePassBloc _changePassBloc = ChangePassBloc();
   final GlobalKey<FormState> _formKey = GlobalKey();
   GlobalKey<ScaffoldState> _globalKey = GlobalKey();
@@ -224,7 +223,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         String confirmPassword = _confirmPasswordController.text.toString();
                         if(newPassword == confirmPassword){
                           _changePassBloc.changePassword(_oldPasswordController.text.toString(),
-                              newPassword, _user.accessToken, _user.user_id);
+                              newPassword, _user.accessToken, _user.userId);
                         }else{
                           Fluttertoast.showToast(
                               msg: "Your password not match",
