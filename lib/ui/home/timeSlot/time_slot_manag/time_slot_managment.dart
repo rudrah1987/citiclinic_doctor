@@ -1,18 +1,22 @@
-import 'package:city_clinic_doctor/ui/home/timeSlot/fragment/AppointmentTSPage.dart';
-import 'package:city_clinic_doctor/ui/home/timeSlot/fragment/ConsultationTSPage.dart';
 import 'package:city_clinic_doctor/utils/CircleIndicator.dart';
 import 'package:city_clinic_doctor/utils/Colors.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class TimeSlotPage extends StatefulWidget {
+import 'TSMtabs/appointment_tsm.dart';
+import 'TSMtabs/consultations_tsm.dart';
+
+class TimeSlotManagement extends StatefulWidget {
+    static const String routeName = '/timeSlotManagement';
+
+  TimeSlotManagement({Key key}) : super(key: key);
+
   @override
-  _TimeSlotPageState createState() => _TimeSlotPageState();
+  _TimeSlotManagementState createState() => _TimeSlotManagementState();
 }
 
-class _TimeSlotPageState extends State<TimeSlotPage> {
-  int _currentIndex = 0;
-
+class _TimeSlotManagementState extends State<TimeSlotManagement> {
+  int _currentIndex=0;
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -26,9 +30,10 @@ class _TimeSlotPageState extends State<TimeSlotPage> {
                 bottom: Radius.circular(14),
               ),
             ),
-            title: Text("Time Slot Management"),
+            title: Text("Time Slot Managment"),
             //Ternery operator use for condition check
-            elevation: defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
+            elevation:
+                defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
             centerTitle: false,
             leading: new IconButton(
               icon: new Icon(Icons.arrow_back),
@@ -44,13 +49,18 @@ class _TimeSlotPageState extends State<TimeSlotPage> {
                   _currentIndex = index;
                 });
               },
-              tabs: [Tab(text: "Appointments"), Tab(text: "Consultations")],
+              tabs: [Tab(text: "Appointment"), Tab(text: "Consultation")],
             ),
           ),
-          body: TabBarView(
-            // physics: NeverScrollableScrollPhysics(),
-            children: [AppointmentTSPage(), ConsultationTSPage()],
-          ),
-        ));
+          body: 
+                 TabBarView(
+                  // physics: NeverScrollableScrollPhysics(),
+                  children: [
+                    AppointmentTSM(),
+                    ConsultationTSM()
+                  ],
+                )
+        )
+                );
   }
 }

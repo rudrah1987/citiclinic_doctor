@@ -25,7 +25,7 @@ class PreferenceHelper {
     }catch(e){
       gLogger.e(e);
     }
-    print('PreferenceHelper SAVED SUCCESS ${jsonEncode(user)}');
+    print('--------PreferenceHelper SAVED SUCCESS ${jsonEncode(user)}');
     var k=_prefs.getString(PREFERENCE_KEY);
     print('PreferenceHelper SAVED SUCCESS----- $k');
   }

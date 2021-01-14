@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:city_clinic_doctor/modal/auth/user.dart';
+import 'package:city_clinic_doctor/modal/profile/BankDetailResponse.dart';
 import 'package:city_clinic_doctor/modal/profile/CityResponse.dart';
 import 'package:city_clinic_doctor/modal/profile/CountryResponse.dart';
 import 'package:city_clinic_doctor/modal/profile/DegreeListItem.dart';
@@ -9,11 +9,14 @@ import 'package:city_clinic_doctor/modal/profile/SpecialityResponse.dart';
 import 'package:city_clinic_doctor/modal/profile/UserDetailResponse.dart';
 import 'package:city_clinic_doctor/network/api_provider.dart';
 import 'package:city_clinic_doctor/new/constants/string_constants.dart';
+import 'package:city_clinic_doctor/new/customs/my_methods.dart';
+import 'package:city_clinic_doctor/ui/auth/bloc/LoginBloc.dart';
 import 'package:city_clinic_doctor/ui/dialogs/CityDialog.dart';
 import 'package:city_clinic_doctor/ui/dialogs/CountryDialog.dart';
 import 'package:city_clinic_doctor/ui/dialogs/StateDialog.dart';
 import 'package:city_clinic_doctor/ui/profile/EducationQualificationPage.dart';
 import 'package:city_clinic_doctor/ui/profile/RegistrationDetailsPage.dart';
+import 'package:city_clinic_doctor/ui/profile/bloc/BnakDataBloc.dart';
 import 'package:city_clinic_doctor/ui/profile/bloc/ProfileImageBloc.dart';
 import 'package:city_clinic_doctor/ui/profile/bloc/ProfileUpdateBloc.dart';
 import 'package:city_clinic_doctor/ui/profile/bloc/SpecialityBloc.dart';
@@ -57,12 +60,15 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
   TextEditingController addressFieldController = TextEditingController();
   TextEditingController localityFieldController = TextEditingController();
   TextEditingController experienceFieldController = TextEditingController();
+  TextEditingController _bankNameController = TextEditingController();
 
   List<CityData> cityList;
   List<CountryData> countryList;
   List<SpecialityData> specialityList;
+  List<String> bankDataList = [];
 
   SpecialityBloc _specialityBloc = SpecialityBloc();
+  BankDataBloc _bankBloc = BankDataBloc();
   ProfileImageBloc _profileImageBloc = ProfileImageBloc();
   ProfileUpdateBloc _profileUpdateBloc = ProfileUpdateBloc();
 
@@ -80,7 +86,9 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
   DegreeList _selectedItem;
 
   List<DropdownMenuItem<SpecialityData>> _dropdownSpecialityData;
+  List<DropdownMenuItem<String>> _dropdownBankData;
   SpecialityData _selectedSpecialityData;
+  String _selectedBankData;
 
   String _radioValue,
       _consultRadioValue; //Initial definition of radio button value
@@ -106,6 +114,21 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
           _selectedSpecialityData = _dropdownSpecialityData[0].value;
         });
         print("specialityList -> ${event.specialities.length}");
+      } else {
+        AppUtils.showError(event.message, _globalKey);
+        print(event.message);
+      }
+    });
+    _bankBloc.bankStream.listen((event) {
+      print('=======fbgfb===${event.scalar}');
+      if (event.scalar.length > 0) {
+        bankDataList = event.scalar.toSet().toList();
+        print("lalalalalalalalalala -----$bankDataList");
+        // setState(() {
+        //   _dropdownBankData = buildDropDownBankData(bankDataList);
+        //   _selectedBankData = _dropdownBankData[0].value;
+        // });
+        // print("specialityList -> $event");
       } else {
         AppUtils.showError(event.message, _globalKey);
         print(event.message);
@@ -174,14 +197,21 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
       di.text = _user.name;
       phoneFieldController.text = _user.phoneNumber;
       emailFieldController.text = _user.email;
-      // accNumberFieldController.text=_user.
-      _profileImageUrl = _user.profileImage;
+      dobTextFieldController.text = _user.dob.substring(0, 10) ?? '';
+      // experienceFieldController.text=_user.
+      accNumberFieldController.text = _user?.userBanks?.accountNumber ?? '';
+      _bankNameController.text = _user?.userBanks?.bankName ?? '';
+      accNameFieldController.text = _user?.userBanks?.accountHolderName ?? '';
+      ifscFieldController.text = _user?.userBanks?.ifscCode ?? '';
+      _profileImageUrl = _user.profileImage ?? '';
+      addressFieldController.text = _user?.address1 ?? '';
+      localityFieldController.text = _user?.address2 ?? '';
       print('profileImgUrl---------${_user.profileImage})');
       // _profileImageUrl = _user.;
       // _profileImageBloc.prof
-      countryFieldController.text = _user.country;
-      stateFieldController.text = _user.state;
-      cityFieldController.text = _user.city;
+      countryFieldController.text = _user.country ?? '';
+      stateFieldController.text = _user.state ?? '';
+      cityFieldController.text = _user.city ?? '';
       genderValue = _user.gender;
     });
   }
@@ -228,6 +258,8 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
 
   void getData() async {
     await parseJson();
+    await _bankBloc.getBankList();
+
     await _specialityBloc.getSpecialityData();
   }
 
@@ -311,6 +343,19 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
       items.add(
         DropdownMenuItem(
           child: Text(listItem.speciality_type),
+          value: listItem,
+        ),
+      );
+    }
+    return items;
+  }
+
+  List<DropdownMenuItem<String>> buildDropDownBankData(List listItems) {
+    List<DropdownMenuItem<String>> items = List();
+    for (String listItem in listItems) {
+      items.add(
+        DropdownMenuItem(
+          child: Text(listItem),
           value: listItem,
         ),
       );
@@ -1370,16 +1415,27 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                                   color: Color(0xFFF2F2F2),
                                   border:
                                       Border.all(width: 1, color: Colors.grey)),
-                              child: DropdownButtonHideUnderline(
-                                child: DropdownButton(
-                                    value: _selectedItem,
-                                    items: _dropdownMenuItems,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _selectedItem = value;
-                                      });
-                                    }),
-                              ),
+                              child: TextField(
+                                  controller: _bankNameController,
+                              
+                                  decoration: InputDecoration(border: InputBorder.none),
+                                  onTap: () => showSheet(
+                                        bankDataList,
+                                        'Bank',
+                                        context,
+                                      ).then((value) =>
+                                          _bankNameController.text = value),
+                                  readOnly: true),
+                              // DropdownButtonHideUnderline(
+                              //   child: DropdownButton(
+                              //       value: _selectedBankData,
+                              //       items: _dropdownBankData,
+                              //       onChanged: (value) {
+                              //         setState(() {
+                              //           _selectedBankData = value;
+                              //         });
+                              //       }),
+                              // ),
                             ),
                           ],
                         ),
@@ -1493,7 +1549,7 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                                       cityFieldController.text.toString(),
                                       stateFieldController.text.toString(),
                                       countryFieldController.text.toString(),
-                                      "SBI",
+                                      _bankNameController.text.toString(),
                                       accNameFieldController.text.toString(),
                                       accNumberFieldController.text.toString(),
                                       ifscFieldController.text.toString())

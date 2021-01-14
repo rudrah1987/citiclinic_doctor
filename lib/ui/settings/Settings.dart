@@ -22,6 +22,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../utils/SvgImages.dart';
 import '../../utils/SvgImages.dart';
 import 'ContactUsPage.dart';
+import 'my_prescriptions.dart';
 
 var globalContext;
 class Settings extends StatefulWidget {
@@ -220,7 +221,7 @@ class _SettingsState extends State<Settings> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (_) => PrescriptionPage()));
+                                builder: (_) => PrescriptionPage2()));
                       },
                     ),
                   ],

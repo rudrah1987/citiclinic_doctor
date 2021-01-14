@@ -4,19 +4,21 @@ import 'package:city_clinic_doctor/modal/apointmentList/apointmentListResponse.d
 import 'package:city_clinic_doctor/modal/auth/ChangePassResponse.dart';
 import 'package:city_clinic_doctor/modal/auth/ForgotPassResponse.dart';
 import 'package:city_clinic_doctor/modal/auth/ForgotPassVerifyOtpResponse.dart';
-import 'package:city_clinic_doctor/modal/auth/LoginResponse.dart';
 import 'package:city_clinic_doctor/modal/auth/LogoutResponse.dart';
 import 'package:city_clinic_doctor/modal/auth/ResendOtpResponse.dart';
 import 'package:city_clinic_doctor/modal/auth/ResetPassResponse.dart';
 import 'package:city_clinic_doctor/modal/auth/SignUpResponse.dart';
 import 'package:city_clinic_doctor/modal/auth/VerifyOtpResponse.dart';
 import 'package:city_clinic_doctor/modal/home/AddAppointmentScheduleResponse.dart';
+import 'package:city_clinic_doctor/modal/profile/BankDetailResponse.dart';
 import 'package:city_clinic_doctor/modal/profile/ProfileImageResponse.dart';
 import 'package:city_clinic_doctor/modal/profile/ProfileUpdateResponse.dart';
 import 'package:city_clinic_doctor/modal/profile/QualificationResponse.dart';
 import 'package:city_clinic_doctor/modal/profile/RegistrationResponse.dart';
 import 'package:city_clinic_doctor/modal/profile/SpecialityResponse.dart';
 import 'package:city_clinic_doctor/modal/profile/UserDetailResponse.dart';
+import 'package:city_clinic_doctor/new/utils/prefrence_helper.dart';
+import 'package:city_clinic_doctor/ui/auth/bloc/LoginBloc.dart';
 import 'package:city_clinic_doctor/utils/Constant.dart';
 import 'package:dio/dio.dart';
 
@@ -74,8 +76,8 @@ class ApiProvider {
     }
   }
 
-  Future<UserDetailResponse> login(String phone, String password, String longitude,
-      String latitude, int roleType) async {
+  Future<UserDetailResponse> login(String phone, String password,
+      String longitude, String latitude, int roleType) async {
     Dio _dioClient = Dio(BaseOptions(
       baseUrl: TESTING_BASE_URL,
       connectTimeout: 5000,
@@ -422,12 +424,19 @@ class ApiProvider {
     try {
       Response response = await _dioClientHeader.get('userinfo');
       dynamic json = jsonDecode(response.toString());
+      UserDetailResponse data;
       print(response.data);
       if (response.data != "") {
         print("dataValue :- ${json['success']}");
-        if (json['success'] == true)
-          return UserDetailResponse.fromJson(json);
-        else
+        if (json['success'] == true) {
+          data = UserDetailResponse.fromJson(json);
+          if (data != null) {
+            PreferenceHelper.saveUser(data.user);
+            currentUser.value.user = data.user;
+          }
+
+          return data;
+        } else
           return UserDetailResponse.fromError(json['message']);
       } else {
         return UserDetailResponse.fromError("No data" /*, 396*/);
@@ -790,22 +799,22 @@ class ApiProvider {
     }
   }
 
-  Future<SpecialityResponse> getBankData() async {
+  Future<BankResponse> getBankData() async {
     try {
       Response response = await _dioClient.get('getbanks');
       dynamic json = jsonDecode(response.toString());
+      print('-------getBankData---------');
       print(response.data);
-      if (response.data != "") {
-        print("dataValue :- ${json['success']}");
-        if (json['success'] == true)
-          return SpecialityResponse.fromJson(json);
-        else
-          return SpecialityResponse.fromError(
-              json['message'] /*,
-            response.data['error_code'],*/
-              );
+      if (response.data[0] != "") {
+        print("Bank=====dataValue :- $json");
+        return BankResponse.fromJson(json);
+        // else
+        //   return BankResponse.fromError(
+        //       json['message'] /*,
+        //     response.data['error_code'],*/
+        //       );
       } else {
-        return SpecialityResponse.fromError("No data" /*, 396*/);
+        return BankResponse.fromError("No data" /*, 396*/);
       }
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
@@ -814,7 +823,7 @@ class ApiProvider {
         e = getErrorMsg(e.type);
       }
       print("Error -> $e");
-      return SpecialityResponse.fromError("$e" /*, 397*/);
+      return BankResponse.fromError("$e" /*, 397*/);
     }
   }
 
@@ -951,10 +960,11 @@ class ApiProvider {
     }
   }
 
-Future<AppointmentListResponse> getAppointments(int docId) async {
+  Future<AppointmentListResponse> getAppointments(int docId) async {
     try {
       print('-------------getAppointments Called--$docId');
-      Response response = await _dioClient.get('bookinglist?for=doctor&id=$docId');
+      Response response =
+          await _dioClient.get('bookinglist?for=doctor&id=$docId');
       dynamic json = jsonDecode(response.toString());
       print(response.data);
       if (response.data != "") {
@@ -979,4 +989,9 @@ Future<AppointmentListResponse> getAppointments(int docId) async {
       return AppointmentListResponse.fromError("$e" /*, 397*/);
     }
   }
+
+//   Future<BankDetailResponse> getBanks(){
+
+//   }
+// }
 }

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:city_clinic_doctor/modal/auth/user.dart';
 import 'package:city_clinic_doctor/modal/profile/UserDetailResponse.dart';
 import 'package:city_clinic_doctor/new/utils/prefrence_helper.dart';
+import 'package:city_clinic_doctor/ui/auth/bloc/LoginBloc.dart';
 import 'package:city_clinic_doctor/ui/dialogs/YearSelectionDialog.dart';
 import 'package:city_clinic_doctor/ui/profile/bloc/DoctorQualificationBloc.dart';
 import 'package:city_clinic_doctor/utils/Colors.dart';
@@ -18,11 +19,12 @@ import 'package:intl/intl.dart' as intl;
 
 class EducationQualificationPage extends StatefulWidget {
   @override
-  _EducationQualificationPageState createState() => _EducationQualificationPageState();
+  _EducationQualificationPageState createState() =>
+      _EducationQualificationPageState();
 }
 
-class _EducationQualificationPageState extends State<EducationQualificationPage> {
-
+class _EducationQualificationPageState
+    extends State<EducationQualificationPage> {
   final GlobalKey<FormState> _formKey = GlobalKey();
   GlobalKey<ScaffoldState> _globalKey = GlobalKey();
   TextEditingController _degreeController = TextEditingController();
@@ -77,18 +79,28 @@ class _EducationQualificationPageState extends State<EducationQualificationPage>
     _doctorQualificationBloc.errorStream.listen((event) {
       print("doctorError -> ${event}");
     });
+
+    asignText();
   }
 
-  void getYearList(){
+  asignText() {
+    _degreeController.text = currentUser.value.user.doctorQulifications.degree;
+    _collegeController.text = currentUser.value.user.doctorQulifications.university;
+    yearFieldController.text = currentUser.value.user.doctorQulifications.passingYear;
+    qualifyProofImageController.text =
+        currentUser.value.user.doctorQulifications.documentFile.toString();
+  }
+
+  void getYearList() {
     yearList = List<String>();
-    for(int i=1960; i<=int.tryParse(currentYear) ?? 0; i++){
+    for (int i = 1960; i <= int.tryParse(currentYear) ?? 0; i++) {
       yearList.add("$i");
     }
   }
 
   UserData _user;
   getUserFromPreference() {
-    PreferenceHelper.getUser().then((value){
+    PreferenceHelper.getUser().then((value) {
       setState(() {
         _user = value;
       });
@@ -107,7 +119,7 @@ class _EducationQualificationPageState extends State<EducationQualificationPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold (
+    return Scaffold(
       appBar: AppBar(
         backgroundColor: kPrimaryColor,
         shape: RoundedRectangleBorder(
@@ -115,8 +127,10 @@ class _EducationQualificationPageState extends State<EducationQualificationPage>
             bottom: Radius.circular(14),
           ),
         ),
-        title: Text("Education Qualification",
-        style: TextStyle(fontSize: 17),),
+        title: Text(
+          "Education Qualification",
+          style: TextStyle(fontSize: 17),
+        ),
         //Ternery operator use for condition check
         elevation: defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
         centerTitle: false,
@@ -134,180 +148,193 @@ class _EducationQualificationPageState extends State<EducationQualificationPage>
             child: Container(
               color: Colors.white,
               padding: EdgeInsets.all(16),
-              child: Column(
-                  children: [
-                    TextFormField(
-                      controller: _degreeController,
-                      keyboardType: TextInputType.name,
-                      textCapitalization: TextCapitalization.words,
-                      style: TextStyle(
-                          fontSize: 16.0,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w400
+              child: Column(children: [
+                TextFormField(
+                  controller: _degreeController,
+                  keyboardType: TextInputType.name,
+                  textCapitalization: TextCapitalization.words,
+                  style: TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.black,
+                      fontWeight: FontWeight.w400),
+                  decoration: const InputDecoration(
+                    // hintText: '-Enter Full Name-',
+                    labelText: 'Degree',
+                  ),
+                  validator: (v) {
+                    if (v.isEmpty) {
+                      return 'Degree is required';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 16),
+                TextFormField(
+                  controller: _collegeController,
+                  keyboardType: TextInputType.name,
+                  textCapitalization: TextCapitalization.words,
+                  style: TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.black,
+                      fontWeight: FontWeight.w400),
+                  decoration: const InputDecoration(
+                    // hintText: '-Enter Full Name-',
+                    labelText: 'College/University',
+                  ),
+                  validator: (v) {
+                    if (v.isEmpty) {
+                      return 'College/University is required';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 16),
+                Container(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(left: 8),
+                        child: Text(
+                          "Select Year",
+                          textDirection: TextDirection.ltr,
+                          style: TextStyle(
+                              fontSize: 12,
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black),
+                        ),
                       ),
-                      decoration: const InputDecoration(
-                        // hintText: '-Enter Full Name-',
-                        labelText: 'Degree',
+                      SizedBox(
+                        height: 6,
                       ),
-                      validator: (v) {
-                        if (v.isEmpty) {
-                          return 'Degree is required';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: 16),
-                    TextFormField(
-                      controller: _collegeController,
-                      keyboardType: TextInputType.name,
-                      textCapitalization: TextCapitalization.words,
-                      style: TextStyle(
-                          fontSize: 16.0,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w400
-                      ),
-                      decoration: const InputDecoration(
-                        // hintText: '-Enter Full Name-',
-                        labelText: 'College/University',
-                      ),
-                      validator: (v) {
-                        if (v.isEmpty) {
-                          return 'College/University is required';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: 16),
-                    Container(
-                      child:  Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: EdgeInsets.only(left: 8),
-                            child: Text("Select Year", textDirection: TextDirection.ltr,
-                              style: TextStyle(
-                                  fontSize: 12,
-                                  fontFamily: 'Poppins',
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.black),
-                            ),
-                          ),
-                          SizedBox(height: 6,),
-                          Stack(
-                            alignment: Alignment.centerRight,
-                            children: <Widget>[
-                              TextField(
-                                  enabled: false,
-                                  controller: yearFieldController,
-                                  keyboardType: TextInputType.text,
-                                  style: Theme.of(context).textTheme.body1,
-                                  // obscureText: true,
-                                  decoration: InputDecoration(
-                                      contentPadding: const EdgeInsets.fromLTRB(12, 6, 48, 6),
-                                      border: OutlineInputBorder(
-                                        borderRadius: const BorderRadius.all(
-                                          const Radius.circular(25.0),
-                                        ),
-                                      ),
-                                      filled: true,
-                                      hintStyle: new TextStyle(color: Colors.grey[800]),
-                                      hintText: "Select year",
-                                      fillColor: Colors.white70)
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.keyboard_arrow_down_rounded),
-                                onPressed: () {
-                                  FocusScope.of(context).requestFocus(FocusNode());
-                                  showYearDialog();
-                                },
-                              ),
-                            ],
+                      Stack(
+                        alignment: Alignment.centerRight,
+                        children: <Widget>[
+                          TextField(
+                              enabled: false,
+                              controller: yearFieldController,
+                              keyboardType: TextInputType.text,
+                              style: Theme.of(context).textTheme.body1,
+                              // obscureText: true,
+                              decoration: InputDecoration(
+                                  contentPadding:
+                                      const EdgeInsets.fromLTRB(12, 6, 48, 6),
+                                  border: OutlineInputBorder(
+                                    borderRadius: const BorderRadius.all(
+                                      const Radius.circular(25.0),
+                                    ),
+                                  ),
+                                  filled: true,
+                                  hintStyle:
+                                      new TextStyle(color: Colors.grey[800]),
+                                  hintText: "Select year",
+                                  fillColor: Colors.white70)),
+                          IconButton(
+                            icon: Icon(Icons.keyboard_arrow_down_rounded),
+                            onPressed: () {
+                              FocusScope.of(context).requestFocus(FocusNode());
+                              showYearDialog();
+                            },
                           ),
                         ],
                       ),
-                    ),
-                    SizedBox(height: 16),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 16),
+                Container(
+                    child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Container(
-                        child:  Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              margin: EdgeInsets.only(left: 8),
-                              child: Text("Attach Qualification Proof", textDirection: TextDirection.ltr,
-                                style: TextStyle(
-                                    fontSize: 12,
-                                    fontFamily: 'Poppins',
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.black),
-                              ),
-                            ),
-                            SizedBox(height: 6,),
-                            Stack(
-                              alignment: Alignment.centerRight,
-                              children: <Widget>[
-                                TextField(
-                                    enabled: false,
-                                    controller:   qualifyProofImageController,
-                                    keyboardType: TextInputType.text,
-                                    style: Theme.of(context).textTheme.body1,
-                                    // obscureText: true,
-                                    decoration: InputDecoration(
-                                        contentPadding: const EdgeInsets.fromLTRB(12, 6, 48, 6),
-                                        border: OutlineInputBorder(
-                                          borderRadius: const BorderRadius.all(
-                                            const Radius.circular(25.0),
-                                          ),
-                                        ),
-                                        filled: true,
-                                        hintStyle: new TextStyle(color: Colors.grey[800]),
-                                        hintText: "File Name Here",
-                                        fillColor: Colors.white70)
-                                ),
-                                IconButton(
-                                  icon: SvgPicture.asset(attachFileImage, height:30, width:30,),
-                                  onPressed: () {
-                                    FocusScope.of(context).requestFocus(FocusNode());
-                                    // Your codes...
-                                    _showImagePicker(context);
-                                  },
-                                ),
-                              ],
-                            )
-                          ],
-                        )
-                    ),
-                    SizedBox(height: 80),
-                    FlatButton(
-                      minWidth: double.infinity,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25.0)
-                      ),
-                      color: kPrimaryColor,
-                      onPressed: () {
-
-                        if(_formKey.currentState.validate()){
-                          if(_qualificationImage != null){
-                            _doctorQualificationBloc.doctorQualification(_user.accessToken,
-                                _user.userId, _degreeController.text.toString(),
-                                _collegeController.text.toString(), yearFieldController.text.toString(), _qualificationImage);
-                          }else{
-                            Fluttertoast.showToast(
-                                msg: "Please attach qualification proof file.",
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.BOTTOM,
-                                timeInSecForIos: 1, // also possible "TOP" and "CENTER"
-                                backgroundColor: kBackgroundColor,
-                                textColor: Colors.white);
-                          }
-                        }
-                      },
-                      height: 50,
+                      margin: EdgeInsets.only(left: 8),
                       child: Text(
-                        "Save",
-                        style: TextStyle(color: Colors.white, fontSize: 16),
+                        "Attach Qualification Proof",
+                        textDirection: TextDirection.ltr,
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black),
                       ),
+                    ),
+                    SizedBox(
+                      height: 6,
+                    ),
+                    Stack(
+                      alignment: Alignment.centerRight,
+                      children: <Widget>[
+                        TextField(
+                            enabled: false,
+                            controller: qualifyProofImageController,
+                            keyboardType: TextInputType.text,
+                            style: Theme.of(context).textTheme.body1,
+                            // obscureText: true,
+                            decoration: InputDecoration(
+                                contentPadding:
+                                    const EdgeInsets.fromLTRB(12, 6, 48, 6),
+                                border: OutlineInputBorder(
+                                  borderRadius: const BorderRadius.all(
+                                    const Radius.circular(25.0),
+                                  ),
+                                ),
+                                filled: true,
+                                hintStyle:
+                                    new TextStyle(color: Colors.grey[800]),
+                                hintText: "File Name Here",
+                                fillColor: Colors.white70)),
+                        IconButton(
+                          icon: SvgPicture.asset(
+                            attachFileImage,
+                            height: 30,
+                            width: 30,
+                          ),
+                          onPressed: () {
+                            FocusScope.of(context).requestFocus(FocusNode());
+                            // Your codes...
+                            _showImagePicker(context);
+                          },
+                        ),
+                      ],
                     )
-                  ]),
+                  ],
+                )),
+                SizedBox(height: 80),
+                FlatButton(
+                  minWidth: double.infinity,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25.0)),
+                  color: kPrimaryColor,
+                  onPressed: () {
+                    if (_formKey.currentState.validate()) {
+                      if (_qualificationImage != null) {
+                        _doctorQualificationBloc.doctorQualification(
+                            _user.accessToken,
+                            _user.userId,
+                            _degreeController.text.toString(),
+                            _collegeController.text.toString(),
+                            yearFieldController.text.toString(),
+                            _qualificationImage);
+                      } else {
+                        Fluttertoast.showToast(
+                            msg: "Please attach qualification proof file.",
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                            timeInSecForIos:
+                                1, // also possible "TOP" and "CENTER"
+                            backgroundColor: kBackgroundColor,
+                            textColor: Colors.white);
+                      }
+                    }
+                  },
+                  height: 50,
+                  child: Text(
+                    "Save",
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                )
+              ]),
             ),
           ),
         ),
@@ -317,8 +344,7 @@ class _EducationQualificationPageState extends State<EducationQualificationPage>
 
   _imgFromCamera() async {
     File image = await ImagePicker.pickImage(
-        source: ImageSource.camera, imageQuality: 50
-    );
+        source: ImageSource.camera, imageQuality: 50);
 
     setState(() {
       _qualificationImage = image;
@@ -330,9 +356,8 @@ class _EducationQualificationPageState extends State<EducationQualificationPage>
   }
 
   _imgFromGallery() async {
-    File image = await  ImagePicker.pickImage(
-        source: ImageSource.gallery, imageQuality: 50
-    );
+    File image = await ImagePicker.pickImage(
+        source: ImageSource.gallery, imageQuality: 50);
 
     setState(() {
       _qualificationImage = image;
@@ -354,59 +379,79 @@ class _EducationQualificationPageState extends State<EducationQualificationPage>
               child: Center(
                 child: Container(
                   padding: EdgeInsets.all(12),
-                  child:  Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Expanded(child:
-                      InkWell(
-                        child:  Container(
+                      Expanded(
+                          child: InkWell(
+                        child: Container(
                           child: Column(
                             children: [
-                              Image.asset(gallImage, width: 60, height: 60, fit: BoxFit.fill,),
-                              SizedBox(height: 10,),
-                              Text("Gallery",
+                              Image.asset(
+                                gallImage,
+                                width: 60,
+                                height: 60,
+                                fit: BoxFit.fill,
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                "Gallery",
                                 textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 16, color: Colors.black),)
+                                style: TextStyle(
+                                    fontSize: 16, color: Colors.black),
+                              )
                             ],
                           ),
                         ),
-                        onTap: (){
+                        onTap: () {
                           _imgFromGallery();
                         },
-                      )
-                      ),
-                      Expanded(child:
-                      InkWell(
-                        child:  Container(
+                      )),
+                      Expanded(
+                          child: InkWell(
+                        child: Container(
                           child: Column(
                             children: [
-                              Image.asset(camImage, width: 60, height: 60, fit: BoxFit.fill,),
-                              SizedBox(height: 10,),
-                              Text("Camera",
+                              Image.asset(
+                                camImage,
+                                width: 60,
+                                height: 60,
+                                fit: BoxFit.fill,
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                "Camera",
                                 textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 16, color: Colors.black),)
-
+                                style: TextStyle(
+                                    fontSize: 16, color: Colors.black),
+                              )
                             ],
                           ),
                         ),
-                        onTap: (){
+                        onTap: () {
                           _imgFromCamera();
                         },
-                      )
-                      )
+                      ))
                     ],
                   ),
                 ),
               ),
             ),
           );
-        }
-    );
+        });
   }
 
   Future<Null> showYearDialog() async {
     print("yearListData :: ${yearList.length}");
-    String returnVal = await showDialog(context: context, builder: (_){return YearSelectionDialog(yearList);});
+    String returnVal = await showDialog(
+        context: context,
+        builder: (_) {
+          return YearSelectionDialog(yearList);
+        });
     print("yearSelectionValue -> $returnVal");
 
     yearFieldController.text = returnVal;

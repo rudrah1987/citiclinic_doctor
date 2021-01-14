@@ -11,6 +11,7 @@ import 'package:city_clinic_doctor/modal/auth/ResetPassResponse.dart';
 import 'package:city_clinic_doctor/modal/auth/SignUpResponse.dart';
 import 'package:city_clinic_doctor/modal/auth/VerifyOtpResponse.dart';
 import 'package:city_clinic_doctor/modal/home/AddAppointmentScheduleResponse.dart';
+import 'package:city_clinic_doctor/modal/profile/BankDetailResponse.dart';
 import 'package:city_clinic_doctor/modal/profile/ProfileImageResponse.dart';
 import 'package:city_clinic_doctor/modal/profile/ProfileUpdateResponse.dart';
 import 'package:city_clinic_doctor/modal/profile/QualificationResponse.dart';
@@ -167,4 +168,7 @@ class Repository {
 
   Future<AppointmentListResponse> getApointments(int docId) =>
       apiProvider.getAppointments(docId);
+
+      Future<BankResponse> getBanks() =>
+      apiProvider.getBankData();
 }

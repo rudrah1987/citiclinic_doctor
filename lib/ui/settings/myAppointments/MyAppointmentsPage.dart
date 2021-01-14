@@ -2,7 +2,6 @@ import 'package:city_clinic_doctor/ui/settings/myAppointments/fragment/DoctorVis
 import 'package:city_clinic_doctor/ui/settings/myAppointments/fragment/HomeVisitAppointPage.dart';
 import 'package:city_clinic_doctor/utils/CircleIndicator.dart';
 import 'package:city_clinic_doctor/utils/Colors.dart';
-import 'package:city_clinic_doctor/utils/utility.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
