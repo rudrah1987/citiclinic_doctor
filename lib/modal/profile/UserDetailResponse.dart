@@ -1,10 +1,12 @@
-
 class UserDetailResponse {
   bool success;
   String message;
   UserData user;
 
   UserDetailResponse({this.success, this.message, this.user});
+  UserDetailResponse.fromError(String errorValue) {
+    this.message = errorValue;
+  }
 
   UserDetailResponse.fromJson(Map<String, dynamic> json) {
     success = json['success'];
@@ -21,11 +23,6 @@ class UserDetailResponse {
     }
     return data;
   }
-
-  UserDetailResponse.fromError(String errorValue /*, int errorCode*/) {
-    this.message = errorValue;
-    // this.errorCode = errorCode;
-  }
 }
 
 class UserData {
@@ -35,12 +32,15 @@ class UserData {
   String email;
   String gender;
   String dob;
-  Null locality;
+  String locality;
   String country;
   String state;
   String city;
-  Null address1;
-  Null address2;
+  String address1;
+  String address2;
+  String quickId;
+  String quickLogin;
+  String quickPassword;
   DoctorQulifications doctorQulifications;
   RegistrationDeatils registrationDeatils;
   UserBanks userBanks;
@@ -62,6 +62,9 @@ class UserData {
       this.city,
       this.address1,
       this.address2,
+      this.quickId,
+      this.quickLogin,
+      this.quickPassword,
       this.doctorQulifications,
       this.registrationDeatils,
       this.userBanks,
@@ -83,6 +86,9 @@ class UserData {
     city = json['city'];
     address1 = json['address_1'];
     address2 = json['address_2'];
+    quickId = json['quick_id'];
+    quickLogin = json['quick_login'];
+    quickPassword = json['quick_password'];
     doctorQulifications = json['DoctorQulifications'] != null
         ? new DoctorQulifications.fromJson(json['DoctorQulifications'])
         : null;
@@ -112,6 +118,9 @@ class UserData {
     data['city'] = this.city;
     data['address_1'] = this.address1;
     data['address_2'] = this.address2;
+    data['quick_id'] = this.quickId;
+    data['quick_login'] = this.quickLogin;
+    data['quick_password'] = this.quickPassword;
     if (this.doctorQulifications != null) {
       data['DoctorQulifications'] = this.doctorQulifications.toJson();
     }
