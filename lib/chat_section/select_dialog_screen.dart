@@ -53,15 +53,15 @@ class _BodyLayoutState extends State<BodyLayout> {
               )
             : _getDialogsList(context),
       ),
-      floatingActionButton: FloatingActionButton(
-        heroTag: "New dialog",
-        child: Icon(
-          Icons.chat,
-          color: Colors.white,
-        ),
-        backgroundColor: Colors.blue,
-        onPressed: () => _createNewDialog(context),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   heroTag: "New dialog",
+      //   child: Icon(
+      //     Icons.chat,
+      //     color: Colors.white,
+      //   ),
+      //   backgroundColor: Colors.blue,
+      //   onPressed: () => _createNewDialog(context),
+      // ),
     );
   }
 
