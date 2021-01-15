@@ -125,6 +125,7 @@ class _VerifyOtpDialogState extends State<VerifyOtpDialog> {
                       borderRadius: BorderRadius.circular(25.0)),
                   color: kPrimaryColor,
                   onPressed: () => {
+                    
                     smsCode = pinFieldController.text.toString(),
                     print(
                         "phone -> ${widget.user.phone_number} :: otp -> ${widget.user.otp}"),

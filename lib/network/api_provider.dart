@@ -308,6 +308,7 @@ class ApiProvider {
       Response response = await _dioClient.post('verifyotp', data: _map);
       dynamic json = jsonDecode(response.toString());
       print(response.data);
+      print('----------OtpVerify---------------');
       if (response.data != "") {
         print("dataValue :- ${json['success']}");
         if (json['success'] == true)
