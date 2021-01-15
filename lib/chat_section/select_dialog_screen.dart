@@ -1,11 +1,10 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:city_clinic_doctor/new/utils/prefrence_helper.dart';
 import 'package:connectycube_sdk/connectycube_sdk.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'chat_dialog_screen.dart';
 import 'chat_list_bloc.dart';
 import 'cube_bloc.dart';
@@ -13,66 +12,32 @@ import 'new_dialog_screen.dart';
 import 'utils/api_utils.dart';
 import 'utils/consts.dart';
 
-var _darkTheme = true;
 
 class SelectDialogScreen extends StatelessWidget {
   static const String TAG = "SelectDialogScreen";
-  final CubeUser currentUser;
-  final bool fromSearch;
-  final String quickId;
-  final String dialog_id;
-  final String name;
 
-  SelectDialogScreen(
-      this.currentUser, this.fromSearch, this.quickId, this.dialog_id, {this.name});
+  SelectDialogScreen();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: InkWell(
-            onTap: () {
-              Navigator.pop(context);
-            },
-            child: Icon(Icons.arrow_back)),
-        title: Text(
-          'Logged in as ${currentUser.login}',
-        ),
-      ),
-      body: BodyLayout(currentUser, fromSearch, quickId, dialog_id,name),
+      body: BodyLayout(),
     );
   }
 }
 
 class BodyLayout extends StatefulWidget {
-  final CubeUser currentUser;
-  final bool fromSearch;
-  final String quickId;
-  final String dialog_id;
-  final String name;
-
-  BodyLayout(this.currentUser, this.fromSearch, this.quickId, this.dialog_id,this.name);
-
   @override
   State<StatefulWidget> createState() {
-    return _BodyLayoutState(currentUser);
+    return _BodyLayoutState();
   }
 }
 
 class _BodyLayoutState extends State<BodyLayout> {
   static const String TAG = "_BodyLayoutState";
-
-  Set<int> _selectedDialogs = {};
-  final CubeUser currentUser;
+  CubeUser currentUser;
   List<ListItem<CubeDialog>> dialogList = [];
-  var _isDialogContinues = true;
-
-  //
   StreamSubscription<CubeMessage> msgSubscription;
-
-  // ChatMessagesManager chatMessagesManager =
-  //     CubeChatConnection.instance.chatMessagesManager;
-  _BodyLayoutState(this.currentUser);
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +52,7 @@ class _BodyLayoutState extends State<BodyLayout> {
                   strokeWidth: 2,
                 ),
               )
-            : _getDialogsList(context, widget.fromSearch,widget.name),
+            : _getDialogsList(context),
       ),
       floatingActionButton: FloatingActionButton(
         heroTag: "New dialog",
@@ -122,7 +87,7 @@ class _BodyLayoutState extends State<BodyLayout> {
   bool firstTimeNavigating = true;
   bool isFirstTime = true;
 
-  Widget _getDialogsList(BuildContext context, bool fromSearch,name) {
+  Widget _getDialogsList(BuildContext context) {
     print('_getDialogsList  $dialogList');
     // if (fromSearch && isFirstTime) {
     //     print('else2');
@@ -260,7 +225,7 @@ class _BodyLayoutState extends State<BodyLayout> {
                   Text(
                     '${dialogList[index].data.lastMessageDateSent != null ? DateFormat('MMM dd').format(DateTime.fromMillisecondsSinceEpoch(dialogList[index].data.lastMessageDateSent * 1000)) : 'Not available'}',
                     style: TextStyle(
-                      color: _darkTheme ? Colors.white : Colors.black,
+                      color:  Colors.black,
                     ),
                   ),
                 ],
@@ -321,6 +286,13 @@ class _BodyLayoutState extends State<BodyLayout> {
   @override
   void initState() {
     super.initState();
+
+    PreferenceHelper.getCUser().then((value) {
+      setState(() {
+        currentUser = value;
+      });
+    });
+
     cubeBloc.cubeStream.listen((event) {
       print('sssssss');
       ChatListBloc().chatList.listen((event) {

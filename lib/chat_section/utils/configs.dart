@@ -11,5 +11,6 @@ const String AUTH_KEY = "FTsUGpaSjL6FK9g";
 const String AUTH_SECRET = "T2maVkafmgK6QBh";
 const String ACCOUNT_ID = "ktvCP5dGhVsF3y1jaT9v";
 const String DEFAULT_PASS = "xxasBUM3gQs36bhj";
+const String CUBE_KEY = 'cube_key';
 
 

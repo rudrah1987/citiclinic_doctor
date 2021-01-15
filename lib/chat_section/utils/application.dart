@@ -33,7 +33,6 @@ class Application {
       FcmHelper()..register();
     }
 
-
     initNotification();
 
     getUser().then((value) {

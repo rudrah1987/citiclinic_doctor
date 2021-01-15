@@ -27,7 +27,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
 import 'Chat/ChatPage.dart';
 import 'bloc/UserDetailBloc.dart';
 
@@ -97,8 +96,6 @@ class _DashboardPageState extends State<DashboardPage> {
   int _selectedIndex = 0;
   List<Widget> _widgetOptions;
 
-
-
   List<String> _bottomPagesTitle = [
     "City Clinic",
     "My Chats",
@@ -106,19 +103,22 @@ class _DashboardPageState extends State<DashboardPage> {
     "Profile Details"
   ];
 
-
-
-
+  getTabs() async{
+    _widgetOptions = <Widget>[
+      HomePage(),
+      SelectDialogScreen(),
+      PrescriptionPage(),
+      ProfileUpdatPage()
+    ];
+  }
 
   @override
   void initState() {
     super.initState();
-    _widgetOptions = <Widget>[
-      HomePage(),
-      SelectDialogScreen(widget.cubeUser, false, "", ""),
-      PrescriptionPage(),
-      ProfileUpdatPage()
-    ];
+
+    PreferenceHelper.getCUser().then((value) => print(value.login)).catchError((e)=>print(e.toString()));
+    getTabs();
+
     PreferenceHelper.getUser().then((value) {
       currentUser.value.user = value;
       AppUtils.currentUser = value;

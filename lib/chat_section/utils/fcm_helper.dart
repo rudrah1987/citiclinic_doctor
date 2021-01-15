@@ -92,7 +92,7 @@ onSelectNotification(String payload)  async {
     if(payload =='1'){
       ChatHelper().showIncomingCallScreen();
     }else{
-      navigatorKey.currentState.push(MaterialPageRoute(builder: (_)=> SelectDialogScreen(cubeUser, false, "", "")));
+      navigatorKey.currentState.push(MaterialPageRoute(builder: (_)=> SelectDialogScreen()));
     }
   }
 }
@@ -196,7 +196,7 @@ class FcmHelper{
       if(isVideo =='1'){
         ChatHelper().showIncomingCallScreen();
       }else{
-        navigatorKey.currentState.push(MaterialPageRoute(builder: (_)=> SelectDialogScreen(cubeUser, false, "", "")));
+        navigatorKey.currentState.push(MaterialPageRoute(builder: (_)=> SelectDialogScreen()));
       }
     }
     return Future.value(true);

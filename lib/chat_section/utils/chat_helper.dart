@@ -44,6 +44,8 @@ class ChatHelper{
        PreferenceHelper.saveString("cb_pass", cubeUser.password);
        PreferenceHelper.saveString("cb_name", cubeUser.fullName);
 
+       PreferenceHelper.saveCUser(cubeUser);
+
       ChatMessagesManager chatMessagesManager = CubeChatConnection.instance.chatMessagesManager;
       var v = chatMessagesManager.chatMessagesStream
         ..listen((event) {

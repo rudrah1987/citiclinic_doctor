@@ -23,10 +23,8 @@ class _ChatPageState extends State<ChatPage> {
   getDataForChat()async{
     print('======00000000000000000');
     CubeUser cuubeUser;
-
     String cb_id = await PreferenceHelper.getString('cb_id');
-    String cb_login =
-    await PreferenceHelper.getString('cb_login');
+    String cb_login = await PreferenceHelper.getString('cb_login');
     String cb_pass = await PreferenceHelper.getString('cb_pass');
     String cb_name = await PreferenceHelper.getString('cb_name');
     print('pppppppppppppppp $cb_login');
@@ -46,7 +44,7 @@ class _ChatPageState extends State<ChatPage> {
           MaterialPageRoute(
             settings: RouteSettings(name: "/SelectDialogScreen"),
             builder: (context) =>
-                SelectDialogScreen(cuubeUser, false, "", ""),
+                SelectDialogScreen(),
           ));
     } else {
       Fluttertoast.showToast(msg: 'Please wait...');
