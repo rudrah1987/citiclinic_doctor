@@ -195,7 +195,7 @@ class _ConversationCallScreenState extends State<ConversationCallScreen>
     log("_onSessionClosed", TAG);
     _callSession.removeSessionCallbacksListener();
 
-    navigatorKey.currentState.pop();
+    Navigator.of(context).pop();
   }
 
   void _onStreamAdd(int opponentId, MediaStream stream) async {
@@ -400,7 +400,7 @@ class _ConversationCallScreenState extends State<ConversationCallScreen>
   _endCall() {
     print("endCall");
     _callSession.hungUp();
-    sendRingerPushNotification("Application.cUser","Missed ${_callSession.callType == CallType.VIDEO_CALL? "Video":"Audio"} Call");
+    // sendRingerPushNotification("Application.cUser","Missed ${_callSession.callType == CallType.VIDEO_CALL? "Video":"Audio"} Call");
   }
 
   void sendRingerPushNotification(String userName,String message) {

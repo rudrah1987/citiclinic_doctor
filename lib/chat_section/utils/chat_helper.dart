@@ -76,11 +76,11 @@ class ChatHelper{
     if (Platform.isAndroid) {
       parameters.channel = NotificationsChannels.GCM;
       parameters.platform = CubePlatform.ANDROID;
-      parameters.bundleIdentifier = "com.stoopup.stoopup";
+      parameters.bundleIdentifier = "com.city_clinic_doctor";
     } else if (Platform.isIOS) {
       parameters.channel = NotificationsChannels.APNS;
       parameters.platform = CubePlatform.IOS;
-      parameters.bundleIdentifier = "com.stoopup.stoopup";
+      parameters.bundleIdentifier = "com.city_clinic_doctor";
     }
 
     String deviceId = await DeviceId.getID;

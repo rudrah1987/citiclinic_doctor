@@ -1,9 +1,9 @@
 import 'dart:async';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:city_clinic_doctor/new/utils/prefrence_helper.dart';
 import 'package:connectycube_sdk/connectycube_sdk.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'chat_dialog_screen.dart';
 import 'chat_list_bloc.dart';
@@ -17,7 +17,6 @@ class SelectDialogScreen extends StatelessWidget {
   static const String TAG = "SelectDialogScreen";
 
   SelectDialogScreen();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,29 +88,18 @@ class _BodyLayoutState extends State<BodyLayout> {
 
   Widget _getDialogsList(BuildContext context) {
     print('_getDialogsList  $dialogList');
-    // if (fromSearch && isFirstTime) {
-    //     print('else2');
-    //     Set<int> users = {int.parse(widget.quickId)};
-    //     _createDialog(context, users, false,fromSearch,name);
-    //     fromSearch = false;
-    //     isFirstTime = false;
-    // }else{
-      print('else from');
       return dialogList.isEmpty
           ? Center(child: Text("No Chats Yet"))
           : AnimatedList(
             initialItemCount: dialogList.length,
             // itemCount: dialogList.length,
             itemBuilder: (ctx, index, anim) {
-              return Column(
-                children: [
-                  _getListItemTile(ctx, index),
-                  Divider(thickness: 2, indent: 40, endIndent: 40)
-                ],
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: _getListItemTile(ctx, index),
               );
             },
       );
-    // }
   }
 
   Widget _getListItemTile(BuildContext context, int index) {
@@ -162,6 +150,7 @@ class _BodyLayoutState extends State<BodyLayout> {
     }
 
     return Container(
+      decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade300),borderRadius: BorderRadius.circular(8)),
       child: FlatButton(
         child: Row(
           children: <Widget>[
@@ -178,9 +167,9 @@ class _BodyLayoutState extends State<BodyLayout> {
                       child: Text(
                         '${dialogList[index].data.name ?? 'Not available'}',
                         style: TextStyle(
-                            color: primaryColor,
+                            color: Colors.black54,
                             fontWeight: FontWeight.bold,
-                            fontSize: 17.0),
+                            fontSize: 15.0),
                       ),
                       alignment: Alignment.centerLeft,
                       margin: EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 5.0),
@@ -189,8 +178,8 @@ class _BodyLayoutState extends State<BodyLayout> {
                       child: Text(
                         '${dialogList[index].data.lastMessage ?? 'Not available'}',
                         style: TextStyle(
-                            color: primaryColor,
-                            fontSize: 14.0),
+                            color: Colors.black54,
+                            fontSize: 12.0),
                       ),
                       alignment: Alignment.centerLeft,
                       margin: EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 0.0),
@@ -225,7 +214,8 @@ class _BodyLayoutState extends State<BodyLayout> {
                   Text(
                     '${dialogList[index].data.lastMessageDateSent != null ? DateFormat('MMM dd').format(DateTime.fromMillisecondsSinceEpoch(dialogList[index].data.lastMessageDateSent * 1000)) : 'Not available'}',
                     style: TextStyle(
-                      color:  Colors.black,
+                      color:  Colors.black54,
+                      fontSize: 12
                     ),
                   ),
                 ],
@@ -239,7 +229,11 @@ class _BodyLayoutState extends State<BodyLayout> {
           });
         },
         onPressed: () {
-          _openDialog(context, dialogList[index].data);
+          print('DIalogLIST--$dialogList');
+          if(currentUser!=null){
+            _openDialog(context, dialogList[index].data);
+          }else Fluttertoast.showToast(msg: 'Please wait');
+
         },
         color:
             dialogList[index].isSelected ? Colors.black54 : Colors.transparent,
@@ -336,7 +330,6 @@ class _BodyLayoutState extends State<BodyLayout> {
 
   void _createDialog(BuildContext context, Set<int> users, bool isGroup,bool fromSearch,String name) async {
     log("_createDialog with users= $users");
-    // _isDialogContinues = true;
     CubeDialog newDialog =
         CubeDialog(CubeDialogType.PRIVATE, occupantsIds: users.toList());
     createDialog(newDialog).then((createdDialog) {
@@ -346,21 +339,10 @@ class _BodyLayoutState extends State<BodyLayout> {
             builder: (context) => ChatDialogScreen(currentUser, createdDialog,fromSearch,name),
           ),
         );
-      // ApiBaseHelper _api = ApiBaseHelper();
-      // _api.chatByUser('${users.first}', createdDialog.dialogId).then((value) {
-      //   print('ApiCallc ${value.toString()}');
-      //   print('ApiCallc ${createdDialog.dialogId}');
-      //
-      // }).catchError((e) {});
     }).catchError(_processCreateDialogError);
   }
 
   void _processCreateDialogError(exception) {
     log("Login error $exception", TAG);
-    // setState(() {
-    //   _isDialogContinues = false;
-    // });
-    // showDialogError(exception, context);
-    // Fluttertoast.showToast(msg: '$exception');
   }
 }
