@@ -1,8 +1,10 @@
 import 'package:city_clinic_doctor/modal/auth/SignUpResponse.dart';
+import 'package:city_clinic_doctor/new/customs/logger_global.dart';
 import 'package:city_clinic_doctor/new/utils/prefrence_helper.dart';
 import 'package:city_clinic_doctor/preference/CCDoctorPrefs.dart';
 import 'package:city_clinic_doctor/routes/Routes.dart';
 import 'package:city_clinic_doctor/ui/auth/Login.dart';
+import 'package:city_clinic_doctor/ui/auth/bloc/LoginBloc.dart';
 import 'package:city_clinic_doctor/ui/dialogs/VerifyOtpDialog.dart';
 import 'package:city_clinic_doctor/ui/dialogs/bloc/ResendOtpBloc.dart';
 import 'package:city_clinic_doctor/ui/dialogs/bloc/VerifyOtpBloc.dart';
@@ -45,7 +47,7 @@ class SignUpState extends State<SignUp> {
 
     user = null;
     _bloc.signUpStream.listen((event) {
-      print('----------signUpStream.listen-----##-------${event.otp}');
+      gLogger.i('----------signUpStream.listen------------${event.otp}');
 
       if (event.user != null) {
         print('EventUser--${event.user}');
@@ -73,11 +75,14 @@ class SignUpState extends State<SignUp> {
     });
 
     _verifyOtpBloc.otpVerifyStream.listen((event) {
+      gLogger.i('----------otpVerifyStream.listen------------${event.user.accessToken.toString()}');
+
       if (event.user != null) {
         AppUtils.currentUser = event.user;
         PreferenceHelper.saveUser(event.user);
+        currentUser.value.user=event.user;
         // CCDoctorPrefs.saveUser(userKeys, jsonEncode(event.user.toJson()));
-        print("userAccessTokenSignUp -> ${event.user.accessToken}");
+        print("otpVerifyStream.listen--userAccessTokenSignUp -> ${event.user.accessToken}");
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => SuccessSignUpPage()),
             (Route<dynamic> route) => false);

@@ -197,10 +197,10 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
       di.text = _user.name;
       phoneFieldController.text = _user.phoneNumber;
       emailFieldController.text = _user.email;
-      dobTextFieldController.text = _user.dob.substring(0, 10) ?? '';
+      dobTextFieldController.text = _user?.dob?.substring(0, 10) ?? '';
       // experienceFieldController.text=_user.
       accNumberFieldController.text = _user?.userBanks?.accountNumber ?? '';
-      _bankNameController.text = _user?.userBanks?.bankName ?? '';
+      _bankNameController.text = _user?.userBanks?.bankName ?? bankDataList[0];
       accNameFieldController.text = _user?.userBanks?.accountHolderName ?? '';
       ifscFieldController.text = _user?.userBanks?.ifscCode ?? '';
       _profileImageUrl = _user.profileImage ?? '';
