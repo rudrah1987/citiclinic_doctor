@@ -45,6 +45,7 @@ class SignUpState extends State<SignUp> {
 
     user = null;
     _bloc.signUpStream.listen((event) {
+      print('--------------------------signUpStream Listening---------------------------$event');
       if (event.user != null) {
         user = event.user;
         getVerifyOtpValue(event.user);

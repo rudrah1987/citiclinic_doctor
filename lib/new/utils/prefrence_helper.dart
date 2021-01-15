@@ -5,17 +5,20 @@ import 'package:city_clinic_doctor/ui/auth/bloc/LoginBloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const String PREFERENCE_KEY='current_user';
+
 class PreferenceHelper {
+
   static Future<String> getString(String key) async {
     var prefs = await SharedPreferences.getInstance();
     String token = prefs.getString(key) ?? "";
-    print('NewTOKEN-$token');
     return token;
   }
+
   static saveString(String key, String value) async {
     var prefs = await SharedPreferences.getInstance();
     prefs.setString(key, value);
   }
+
   static saveUser(UserData user) async {
     print('PreferenceHelper SAVED-$user');
     final SharedPreferences _prefs = await SharedPreferences.getInstance();

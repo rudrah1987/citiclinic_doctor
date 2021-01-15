@@ -43,12 +43,22 @@ dependencies:
   share: ^0.6.5
   fluttertoast: ^3.1.3
   geolocator: ^5.1.3
-  firebase_core: 0.5.0+1
-  firebase_messaging: 7.0.3
-  flutter_local_notifications: ^1.4.4+2
   image_cropper: ^1.3.1
   image_picker: ^0.6.7+7
   logger: ^0.9.4
+
+  #chat
+  connectycube_sdk: ^1.0.0
+  flutter_apns: ^1.4.1
+  device_id: ^0.2.0
+  firebase_core: ^0.5.2
+  firebase_messaging: ^7.0.3
+  flutter_local_notifications: ^1.4.0
+  photo_view: ^0.5.0
+  cached_network_image: ^2.3.3
+
+
+
 
 
 #dependency_overrides:

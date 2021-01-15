@@ -1,17 +1,16 @@
-
 class UserDetailResponse {
   bool success;
   String message;
   UserData user;
-
   UserDetailResponse({this.success, this.message, this.user});
-
+  UserDetailResponse.fromError(String errorValue) {
+    this.message = errorValue;
+  }
   UserDetailResponse.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     message = json['message'];
     user = json['data'] != null ? new UserData.fromJson(json['data']) : null;
   }
-
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['success'] = this.success;
@@ -21,13 +20,7 @@ class UserDetailResponse {
     }
     return data;
   }
-
-  UserDetailResponse.fromError(String errorValue /*, int errorCode*/) {
-    this.message = errorValue;
-    // this.errorCode = errorCode;
-  }
 }
-
 class UserData {
   int userId;
   String name;
@@ -35,12 +28,15 @@ class UserData {
   String email;
   String gender;
   String dob;
-  Null locality;
+  String locality;
   String country;
   String state;
   String city;
-  Null address1;
-  Null address2;
+  String address1;
+  String address2;
+  String quickId;
+  String quickLogin;
+  String quickPassword;
   DoctorQulifications doctorQulifications;
   RegistrationDeatils registrationDeatils;
   UserBanks userBanks;
@@ -48,28 +44,29 @@ class UserData {
   String osType;
   String accessToken;
   String profileImage;
-
   UserData(
       {this.userId,
-      this.name,
-      this.phoneNumber,
-      this.email,
-      this.gender,
-      this.dob,
-      this.locality,
-      this.country,
-      this.state,
-      this.city,
-      this.address1,
-      this.address2,
-      this.doctorQulifications,
-      this.registrationDeatils,
-      this.userBanks,
-      this.doctorSpecialities,
-      this.osType,
-      this.accessToken,
-      this.profileImage});
-
+        this.name,
+        this.phoneNumber,
+        this.email,
+        this.gender,
+        this.dob,
+        this.locality,
+        this.country,
+        this.state,
+        this.city,
+        this.address1,
+        this.address2,
+        this.quickId,
+        this.quickLogin,
+        this.quickPassword,
+        this.doctorQulifications,
+        this.registrationDeatils,
+        this.userBanks,
+        this.doctorSpecialities,
+        this.osType,
+        this.accessToken,
+        this.profileImage});
   UserData.fromJson(Map<String, dynamic> json) {
     userId = json['user_id'];
     name = json['name'];
@@ -83,6 +80,9 @@ class UserData {
     city = json['city'];
     address1 = json['address_1'];
     address2 = json['address_2'];
+    quickId = json['quick_id'];
+    quickLogin = json['quick_login'];
+    quickPassword = json['quick_password'];
     doctorQulifications = json['DoctorQulifications'] != null
         ? new DoctorQulifications.fromJson(json['DoctorQulifications'])
         : null;
@@ -97,7 +97,6 @@ class UserData {
     accessToken = json['accessToken'];
     profileImage = json['profile_image'];
   }
-
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['user_id'] = this.userId;
@@ -112,6 +111,9 @@ class UserData {
     data['city'] = this.city;
     data['address_1'] = this.address1;
     data['address_2'] = this.address2;
+    data['quick_id'] = this.quickId;
+    data['quick_login'] = this.quickLogin;
+    data['quick_password'] = this.quickPassword;
     if (this.doctorQulifications != null) {
       data['DoctorQulifications'] = this.doctorQulifications.toJson();
     }
@@ -128,7 +130,6 @@ class UserData {
     return data;
   }
 }
-
 class DoctorQulifications {
   int id;
   int userId;
@@ -138,17 +139,15 @@ class DoctorQulifications {
   String documentFile;
   String created;
   String modified;
-
   DoctorQulifications(
       {this.id,
-      this.userId,
-      this.degree,
-      this.university,
-      this.passingYear,
-      this.documentFile,
-      this.created,
-      this.modified});
-
+        this.userId,
+        this.degree,
+        this.university,
+        this.passingYear,
+        this.documentFile,
+        this.created,
+        this.modified});
   DoctorQulifications.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     userId = json['user_id'];
@@ -159,7 +158,6 @@ class DoctorQulifications {
     created = json['created'];
     modified = json['modified'];
   }
-
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
@@ -173,7 +171,6 @@ class DoctorQulifications {
     return data;
   }
 }
-
 class RegistrationDeatils {
   int id;
   int userId;
@@ -183,17 +180,15 @@ class RegistrationDeatils {
   String documentFile;
   String created;
   String modified;
-
   RegistrationDeatils(
       {this.id,
-      this.userId,
-      this.registrationNumber,
-      this.registrationCouncil,
-      this.registrationDate,
-      this.documentFile,
-      this.created,
-      this.modified});
-
+        this.userId,
+        this.registrationNumber,
+        this.registrationCouncil,
+        this.registrationDate,
+        this.documentFile,
+        this.created,
+        this.modified});
   RegistrationDeatils.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     userId = json['user_id'];
@@ -204,7 +199,6 @@ class RegistrationDeatils {
     created = json['created'];
     modified = json['modified'];
   }
-
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
@@ -218,7 +212,6 @@ class RegistrationDeatils {
     return data;
   }
 }
-
 class UserBanks {
   int id;
   int userId;
@@ -228,17 +221,15 @@ class UserBanks {
   String ifscCode;
   String created;
   String modified;
-
   UserBanks(
       {this.id,
-      this.userId,
-      this.bankName,
-      this.accountHolderName,
-      this.accountNumber,
-      this.ifscCode,
-      this.created,
-      this.modified});
-
+        this.userId,
+        this.bankName,
+        this.accountHolderName,
+        this.accountNumber,
+        this.ifscCode,
+        this.created,
+        this.modified});
   UserBanks.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     userId = json['user_id'];
@@ -249,7 +240,6 @@ class UserBanks {
     created = json['created'];
     modified = json['modified'];
   }
-
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
@@ -263,3 +253,12 @@ class UserBanks {
     return data;
   }
 }
+
+
+// Send a message to Tushar Dubey
+
+
+
+
+
+

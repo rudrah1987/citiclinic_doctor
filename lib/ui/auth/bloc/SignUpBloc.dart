@@ -29,6 +29,7 @@ class SignUpBloc extends BaseBloc {
       isLoading = true;
       _loadingStream.sink.add(isLoading);
       SignUpResponse r = await repository.signUp(name, phone, email, password, fb_token, longitude, latitude);
+      // _signUpStream.sink.add(r);
       isLoading = false;
       _loadingStream.sink.add(isLoading);
       _signUpStream.sink.add(r);

@@ -7,34 +7,41 @@ import 'package:city_clinic_doctor/ui/home/Dashboard.dart';
 import 'package:city_clinic_doctor/ui/splash/Splash2.dart';
 import 'package:city_clinic_doctor/utils/Colors.dart';
 import 'package:city_clinic_doctor/utils/SvgImages.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'chat_section/utils/application.dart';
 import 'modal/auth/user.dart';
 import 'new/utils/prefrence_helper.dart';
 
-void main() /*async*/{
-  // await SharedPreferences.getInstance();
+final navigatorKey = GlobalKey<NavigatorState>();
+
+
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  Firebase.initializeApp().then((value) {
+    Application().initApp();
+  });
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     systemNavigationBarColor: kPrimaryColor, // navigation bar color
     statusBarColor: kPrimaryColor, // status bar color
   ));
+
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
   PreferenceHelper.getUser();
 
-  // ignore: invalid_use_of_visible_for_testing_member
-  // SharedPreferences.setMockInitialValues({});
   SystemChannels.textInput.invokeMethod('TextInput.hide');
   runApp(MaterialApp(
       theme: ThemeData(primaryColor: kPrimaryColor, accentColor: kAccentColor),
       debugShowCheckedModeBanner: false,
+      navigatorKey: navigatorKey,
       home: SplashMain()
   ));
 }
@@ -45,13 +52,10 @@ class SplashMain extends StatefulWidget{
 }
 
 class SplashMainState extends State<SplashMain>{
-  FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
-
   @override
   void initState() {
     super.initState();
     getUserFromPreference();
-    firebaseCloudMessagingListeners();
   }
 
   getUserFromPreference() async{
@@ -128,75 +132,4 @@ class SplashMainState extends State<SplashMain>{
     );
   }
 
-  void firebaseCloudMessagingListeners() {
-    if (Platform.isIOS) iOS_Permission();
-
-    _firebaseMessaging.getToken().then((token){
-      print(token);
-      CCDoctorPrefs.saveFBToken(token);
-    });
-
-    _firebaseMessaging.configure(
-      onMessage: (Map<String, dynamic> message) async {
-        print('on message $message');
-      },
-      // onBackgroundMessage: messageHandle,
-      onResume: (Map<String, dynamic> message) async {
-        print('on resume $message');
-      },
-      onLaunch: (Map<String, dynamic> message) async {
-        print('on launch $message');
-      },
-    );
-  }
-
-  void iOS_Permission() {
-    _firebaseMessaging.requestNotificationPermissions(
-        IosNotificationSettings(sound: true, badge: true, alert: true)
-    );
-    _firebaseMessaging.onIosSettingsRegistered
-        .listen((IosNotificationSettings settings)
-    {
-      print("Settings registered: $settings");
-    });
-  }
-
-  /*Future<dynamic> messageHandle(Map<String, dynamic> message) async{
-    if (message.containsKey("data")) {
-      Map data = message['data'];
-      String topic;
-      if (data.containsKey("topic")) topic = data['topic'];
-      if (topic == "VendorNewTrips") {
-        String amount = data['amount'];
-        String vehicle = data['vehicle'];
-        String tripType = data['tripType'];
-        String pickUpDate= data['pickUpDate'];
-        String pickUpTime = data['pickUpTime'];
-        String locations= data['locations'];
-        FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-        new FlutterLocalNotificationsPlugin();
-
-        new AndroidInitializationSettings('app_icon');
-        var bigTextStyleInformation = BigTextStyleInformation(
-            'Locations: <b>${locations.replaceAll("\$", " to ")}</b><br>Vehicle: <b>$vehicle</b><br>Trip Type: <b>$tripType</b><br>Pick-Up Date: <b>$pickUpDate</b><br>Pick-Up Time: <b>$pickUpTime</b>',
-            htmlFormatBigText: true,
-            contentTitle: 'Amount:- <b>Rs $amount</b>',
-            htmlFormatContentTitle: true,
-            summaryText: 'Trip Details',
-            htmlFormatSummaryText: true);
-        var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-            '1687497218170948721x8',
-            'New Trips Notification ',
-            'Notification Channel for vendor. All the new trips notifications will arrive here.',
-            // style: AndroidNotificationStyle.BigText,
-            styleInformation: bigTextStyleInformation);
-        var platformChannelSpecifics =
-        NotificationDetails(androidPlatformChannelSpecifics, null);
-
-        flutterLocalNotificationsPlugin.show(5, 'Let\'s Get Wride!',
-          'You Have Got A New Trip!', platformChannelSpecifics,);
-      }
-    }
-    return null;
-  }*/
 }

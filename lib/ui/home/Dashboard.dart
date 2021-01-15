@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:city_clinic_doctor/chat_section/select_dialog_screen.dart';
 import 'package:city_clinic_doctor/main.dart';
 import 'package:city_clinic_doctor/new/utils/prefrence_helper.dart';
 import 'package:city_clinic_doctor/routes/Routes.dart';
@@ -19,6 +20,8 @@ import 'package:city_clinic_doctor/utils/DrawerWidgets.dart';
 import 'package:city_clinic_doctor/utils/SvgImages.dart';
 import 'package:city_clinic_doctor/utils/Colors.dart';
 import 'package:city_clinic_doctor/utils/app_utils.dart';
+import 'package:city_clinic_doctor/utils/chat_initializer_methods.dart';
+import 'package:connectycube_sdk/connectycube_calls.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -30,9 +33,29 @@ import 'bloc/UserDetailBloc.dart';
 
 var globalContext; // Declare global variable to store context from StatelessWidget
 
-class Dashboard extends StatelessWidget {
+class Dashboard extends StatefulWidget {
+
+  @override
+  _DashboardState createState() => _DashboardState();
+}
+
+class _DashboardState extends State<Dashboard> {
+  CubeUser _cubeUser;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getDataForChat(context).then((value) {
+      if(value!=null){
+        setState(() {
+          _cubeUser=value;
+        });
+      }
+    });
+  }
   @override
   Widget build(BuildContext context) {
+    print('CUBEEUSER--------$_cubeUser');
     globalContext = context;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -53,12 +76,15 @@ class Dashboard extends StatelessWidget {
       theme: ThemeData(
         appBarTheme: AppBarTheme(color: kPrimaryColor),
       ),
-      home: DashboardPage(),
+      home: DashboardPage(_cubeUser),
     );
   }
 }
 
 class DashboardPage extends StatefulWidget {
+  final CubeUser cubeUser;
+  DashboardPage(this.cubeUser);
+
   @override
   _DashboardPageState createState() => _DashboardPageState();
 }
@@ -69,6 +95,9 @@ class _DashboardPageState extends State<DashboardPage> {
   LogoutBloc _logoutBloc = LogoutBloc();
   UserDetailBloc _userDetailBloc = UserDetailBloc();
   int _selectedIndex = 0;
+  List<Widget> _widgetOptions;
+
+
 
   List<String> _bottomPagesTitle = [
     "City Clinic",
@@ -77,16 +106,19 @@ class _DashboardPageState extends State<DashboardPage> {
     "Profile Details"
   ];
 
-  List<Widget> _widgetOptions = <Widget>[
-    HomePage(),
-    ChatPage(),
-    PrescriptionPage(),
-    ProfileUpdatPage()
-  ];
+
+
+
 
   @override
   void initState() {
     super.initState();
+    _widgetOptions = <Widget>[
+      HomePage(),
+      SelectDialogScreen(widget.cubeUser, false, "", ""),
+      PrescriptionPage(),
+      ProfileUpdatPage()
+    ];
     PreferenceHelper.getUser().then((value) {
       currentUser.value.user = value;
       AppUtils.currentUser = value;
@@ -160,6 +192,12 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
+    // List<Widget> _widgetOptions = <Widget>[
+    //   HomePage(),
+    //   SelectDialogScreen(widget.cubeUser, false, "", ""),
+    //   PrescriptionPage(),
+    //   ProfileUpdatPage()
+    // ];
     return WillPopScope(
         child: Scaffold(
           backgroundColor: Colors.white,
