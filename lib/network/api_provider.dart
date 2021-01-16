@@ -17,6 +17,7 @@ import 'package:city_clinic_doctor/modal/profile/QualificationResponse.dart';
 import 'package:city_clinic_doctor/modal/profile/RegistrationResponse.dart';
 import 'package:city_clinic_doctor/modal/profile/SpecialityResponse.dart';
 import 'package:city_clinic_doctor/modal/profile/UserDetailResponse.dart';
+import 'package:city_clinic_doctor/modal/staticResponse/staticResponse.dart';
 import 'package:city_clinic_doctor/new/utils/prefrence_helper.dart';
 import 'package:city_clinic_doctor/ui/auth/bloc/LoginBloc.dart';
 import 'package:city_clinic_doctor/utils/Constant.dart';
@@ -480,6 +481,35 @@ class ApiProvider {
       }
       print("Error -> $e");
       return SpecialityResponse.fromError("$e" /*, 397*/);
+    }
+  }
+
+  Future<StaticPageResponse> getStaticPages() async {
+    try {
+      print('-------------getStaticPages Called');
+      Response response = await _dioClient.get('staticpageslist');
+      dynamic json = jsonDecode(response.toString());
+      print(response.data);
+      if (response.data != "") {
+        print("dataValue :- ${json['success']}");
+        if (json['success'] == true)
+          return StaticPageResponse.fromJson(json);
+        else
+          return StaticPageResponse.fromError(
+              json['message'] /*,
+            response.data['error_code'],*/
+          );
+      } else {
+        return StaticPageResponse.fromError("No data" /*, 396*/);
+      }
+    } catch (error, stacktrace) {
+      print("Exception occured: $error stackTrace: $stacktrace");
+      var e = error;
+      if (error is DioError) {
+        e = getErrorMsg(e.type);
+      }
+      print("Error -> $e");
+      return StaticPageResponse.fromError("$e" /*, 397*/);
     }
   }
 

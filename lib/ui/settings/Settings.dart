@@ -1,5 +1,6 @@
 import 'package:city_clinic_doctor/modal/auth/user.dart';
 import 'package:city_clinic_doctor/modal/profile/UserDetailResponse.dart';
+import 'package:city_clinic_doctor/network/api_provider.dart';
 import 'package:city_clinic_doctor/new/utils/prefrence_helper.dart';
 import 'package:city_clinic_doctor/ui/dialogs/LogoutDialog.dart';
 import 'package:city_clinic_doctor/ui/drawer/prescriptionManagement/PrescriptionPage.dart';
@@ -66,6 +67,11 @@ class _SettingsState extends State<Settings> {
           Navigator.of(context, rootNavigator: true).pop();
         }
       }
+    });
+  }
+  getStaticData(){
+    ApiProvider().getStaticPages().then((value) {
+
     });
   }
 

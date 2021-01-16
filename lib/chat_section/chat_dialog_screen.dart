@@ -559,7 +559,7 @@ class ChatScreenState extends State<ChatScreen> {
         DateFormat('HH:mm').format(
             DateTime.fromMillisecondsSinceEpoch(message.dateSent * 1000)),
         style: TextStyle(
-            color: _darkTheme ? Colors.white : Colors.black,
+            color: Colors.black,
             fontSize: 12.0,
             fontStyle: FontStyle.italic),
       );
@@ -572,7 +572,7 @@ class ChatScreenState extends State<ChatScreen> {
           DateFormat('dd MMMM').format(
               DateTime.fromMillisecondsSinceEpoch(message.dateSent * 1000)),
           style: TextStyle(
-              color: _darkTheme ? Colors.white : Colors.black, fontSize: 18.0, fontStyle: FontStyle.italic),
+              color:  Colors.black, fontSize: 18.0, fontStyle: FontStyle.italic),
         ),
         margin: EdgeInsets.all(10.0),
       );
@@ -727,7 +727,7 @@ class ChatScreenState extends State<ChatScreen> {
                             ? NetworkImage(_occupants[message.senderId].avatar)
                             : null,
                     backgroundColor: greyColor2,
-                    radius: 30,
+                    radius: 25,
                     child: getAvatarTextWidget(
                       _occupants[message.senderId].avatar != null &&
                           _occupants[message.senderId].avatar.isNotEmpty,
@@ -738,7 +738,7 @@ class ChatScreenState extends State<ChatScreen> {
                     ),
                   ),
                   borderRadius: BorderRadius.all(
-                    Radius.circular(30.0),
+                    Radius.circular(25.0),
                   ),
                   clipBehavior: Clip.hardEdge,
                 ),
@@ -878,7 +878,9 @@ class ChatScreenState extends State<ChatScreen> {
 
   Widget buildLoading() {
     return Positioned(
-      child: isLoading ? const Loading() : Container(),
+      child: isLoading ? CircularProgressIndicator(
+        valueColor: new AlwaysStoppedAnimation<Color>(themeColor),
+      ) : Container(),
     );
   }
 

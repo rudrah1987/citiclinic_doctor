@@ -6,10 +6,10 @@ Widget getAvatarTextWidget(bool condition, String text) {
     return SizedBox.shrink();
   else
     return ClipRRect(
-      borderRadius: BorderRadius.circular(55),
+      borderRadius: BorderRadius.circular(40),
       child: Text(
         text,
-        style: TextStyle(fontSize: 30,),
+        style: TextStyle(fontSize: 20,),
       ),
     );
 }
