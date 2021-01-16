@@ -26,6 +26,7 @@ void main() {
   Firebase.initializeApp().then((value) {
     Application().initApp();
   });
+
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     systemNavigationBarColor: kPrimaryColor, // navigation bar color
     statusBarColor: kPrimaryColor, // status bar color

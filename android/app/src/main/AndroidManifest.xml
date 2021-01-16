@@ -28,7 +28,7 @@
 
     <application
         android:name=".Application"
-        android:label="city_clinic_doctor"
+        android:label="City Clinic Doctor"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

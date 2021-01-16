@@ -11,8 +11,6 @@ class ChatPage extends StatefulWidget {
   _ChatPageState createState() => _ChatPageState();
 }
 
-
-
 class _ChatPageState extends State<ChatPage> {
 
   @override
@@ -47,7 +45,6 @@ class _ChatPageState extends State<ChatPage> {
                 SelectDialogScreen(),
           ));
     } else {
-      Fluttertoast.showToast(msg: 'Please wait...');
     }
   }
 

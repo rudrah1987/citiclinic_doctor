@@ -59,14 +59,16 @@ dependencies:
 
 
 
-
-
-#dependency_overrides:
-#  flutter_svg: ^0.18.0
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: "^0.8.0"
+
+flutter_icons:
+  image_path: "assets/images/app_launcher.png"
+  android: true
+  ios: true
+
 #  build_runner:
 
 # For information on the generic Dart part of this file, see the
