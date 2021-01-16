@@ -47,9 +47,7 @@ class _BodyLayoutState extends State<BodyLayout> {
             ? Container(
                 margin: EdgeInsets.all(40),
                 alignment: FractionalOffset.center,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                ),
+                child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(themeColor),),
               )
             : _getDialogsList(context),
       ),
@@ -167,9 +165,7 @@ class _BodyLayoutState extends State<BodyLayout> {
                       child: Text(
                         '${dialogList[index].data.name ?? 'Not available'}',
                         style: TextStyle(
-                            color: Colors.black54,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15.0),
+                            fontSize: 17.0),
                       ),
                       alignment: Alignment.centerLeft,
                       margin: EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 5.0),
@@ -178,8 +174,7 @@ class _BodyLayoutState extends State<BodyLayout> {
                       child: Text(
                         '${dialogList[index].data.lastMessage ?? 'Not available'}',
                         style: TextStyle(
-                            color: Colors.black54,
-                            fontSize: 12.0),
+                            fontSize: 14.0),
                       ),
                       alignment: Alignment.centerLeft,
                       margin: EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 0.0),
@@ -215,7 +210,7 @@ class _BodyLayoutState extends State<BodyLayout> {
                     '${dialogList[index].data.lastMessageDateSent != null ? DateFormat('MMM dd').format(DateTime.fromMillisecondsSinceEpoch(dialogList[index].data.lastMessageDateSent * 1000)) : 'Not available'}',
                     style: TextStyle(
                       color:  Colors.black54,
-                      fontSize: 12
+                      fontSize: 14
                     ),
                   ),
                 ],

@@ -28,7 +28,7 @@ class _ChatPageState extends State<ChatPage> {
     print('pppppppppppppppp $cb_login');
     print("saved user  $cuubeUser");
     // print(cubeUser1);
-    if (!cb_login.isEmpty) {
+    if (cb_login.isNotEmpty) {
       setState(() {
         cuubeUser = CubeUser(
             login: cb_login,
