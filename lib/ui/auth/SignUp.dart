@@ -47,6 +47,7 @@ class SignUpState extends State<SignUp> {
 
     user = null;
     _bloc.signUpStream.listen((event) {
+
       gLogger.i('----------signUpStream.listen------------${event.otp}');
 
       if (event.user != null) {

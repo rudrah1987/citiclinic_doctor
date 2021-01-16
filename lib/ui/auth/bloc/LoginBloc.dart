@@ -47,6 +47,8 @@ class LoginBloc extends BaseBloc {
         //   PreferenceHelper.saveUser(value.user);
         // }
         // PreferenceHelper.getUser().then((value) {
+
+
           currentUser.value.user = value.user;
           currentUser.notifyListeners();
           gLogger.i('UserName getUser-${currentUser.value.user.name}');

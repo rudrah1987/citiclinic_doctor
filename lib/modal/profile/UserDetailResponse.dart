@@ -2,18 +2,16 @@ class UserDetailResponse {
   bool success;
   String message;
   UserData user;
-
   UserDetailResponse({this.success, this.message, this.user});
+  
   UserDetailResponse.fromError(String errorValue) {
     this.message = errorValue;
   }
-
   UserDetailResponse.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     message = json['message'];
     user = json['data'] != null ? new UserData.fromJson(json['data']) : null;
   }
-
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['success'] = this.success;
@@ -24,7 +22,6 @@ class UserDetailResponse {
     return data;
   }
 }
-
 class UserData {
   int userId;
   String name;
@@ -48,7 +45,6 @@ class UserData {
   String osType;
   String accessToken;
   String profileImage;
-
   UserData(
       {this.userId,
       this.name,
@@ -103,7 +99,6 @@ class UserData {
     accessToken = json['accessToken'];
     profileImage = json['profile_image'];
   }
-
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['user_id'] = this.userId;
@@ -137,7 +132,6 @@ class UserData {
     return data;
   }
 }
-
 class DoctorQulifications {
   int id;
   int userId;
@@ -147,17 +141,15 @@ class DoctorQulifications {
   String documentFile;
   String created;
   String modified;
-
   DoctorQulifications(
       {this.id,
-      this.userId,
-      this.degree,
-      this.university,
-      this.passingYear,
-      this.documentFile,
-      this.created,
-      this.modified});
-
+        this.userId,
+        this.degree,
+        this.university,
+        this.passingYear,
+        this.documentFile,
+        this.created,
+        this.modified});
   DoctorQulifications.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     userId = json['user_id'];
@@ -168,7 +160,6 @@ class DoctorQulifications {
     created = json['created'];
     modified = json['modified'];
   }
-
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
@@ -182,7 +173,6 @@ class DoctorQulifications {
     return data;
   }
 }
-
 class RegistrationDeatils {
   int id;
   int userId;
@@ -192,17 +182,15 @@ class RegistrationDeatils {
   String documentFile;
   String created;
   String modified;
-
   RegistrationDeatils(
       {this.id,
-      this.userId,
-      this.registrationNumber,
-      this.registrationCouncil,
-      this.registrationDate,
-      this.documentFile,
-      this.created,
-      this.modified});
-
+        this.userId,
+        this.registrationNumber,
+        this.registrationCouncil,
+        this.registrationDate,
+        this.documentFile,
+        this.created,
+        this.modified});
   RegistrationDeatils.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     userId = json['user_id'];
@@ -213,7 +201,6 @@ class RegistrationDeatils {
     created = json['created'];
     modified = json['modified'];
   }
-
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
@@ -227,7 +214,6 @@ class RegistrationDeatils {
     return data;
   }
 }
-
 class UserBanks {
   int id;
   int userId;
@@ -237,17 +223,15 @@ class UserBanks {
   String ifscCode;
   String created;
   String modified;
-
   UserBanks(
       {this.id,
-      this.userId,
-      this.bankName,
-      this.accountHolderName,
-      this.accountNumber,
-      this.ifscCode,
-      this.created,
-      this.modified});
-
+        this.userId,
+        this.bankName,
+        this.accountHolderName,
+        this.accountNumber,
+        this.ifscCode,
+        this.created,
+        this.modified});
   UserBanks.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     userId = json['user_id'];
@@ -258,7 +242,6 @@ class UserBanks {
     created = json['created'];
     modified = json['modified'];
   }
-
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
@@ -272,3 +255,6 @@ class UserBanks {
     return data;
   }
 }
+
+
+// Send a message to Tushar Dubey

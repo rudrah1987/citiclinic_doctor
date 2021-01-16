@@ -1,21 +1,26 @@
 import 'dart:convert';
+import 'package:city_clinic_doctor/chat_section/utils/configs.dart';
 import 'package:city_clinic_doctor/modal/profile/UserDetailResponse.dart';
 import 'package:city_clinic_doctor/new/customs/logger_global.dart';
 import 'package:city_clinic_doctor/ui/auth/bloc/LoginBloc.dart';
+import 'package:connectycube_sdk/connectycube_calls.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const String PREFERENCE_KEY='current_user';
+
 class PreferenceHelper {
+
   static Future<String> getString(String key) async {
     var prefs = await SharedPreferences.getInstance();
     String token = prefs.getString(key) ?? "";
-    print('NewTOKEN-$token');
     return token;
   }
+
   static saveString(String key, String value) async {
     var prefs = await SharedPreferences.getInstance();
     prefs.setString(key, value);
   }
+
   static saveUser(UserData user) async {
     print('PreferenceHelper SAVED-$user');
     final SharedPreferences _prefs = await SharedPreferences.getInstance();
@@ -59,4 +64,27 @@ class PreferenceHelper {
       return false;
     }
   }
+
+  static Future<CubeUser> getCUser() async {
+    final SharedPreferences _prefs = await SharedPreferences.getInstance();
+    dynamic s;
+    try {
+      var ss = _prefs.containsKey("CUBE_KEY") ? _prefs.getString("CUBE_KEY") : null;
+      if (ss == null) {
+        return null;
+      }
+      s = jsonDecode(ss);
+    } catch (e) {
+      print(e);
+    }
+    return s == null ? null : CubeUser.fromJson(s);
+  }
+
+
+
+  static saveCUser(CubeUser cubeUser) async {
+    final SharedPreferences _prefs = await SharedPreferences.getInstance();
+    _prefs.setString("CUBE_KEY", jsonEncode(cubeUser));
+  }
+
 }
