@@ -3,6 +3,7 @@ class UserDetailResponse {
   String message;
   UserData user;
   UserDetailResponse({this.success, this.message, this.user});
+  
   UserDetailResponse.fromError(String errorValue) {
     this.message = errorValue;
   }
@@ -46,27 +47,28 @@ class UserData {
   String profileImage;
   UserData(
       {this.userId,
-        this.name,
-        this.phoneNumber,
-        this.email,
-        this.gender,
-        this.dob,
-        this.locality,
-        this.country,
-        this.state,
-        this.city,
-        this.address1,
-        this.address2,
-        this.quickId,
-        this.quickLogin,
-        this.quickPassword,
-        this.doctorQulifications,
-        this.registrationDeatils,
-        this.userBanks,
-        this.doctorSpecialities,
-        this.osType,
-        this.accessToken,
-        this.profileImage});
+      this.name,
+      this.phoneNumber,
+      this.email,
+      this.gender,
+      this.dob,
+      this.locality,
+      this.country,
+      this.state,
+      this.city,
+      this.address1,
+      this.address2,
+      this.quickId,
+      this.quickLogin,
+      this.quickPassword,
+      this.doctorQulifications,
+      this.registrationDeatils,
+      this.userBanks,
+      this.doctorSpecialities,
+      this.osType,
+      this.accessToken,
+      this.profileImage});
+
   UserData.fromJson(Map<String, dynamic> json) {
     userId = json['user_id'];
     name = json['name'];
@@ -256,9 +258,3 @@ class UserBanks {
 
 
 // Send a message to Tushar Dubey
-
-
-
-
-
-

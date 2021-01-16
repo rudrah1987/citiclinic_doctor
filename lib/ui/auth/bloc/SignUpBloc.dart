@@ -1,5 +1,6 @@
 import 'package:city_clinic_doctor/modal/auth/SignUpResponse.dart';
 import 'package:city_clinic_doctor/repository/base.dart';
+import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
 class SignUpBloc extends BaseBloc {

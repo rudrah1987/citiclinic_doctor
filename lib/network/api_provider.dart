@@ -51,10 +51,12 @@ class ApiProvider {
     _map['firebase_token'] = fb_token;
     _map['longitude'] = longitude;
     _map['latitude'] = latitude;
+    _map["role_id"]= "3";
+
 
     print("Signup data -> $_map");
     try {
-      Response response = await _dioClient.post('doctorsignup', data: _map);
+      Response response = await _dioClient.post('signup', data: _map);
       dynamic json = jsonDecode(response.toString());
       print(response.data);
       if (response.data != "") {
@@ -308,6 +310,7 @@ class ApiProvider {
       Response response = await _dioClient.post('verifyotp', data: _map);
       dynamic json = jsonDecode(response.toString());
       print(response.data);
+      print('----------OtpVerify---------------');
       if (response.data != "") {
         print("dataValue :- ${json['success']}");
         if (json['success'] == true)

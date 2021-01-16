@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:city_clinic_doctor/chat_section/utils/application.dart';
 import 'package:city_clinic_doctor/modal/auth/ForgotPassData.dart';
 import 'package:city_clinic_doctor/modal/auth/ForgotPassResponse.dart';
+import 'package:city_clinic_doctor/new/customs/logger_global.dart';
 import 'package:city_clinic_doctor/new/utils/prefrence_helper.dart';
 import 'package:city_clinic_doctor/preference/CCDoctorPrefs.dart';
 import 'package:city_clinic_doctor/ui/auth/bloc/LoginBloc.dart';
@@ -57,6 +58,8 @@ class LoginState extends State<Login>{
     user = null;
 
     _loginBloc.loginStream.listen((event) {
+      gLogger.i('----------loginStream.listen------------${event}');
+
       if (event.user != null) {
         AppUtils.currentUser = event.user;
         PreferenceHelper.saveUser(event.user);

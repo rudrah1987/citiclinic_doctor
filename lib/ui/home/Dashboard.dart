@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:city_clinic_doctor/chat_section/select_dialog_screen.dart';
 import 'package:city_clinic_doctor/main.dart';
+import 'package:city_clinic_doctor/new/customs/logger_global.dart';
 import 'package:city_clinic_doctor/new/utils/prefrence_helper.dart';
 import 'package:city_clinic_doctor/routes/Routes.dart';
 import 'package:city_clinic_doctor/ui/auth/bloc/LoginBloc.dart';
@@ -120,7 +121,9 @@ class _DashboardPageState extends State<DashboardPage> {
     getTabs();
 
     PreferenceHelper.getUser().then((value) {
-      currentUser.value.user = value;
+      setState(() {
+        currentUser.value.user = value;
+      });
       AppUtils.currentUser = value;
       _userDetailBloc.userDetailData(value.accessToken, value.userId);
     });
@@ -243,7 +246,7 @@ class _DashboardPageState extends State<DashboardPage> {
           drawer: Drawer(
             child: ListView(
               children: [
-                createHeader(context, currentUser.value.user.name),
+                createHeader(context, currentUser.value?.user?.name??''),
                 createDrawerItems(context, "Home", () {
                   Navigator.of(context).pop();
                   setState(() {
@@ -378,6 +381,7 @@ class _DashboardPageState extends State<DashboardPage> {
         });
 
     if (returnVal == 'logout') {
+      gLogger.d('LOGOUT-${currentUser.value.user.accessToken}--${currentUser.value.user.userId}');
       _logoutBloc.logoutUser(
           currentUser.value.user.accessToken, currentUser.value.user.userId);
     }

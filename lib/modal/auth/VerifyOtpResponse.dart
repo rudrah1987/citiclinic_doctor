@@ -1,4 +1,3 @@
-import 'package:city_clinic_doctor/modal/auth/user.dart';
 import 'package:city_clinic_doctor/modal/profile/UserDetailResponse.dart';
 
 class VerifyOtpResponse {
@@ -6,15 +5,24 @@ class VerifyOtpResponse {
   String message;
   UserData user;
 
-  VerifyOtpResponse(this.success, this.message, this.user);
-
-  VerifyOtpResponse.fromJson(Map<String, dynamic> json) {
-    this.success = json['success'];
-    this.message = json['message'];
-    this.user = json['user'] != null ? UserData.fromJson(json['user']) : null;
-  }
-
-  VerifyOtpResponse.fromError(String errorValue) {
+  VerifyOtpResponse({this.success, this.message, this.user});
+VerifyOtpResponse.fromError(String errorValue) {
     this.message = errorValue;
   }
+  VerifyOtpResponse.fromJson(Map<String, dynamic> json) {
+    success = json['success'];
+    message = json['message'];
+    user = json['data'] != null ? new UserData.fromJson(json['data']) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['success'] = this.success;
+    data['message'] = this.message;
+    if (this.user != null) {
+      data['data'] = this.user.toJson();
+    }
+    return data;
+  }
 }
+
