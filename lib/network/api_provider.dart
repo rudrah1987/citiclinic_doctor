@@ -1019,7 +1019,7 @@ class ApiProvider {
   Future<AppointmentListResponse> getAppointments(int docId) async {
     try {
       print('-------------getAppointments Called--$docId');
-      Response response = await _dioClient.get('bookinglist?for=doctor&id=$docId');
+      Response response = await _dioClient.get('bookinglist?for=doctor&id=46');
       dynamic json = jsonDecode(response.toString());
       print(response.data);
       if (response.data != "") {

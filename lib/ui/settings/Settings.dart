@@ -13,6 +13,7 @@ import 'package:city_clinic_doctor/ui/settings/bloc/LogoutBloc.dart';
 import 'package:city_clinic_doctor/ui/settings/myAppointments/MyAppointmentsPage.dart';
 import 'package:city_clinic_doctor/ui/settings/myConsults/MyConsultsPage.dart';
 import 'package:city_clinic_doctor/ui/splash/Splash2.dart';
+import 'package:city_clinic_doctor/utils/Constant.dart';
 import 'package:city_clinic_doctor/utils/SvgImages.dart';
 import 'package:city_clinic_doctor/utils/Colors.dart';
 import 'package:city_clinic_doctor/utils/app_utils.dart';
@@ -119,16 +120,37 @@ class _SettingsState extends State<Settings> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-//            SizedBox(height: 8,),
+                SizedBox(
+                  height: 8,
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.max,
                   children: [
-                    SvgPicture.asset(
-                      profile_placeholder,
-                      height: 64,
-                      width: 64,
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(30),
+                      child: Image.network(
+                        "$TESTING_BASE_URL${_user.profileImage}",
+                        errorBuilder: (_, __, ___) {
+                          return CircleAvatar(
+                            radius: 30.0,
+                            backgroundColor: kPrimaryColor,
+                            child: Text(
+                              "${_user?.name[0]}",
+                            ),
+                          );
+                        },
+                        loadingBuilder: (_, __, ___) {
+                          return CircleAvatar(
+                            radius: 30.0,
+                            backgroundColor: kPrimaryColor,
+                            child: Text(
+                              "${_user?.name[0]}",
+                            ),
+                          );
+                        },
+                      ),
                     ),
                     SizedBox(
                       width: 20,
@@ -362,7 +384,8 @@ class _SettingsState extends State<Settings> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (_) => PrivacyPolicy(_staticPageResponse?.data[1])));
+                                    builder: (_) => PrivacyPolicy(
+                                        _staticPageResponse?.data[1])));
                           } else
                             Fluttertoast.showToast(msg: 'No Data');
                         },

@@ -17,6 +17,7 @@ import 'package:city_clinic_doctor/ui/profile/ProfileUpdate.dart';
 import 'package:city_clinic_doctor/ui/settings/NotificationPage.dart';
 import 'package:city_clinic_doctor/ui/settings/Settings.dart';
 import 'package:city_clinic_doctor/ui/settings/bloc/LogoutBloc.dart';
+import 'package:city_clinic_doctor/utils/Constant.dart';
 import 'package:city_clinic_doctor/utils/DrawerWidgets.dart';
 import 'package:city_clinic_doctor/utils/SvgImages.dart';
 import 'package:city_clinic_doctor/utils/Colors.dart';
@@ -247,7 +248,7 @@ class _DashboardPageState extends State<DashboardPage> {
           drawer: Drawer(
             child: ListView(
               children: [
-                createHeader(context, currentUser.value?.user?.name??''),
+                createHeader(context, currentUser.value?.user?.name??'',currentUser.value?.user?.profileImage??''),
                 createDrawerItems(context, "Home", () {
                   Navigator.of(context).pop();
                   setState(() {
@@ -389,7 +390,7 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   //Dashboard Navigation drawer header widget here...
-  Widget createHeader(BuildContext context, String doctorName) {
+  Widget createHeader(BuildContext context, String doctorName,String imgUrl) {
     return Container(
       height: 120,
       child: DrawerHeader(
@@ -399,15 +400,35 @@ class _DashboardPageState extends State<DashboardPage> {
         child: Row(
           children: [
             Container(
-                width: 60.00,
-                height: 60.00,
-                decoration: new BoxDecoration(
-                  image: new DecorationImage(
-                    image: ExactAssetImage(
-                        'assets/images/user_image_placeholder.png'),
-                    fit: BoxFit.fill,
-                  ),
-                )),
+              decoration: BoxDecoration(border: Border.all(color: Colors.white),borderRadius: BorderRadius.circular(30)),
+
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(35),
+                child: Image.network(
+                  "$TESTING_BASE_URL$imgUrl",
+                  errorBuilder: (_, __, ___) {
+                    return CircleAvatar(
+
+                      radius: 28.0,
+                      backgroundColor: kPrimaryColor,
+                      child: Text(
+                        "${doctorName[0]}",
+                      ),
+                    );
+                  },
+                  loadingBuilder: (_, __, ___) {
+                    return CircleAvatar(
+
+                      radius: 28.0,
+                      backgroundColor: kPrimaryColor,
+                      child: Text(
+                        "${doctorName[0]}",
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
             SizedBox(
               width: 16,
             ),
