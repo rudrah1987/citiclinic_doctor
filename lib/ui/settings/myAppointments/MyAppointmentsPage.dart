@@ -1,3 +1,4 @@
+import 'package:city_clinic_doctor/modal/apointmentList/apointmentListResponse.dart';
 import 'package:city_clinic_doctor/ui/settings/myAppointments/fragment/DoctorVisitAppointPage.dart';
 import 'package:city_clinic_doctor/ui/settings/myAppointments/fragment/HomeVisitAppointPage.dart';
 import 'package:city_clinic_doctor/utils/CircleIndicator.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../NotificationPage.dart';
+import 'bloc/apointmentBloc.dart';
 
 class MyAppointmentsPage extends StatefulWidget {
   @override

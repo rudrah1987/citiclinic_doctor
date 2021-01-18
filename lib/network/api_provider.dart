@@ -1019,7 +1019,7 @@ class ApiProvider {
   Future<AppointmentListResponse> getAppointments(int docId) async {
     try {
       print('-------------getAppointments Called--$docId');
-      Response response = await _dioClient.get('bookinglist?for=doctor&id=46');
+      Response response = await _dioClient.get('bookinglist?for=doctor&id=$docId');
       dynamic json = jsonDecode(response.toString());
       print(response.data);
       if (response.data != "") {
@@ -1031,6 +1031,37 @@ class ApiProvider {
               json['message'] /*,
             response.data['error_code'],*/
               );
+      } else {
+        return AppointmentListResponse.fromError("No data" /*, 396*/);
+      }
+    } catch (error, stacktrace) {
+      print("Exception occured: $error stackTrace: $stacktrace");
+      var e = error;
+      if (error is DioError) {
+        e = getErrorMsg(e.type);
+      }
+      print("Error -> $e");
+      return AppointmentListResponse.fromError("$e" /*, 397*/);
+    }
+  }
+
+  Future<AppointmentListResponse> getOnGoingOrUpcomingAppointments(int docId ,String timeFrame) async {
+    try {
+      print('-------------getAppointments Called--$docId');
+      Response response = await _dioClient.get('bookinglist?for=doctor&id=$docId&time_frame=$timeFrame');
+      dynamic json = jsonDecode(response.toString());
+      print("-------------------------------------");
+      print(response.data);
+      if (response.data != "") {
+        print("dataValue :- ${json['success']}");
+        if (json['success'] == true) {
+          print('SUCCCscscscs');
+          return AppointmentListResponse.fromJson(json);
+        } else
+          return AppointmentListResponse.fromError(
+              json['message'] /*,
+            response.data['error_code'],*/
+          );
       } else {
         return AppointmentListResponse.fromError("No data" /*, 396*/);
       }

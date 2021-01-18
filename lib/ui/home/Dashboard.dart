@@ -7,6 +7,7 @@ import 'package:city_clinic_doctor/new/utils/prefrence_helper.dart';
 import 'package:city_clinic_doctor/routes/Routes.dart';
 import 'package:city_clinic_doctor/ui/auth/bloc/LoginBloc.dart';
 import 'package:city_clinic_doctor/ui/dialogs/LogoutDialog.dart';
+import 'package:city_clinic_doctor/ui/drawer/drawer_page/drawer_page.dart';
 import 'package:city_clinic_doctor/ui/drawer/feeManagement/FeesManagement.dart';
 import 'package:city_clinic_doctor/ui/drawer/paymentManagement/PaymentManagementPage.dart';
 import 'package:city_clinic_doctor/ui/drawer/prescriptionManagement/PrescriptionPage.dart';
@@ -245,71 +246,72 @@ class _DashboardPageState extends State<DashboardPage> {
                   },
                 )
               ]),
-          drawer: Drawer(
-            child: ListView(
-              children: [
-                createHeader(context, currentUser.value?.user?.name??'',currentUser.value?.user?.profileImage??''),
-                createDrawerItems(context, "Home", () {
-                  Navigator.of(context).pop();
-                  setState(() {
-                    _selectedIndex = 0;
-                  });
-                }),
-                createDrawerItems(context, "Statistics", () {
-                  Navigator.of(context).pop();
-                  Navigator.pushNamed(context, Routes.statistics);
-                }),
-                createDrawerItems(context, "Fee Management", () {
-                  Navigator.of(context).pop();
-                  // Fluttertoast.showToast(
-                  //     msg: 'Admin ',
-                  //     toastLength: Toast.LENGTH_SHORT,
-                  //     gravity: ToastGravity.CENTER,
-                  //     backgroundColor: Colors.red,
-                  //     textColor: Colors.white,
-                  //     fontSize: 16.0);
-                  Navigator.pushNamed(context, Routes.feeManagement);
-                }),
-                createDrawerItems(context, "Time Slot Managment", () {
-                  Navigator.of(context).pop();
-                  // Fluttertoast.showToast(
-                  //     msg: 'Admin ',
-                  //     toastLength: Toast.LENGTH_SHORT,
-                  //     gravity: ToastGravity.CENTER,
-                  //     backgroundColor: Colors.red,
-                  //     textColor: Colors.white,
-                  //     fontSize: 16.0);
-                  Navigator.pushNamed(context, Routes.timeSlotManagment);
-                }),
-                createDrawerItems(context, "Prescription Management", () {
-                  // Navigator.pushNamed(context, Routes.prescriptionManagement);
-                  Navigator.of(context).pop();
-                  setState(() {
-                    _selectedIndex = 2;
-                  });
-                }),
-                createDrawerItems(context, "Payment Management", () {
-                  Navigator.of(context).pop();
-                  Navigator.pushNamed(context, Routes.paymentManagement);
-                }),
-                createDrawerItems(context, "My Chat", () {
-                  // Navigator.pushNamed(context, Routes.myChat);
-                  Navigator.of(context).pop();
-                  setState(() {
-                    _selectedIndex = 1;
-                  });
-                }),
-                createDrawerItems(context, "Settings", () {
-                  Navigator.of(context).pop();
-                  Navigator.pushNamed(context, Routes.settings);
-                }),
-                createDrawerItems(context, "Logout", () {
-                  Navigator.of(context).pop();
-                  getLogoutValue();
-                }),
-              ],
-            ),
-          ),
+          drawer: Drawer(child: DrawerPage(),),
+          // Drawer(
+          //   child: ListView(
+          //     children: [
+          //       createHeader(context, currentUser.value?.user?.name??'',currentUser.value?.user?.profileImage??''),
+          //       createDrawerItems(context, "Home", () {
+          //         Navigator.of(context).pop();
+          //         setState(() {
+          //           _selectedIndex = 0;
+          //         });
+          //       }),
+          //       createDrawerItems(context, "Statistics", () {
+          //         Navigator.of(context).pop();
+          //         Navigator.pushNamed(context, Routes.statistics);
+          //       }),
+          //       createDrawerItems(context, "Fee Management", () {
+          //         Navigator.of(context).pop();
+          //         // Fluttertoast.showToast(
+          //         //     msg: 'Admin ',
+          //         //     toastLength: Toast.LENGTH_SHORT,
+          //         //     gravity: ToastGravity.CENTER,
+          //         //     backgroundColor: Colors.red,
+          //         //     textColor: Colors.white,
+          //         //     fontSize: 16.0);
+          //         Navigator.pushNamed(context, Routes.feeManagement);
+          //       }),
+          //       createDrawerItems(context, "Time Slot Managment", () {
+          //         Navigator.of(context).pop();
+          //         // Fluttertoast.showToast(
+          //         //     msg: 'Admin ',
+          //         //     toastLength: Toast.LENGTH_SHORT,
+          //         //     gravity: ToastGravity.CENTER,
+          //         //     backgroundColor: Colors.red,
+          //         //     textColor: Colors.white,
+          //         //     fontSize: 16.0);
+          //         Navigator.pushNamed(context, Routes.timeSlotManagment);
+          //       }),
+          //       createDrawerItems(context, "Prescription Management", () {
+          //         // Navigator.pushNamed(context, Routes.prescriptionManagement);
+          //         Navigator.of(context).pop();
+          //         setState(() {
+          //           _selectedIndex = 2;
+          //         });
+          //       }),
+          //       createDrawerItems(context, "Payment Management", () {
+          //         Navigator.of(context).pop();
+          //         Navigator.pushNamed(context, Routes.paymentManagement);
+          //       }),
+          //       createDrawerItems(context, "My Chat", () {
+          //         // Navigator.pushNamed(context, Routes.myChat);
+          //         Navigator.of(context).pop();
+          //         setState(() {
+          //           _selectedIndex = 1;
+          //         });
+          //       }),
+          //       createDrawerItems(context, "Settings", () {
+          //         Navigator.of(context).pop();
+          //         Navigator.pushNamed(context, Routes.settings);
+          //       }),
+          //       createDrawerItems(context, "Logout", () {
+          //         Navigator.of(context).pop();
+          //         getLogoutValue();
+          //       }),
+          //     ],
+          //   ),
+          // ),
           bottomNavigationBar: BottomNavigationBar(
             currentIndex: _selectedIndex,
             type: BottomNavigationBarType.fixed,

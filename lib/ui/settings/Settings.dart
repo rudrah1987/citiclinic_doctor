@@ -314,7 +314,7 @@ class _SettingsState extends State<Settings> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (_) => PrescriptionPage2()));
+                                  builder: (_) => PrescriptionPageWithAppBar()));
                         },
                       ),
                     ],

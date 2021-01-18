@@ -1,11 +1,16 @@
+import 'package:city_clinic_doctor/modal/apointmentList/apointmentListResponse.dart';
 import 'package:city_clinic_doctor/new/customs/custom_methods.dart';
 import 'package:city_clinic_doctor/ui/settings/myAppointments/items/upload_prescription.dart';
 import 'package:city_clinic_doctor/utils/Colors.dart';
+import 'package:city_clinic_doctor/utils/Constant.dart';
 import 'package:city_clinic_doctor/utils/SvgImages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class DoctorVisitMyAppointmentItems extends StatefulWidget {
+  final BookingList data;
+  DoctorVisitMyAppointmentItems(this.data);
+
   @override
   _DoctorVisitMyAppointmentItemsState createState() => _DoctorVisitMyAppointmentItemsState();
 }
@@ -28,30 +33,49 @@ class _DoctorVisitMyAppointmentItemsState extends State<DoctorVisitMyAppointment
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.max,
             children: [
-              SvgPicture.asset(profile_placeholder, height:42, width:42),
-              SizedBox(width: 16,),
+              ClipRRect(
+                child: Image.network(
+                  "$PROFILE_IMG_TESTING_BASE_PATH${widget.data.patient.profileImage}",
+                  errorBuilder: (_, __, ___) {
+                    return CircleAvatar(
+                      backgroundColor: kPrimaryColor,
+                      child: Text(
+                        "${widget.data?.patient?.name[0]}",
+                      ),
+                    );
+                  },
+                  loadingBuilder: (_, __, ___) {
+                    return CircleAvatar(
+                      backgroundColor: kPrimaryColor,
+                      child: Text(
+                        "${widget.data?.patient?.name[0]}",
+                      ),
+                    );
+                  },
+                ),
+              ),              SizedBox(width: 16,),
               Expanded(child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Patient Name : John Doe",
+                  Text("Patient Name : ${widget.data.patient?.name??''}",
                     style: TextStyle(
                         fontSize: 16,
                         color: Colors.black87
                     ),),
                   SizedBox(height: 2),
-                  Text("Email id: johndoe@email.com",
+                  Text("Email id: ${widget.data.patient?.email??''}",
                     style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey
                     ),),
                   SizedBox(height: 2),
-                  Text("Mobile Number: 98765 43210",
+                  Text("Mobile Number: ${widget.data.patient?.phoneNumber??''}",
                     style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey
                     ),),
                   SizedBox(height: 2),
-                  Text("Gender: Male",
+                  Text("Gender: ${widget.data.patient?.gender??''}",
                     style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey
@@ -65,18 +89,19 @@ class _DoctorVisitMyAppointmentItemsState extends State<DoctorVisitMyAppointment
                         color: kPrimaryColor
                     ),),
                   SizedBox(height: 4),
-                  Text("Appointment ID: CD1379",
+                  Text("Appointment ID: CCD00${widget.data.bookBy?.id??''}",
                     style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey
                     ),),
                   SizedBox(height: 2),
-                  Text("Appointment Date & Time: 06/09/2020 07:58:00 PM",
+                  Text(
+                    "Appointment Date & Time: ${widget.data.otherBookingDeatils?.datetimeStart?.substring(0, 10)??''} ${widget.data.otherBookingDeatils?.datetimeStart?.substring(11, 16)??''}",
                     style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey
                     ),),
-                  
+
                 ],
               ))
             ],
@@ -84,7 +109,7 @@ class _DoctorVisitMyAppointmentItemsState extends State<DoctorVisitMyAppointment
           SizedBox(height: 20),
           Container(
             width: double.infinity,
-            child:  Expanded(child: FlatButton(
+            child:  FlatButton(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(25.0),
                   side: BorderSide(color: kPrimaryColor)
@@ -99,7 +124,7 @@ class _DoctorVisitMyAppointmentItemsState extends State<DoctorVisitMyAppointment
                 style: TextStyle(color: kPrimaryColor,
                     fontSize: 14),
               ),
-            )),
+            ),
           )
         ],
       ),

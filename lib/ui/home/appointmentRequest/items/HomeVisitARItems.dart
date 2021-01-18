@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class HomeVisitARItems extends StatefulWidget {
-  final Data data;
+  final BookingList data;
   HomeVisitARItems({this.data});
   @override
   _HomeVisitARItemsState createState() => _HomeVisitARItemsState();

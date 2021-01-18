@@ -3,13 +3,13 @@ import 'package:city_clinic_doctor/utils/Colors.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class PrescriptionPage2 extends StatefulWidget {
-  static const String routeName = '/prescriptionManagement';
+class PrescriptionPageWithAppBar extends StatefulWidget {
+  static const String routeName = '/prescriptionManagementWithAppBar';
   @override
-  _PrescriptionPage2State createState() => _PrescriptionPage2State();
+  _PrescriptionPageWithAppBarState createState() => _PrescriptionPageWithAppBarState();
 }
 
-class _PrescriptionPage2State extends State<PrescriptionPage2> {
+class _PrescriptionPageWithAppBarState extends State<PrescriptionPageWithAppBar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

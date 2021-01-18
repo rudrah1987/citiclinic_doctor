@@ -34,7 +34,7 @@ class AppointmentBloc extends BaseBloc {
       isLoading = false;
       _loadingStream.sink.add(isLoading);
       _appointmentStream.sink.add(value);
-      for (var i in value.data) {
+      for (var i in value.data.bookingList) {
         if (i.otherBookingDeatils.visitType == '1') {
           docVisitStream.add(i);
         } else

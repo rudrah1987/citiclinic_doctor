@@ -168,6 +168,8 @@ class Repository {
 
   Future<AppointmentListResponse> getApointments(int docId) =>
       apiProvider.getAppointments(docId);
+  getOnGoingOrUpcomingAppointments(int docId,String timeFrame) =>
+      apiProvider.getOnGoingOrUpcomingAppointments(docId,timeFrame);
 
       Future<BankResponse> getBanks() =>
       apiProvider.getBankData();
