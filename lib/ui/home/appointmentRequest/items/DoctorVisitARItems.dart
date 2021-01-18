@@ -1,5 +1,6 @@
 import 'package:city_clinic_doctor/modal/apointmentList/apointmentListResponse.dart';
 import 'package:city_clinic_doctor/utils/Colors.dart';
+import 'package:city_clinic_doctor/utils/Constant.dart';
 import 'package:city_clinic_doctor/utils/SvgImages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -27,7 +28,28 @@ class _DoctorVisitARItemsState extends State<DoctorVisitARItems> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.max,
         children: [
-          SvgPicture.asset(profile_placeholder, height: 42, width: 42),
+          ClipRRect(
+            child: Image.network(
+              "$TESTING_BASE_URL${widget.data.patient.profileImage}",
+              errorBuilder: (_, __, ___) {
+                return CircleAvatar(
+                  backgroundColor: kPrimaryColor,
+                  child: Text(
+                    "${widget.data?.patient?.name[0]}",
+                  ),
+                );
+              },
+              loadingBuilder: (_, __, ___) {
+                return CircleAvatar(
+                  backgroundColor: kPrimaryColor,
+                  child: Text(
+                    "${widget.data?.patient?.name[0]}",
+                  ),
+                );
+              },
+            ),
+          ),
+          // SvgPicture.asset(profile_placeholder, height: 42, width: 42),
           SizedBox(
             width: 16,
           ),
@@ -36,17 +58,17 @@ class _DoctorVisitARItemsState extends State<DoctorVisitARItems> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Patient Name : John Doe",
+                "Patient Name : ${widget.data.patient.name}",
                 style: TextStyle(fontSize: 16, color: Colors.black87),
               ),
               SizedBox(height: 2),
               Text(
-                "Email id: johndoe@email.com",
+                "Email id: ${widget.data.patient.email ?? ''}",
                 style: TextStyle(fontSize: 12, color: Colors.grey),
               ),
               SizedBox(height: 2),
               Text(
-                "Mobile Number: 98765 43210",
+                "Mobile Number: ${widget.data.patient.phoneNumber ?? ''}",
                 style: TextStyle(fontSize: 12, color: Colors.grey),
               ),
               SizedBox(height: 2),
@@ -64,12 +86,12 @@ class _DoctorVisitARItemsState extends State<DoctorVisitARItems> {
               ),
               SizedBox(height: 4),
               Text(
-                "Appointment ID: CD1379",
+                "Appointment ID: CCD00${widget.data.bookBy.id ?? ''}",
                 style: TextStyle(fontSize: 12, color: Colors.grey),
               ),
               SizedBox(height: 2),
               Text(
-                "Appointment Date & Time: 06/09/2020 07:58:00 PM",
+                "Appointment Date & Time: ${widget.data.otherBookingDeatils?.datetimeStart?.substring(0, 10)??''} ${widget.data.otherBookingDeatils?.datetimeStart?.substring(11, 16)??''}",
                 style: TextStyle(fontSize: 12, color: Colors.grey),
               ),
             ],

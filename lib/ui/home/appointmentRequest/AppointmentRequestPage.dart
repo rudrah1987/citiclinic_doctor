@@ -89,7 +89,7 @@ class _AppointmentRequestPageState extends State<AppointmentRequestPage> {
                         : DoctorVisitARPage(
                             appointmentData: _appointmentBloc.docVisitStream,
                           ),
-                    HomeVisitARPage()
+                    HomeVisitARPage(appointmentData:_appointmentBloc.homeVisitStream)
                   ],
                 );
               }),

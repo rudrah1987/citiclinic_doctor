@@ -27,7 +27,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'Chat/ChatPage.dart';
 import 'bloc/UserDetailBloc.dart';
 
@@ -43,7 +42,6 @@ class _DashboardState extends State<Dashboard> {
   CubeUser _cubeUser;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getDataForChat(context).then((value) {
       if(value!=null){
@@ -59,12 +57,15 @@ class _DashboardState extends State<Dashboard> {
     globalContext = context;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+    
       title: "City Clinic",
       // initialRoute: '/',
       routes: {
         // When navigating to the "/" route, build the FirstScreen widget.
+        // c
         // '/': (context) => HomePage(),
         // When navigating to the "/second" route, build the SecondScreen widget.
+
         Routes.statistics: (context) => StatisticsPage(),
         Routes.feeManagement: (context) => FeesManagement(),
         Routes.prescriptionManagement: (context) => PrescriptionPage(),

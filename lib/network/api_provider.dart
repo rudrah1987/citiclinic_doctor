@@ -52,8 +52,7 @@ class ApiProvider {
     _map['firebase_token'] = fb_token;
     _map['longitude'] = longitude;
     _map['latitude'] = latitude;
-    _map["role_id"]= "3";
-
+    _map["role_id"] = "3";
 
     print("Signup data -> $_map");
     try {
@@ -286,6 +285,31 @@ class ApiProvider {
       return ResetPassResponse.fromError("$e" /*, 397*/);
     }
   }
+  // Future<StaticPageResponse> getStaticDtata() async {
+  //     Dio _dioClient = Dio(BaseOptions(
+  //     baseUrl: TESTING_BASE_URL,
+  //     connectTimeout: 5000,
+  //     receiveTimeout: 5000,
+  //     headers: {
+  //       'Appversion': '1.0',
+  //       'Ostype': Platform.isAndroid ? 'android' : 'ios',
+  //     },
+  //   ));
+  //     Response response = await _dioClient.post('staticpageslist');
+  //     dynamic json = jsonDecode(response.toString());
+  //   if (response.data != "") {
+  //       print("dataValue :- ${json['success']}");
+  //       if (json['success'] == true)
+  //         return StaticPageResponse.fromJson(json);
+  //       else
+  //         return StaticPageResponse.fromError(
+  //             json['message'] /*,
+  //           response.data['error_code'],*/
+  //             );
+  //     } else {
+  //       return StaticPageResponse.fromError("No data" /*, 396*/);
+  //     }
+  //   }
 
   Future<VerifyOtpResponse> verifySignUpOtp(
       String phone, String otp, String userLogID, int userID) async {
@@ -294,7 +318,6 @@ class ApiProvider {
       'phone_number': phone,
       'user_otp_log_id': userLogID
     };
-
     print("map -> $_map :: userid -> $userID");
     Dio _dioClient = Dio(BaseOptions(
       baseUrl: TESTING_BASE_URL,
@@ -498,7 +521,7 @@ class ApiProvider {
           return StaticPageResponse.fromError(
               json['message'] /*,
             response.data['error_code'],*/
-          );
+              );
       } else {
         return StaticPageResponse.fromError("No data" /*, 396*/);
       }
@@ -996,8 +1019,7 @@ class ApiProvider {
   Future<AppointmentListResponse> getAppointments(int docId) async {
     try {
       print('-------------getAppointments Called--$docId');
-      Response response =
-          await _dioClient.get('bookinglist?for=doctor&id=$docId');
+      Response response = await _dioClient.get('bookinglist?for=doctor&id=$docId');
       dynamic json = jsonDecode(response.toString());
       print(response.data);
       if (response.data != "") {

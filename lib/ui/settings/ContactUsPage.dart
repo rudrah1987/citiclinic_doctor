@@ -14,46 +14,44 @@ class _ContactUsPageState extends State<ContactUsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          backgroundColor: kPrimaryColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(
-              bottom: Radius.circular(14),
-            ),
-          ),
-          title: Text("Contact Us"),
-          //Ternery operator use for condition check
-          elevation: defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
-          centerTitle: false,
-          leading: new IconButton(
-            icon: new Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(
-                Icons.notifications_none,
-                color: Colors.white,
+        appBar: AppBar(
+            backgroundColor: kPrimaryColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(
+                bottom: Radius.circular(14),
               ),
+            ),
+            title: Text("Contact Us"),
+            //Ternery operator use for condition check
+            elevation:
+                defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
+            centerTitle: false,
+            leading: new IconButton(
+              icon: new Icon(Icons.arrow_back),
               onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => NotificationPage()));
+                Navigator.pop(context);
               },
-            )
-          ]
-      ),
-      body: SingleChildScrollView(
-        child: Container(
+            ),
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(
+                  Icons.notifications_none,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => NotificationPage()));
+                },
+              )
+            ]),
+        body: Container(
             color: Colors.white,
             // height: double.maxFinite,
             padding: EdgeInsets.all(16),
             child: Stack(
               children: [
-                Positioned(child: Column(
+                Positioned(
+                    child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     TextFormField(
@@ -61,8 +59,7 @@ class _ContactUsPageState extends State<ContactUsPage> {
                       style: TextStyle(
                           fontSize: 16.0,
                           color: Colors.black,
-                          fontWeight: FontWeight.w400
-                      ),
+                          fontWeight: FontWeight.w400),
                       decoration: const InputDecoration(
                         hintText: '-Enter full name-',
                         labelText: 'Full Name',
@@ -80,8 +77,7 @@ class _ContactUsPageState extends State<ContactUsPage> {
                       style: TextStyle(
                           fontSize: 16.0,
                           color: Colors.black,
-                          fontWeight: FontWeight.w400
-                      ),
+                          fontWeight: FontWeight.w400),
                       decoration: const InputDecoration(
                         hintText: '-Enter mobile number-',
                         labelText: 'Mobile Number',
@@ -99,8 +95,7 @@ class _ContactUsPageState extends State<ContactUsPage> {
                       style: TextStyle(
                           fontSize: 16.0,
                           color: Colors.black,
-                          fontWeight: FontWeight.w400
-                      ),
+                          fontWeight: FontWeight.w400),
                       decoration: const InputDecoration(
                         hintText: '-Enter email id-',
                         labelText: 'Email Id',
@@ -115,7 +110,9 @@ class _ContactUsPageState extends State<ContactUsPage> {
                     SizedBox(height: 16),
                     Container(
                       margin: EdgeInsets.only(left: 4),
-                      child:  Text("Message", textDirection: TextDirection.ltr,
+                      child: Text(
+                        "Message",
+                        textDirection: TextDirection.ltr,
                         style: TextStyle(
                             fontSize: 14,
                             fontFamily: 'Poppins',
@@ -123,7 +120,9 @@ class _ContactUsPageState extends State<ContactUsPage> {
                             color: Colors.black),
                       ),
                     ),
-                    SizedBox(height: 5,),
+                    SizedBox(
+                      height: 5,
+                    ),
                     TextFormField(
                       keyboardType: TextInputType.multiline,
                       minLines: 6,
@@ -131,8 +130,7 @@ class _ContactUsPageState extends State<ContactUsPage> {
                       style: TextStyle(
                           fontSize: 16.0,
                           color: Colors.black,
-                          fontWeight: FontWeight.w400
-                      ),
+                          fontWeight: FontWeight.w400),
                       decoration: const InputDecoration(
                         hintText: 'Type your message....',
                         contentPadding: EdgeInsets.all(12),
@@ -149,19 +147,19 @@ class _ContactUsPageState extends State<ContactUsPage> {
                         return null;
                       },
                     ),
-                    SizedBox(height: 55),
+                    Spacer(),
                     FlatButton(
                       minWidth: double.infinity,
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25.0)
-                      ),
+                          borderRadius: BorderRadius.circular(25.0)),
                       color: kPrimaryColor,
                       onPressed: () {
                         Fluttertoast.showToast(
                             msg: "Task is Pending",
                             toastLength: Toast.LENGTH_SHORT,
                             gravity: ToastGravity.BOTTOM,
-                            timeInSecForIos: 1, // also possible "TOP" and "CENTER"
+                            timeInSecForIos:
+                                1, // also possible "TOP" and "CENTER"
                             backgroundColor: kBackgroundColor,
                             textColor: Colors.white);
                       },
@@ -174,9 +172,6 @@ class _ContactUsPageState extends State<ContactUsPage> {
                   ],
                 ))
               ],
-            )
-        ),
-      )
-    );
+            )));
   }
 }

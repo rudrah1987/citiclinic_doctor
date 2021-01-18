@@ -2,6 +2,7 @@ class StaticPageResponse {
   bool success;
   String message;
   List<Data> data;
+  
   StaticPageResponse.fromError(String errorValue) {
     this.message = errorValue;
   }
