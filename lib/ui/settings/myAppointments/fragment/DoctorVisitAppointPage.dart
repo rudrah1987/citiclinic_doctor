@@ -66,10 +66,27 @@ class _DoctorVisitAppointPageState extends State<DoctorVisitAppointPage> {
       switch (value) {
         case 'one':
           choice = value;
+          _myAppointmentBloc.getOnGoingAppointments(currentUser.value.user.userId);
+
 
           break;
         case 'two':
           choice = value;
+          pastDocVisitList.clear();
+          _myAppointmentBloc.getPastAppointments(currentUser.value.user.userId);
+          _myAppointmentBloc.pastAppointmentStream.listen((event) {
+            print("Listing PAST ${event.data}");
+            for (var i in event.data.bookingList) {
+              if (i.otherBookingDeatils.visitType == '1') {
+                print('PAST VISIT TYPE--${i.otherBookingDeatils.visitType}');
+                setState(() {
+                  pastDocVisitList.add(i);
+                });
+              }
+            }
+            print('DOCVISIT PAST--$pastDocVisitList');
+          });
+
           break;
         default:
           choice = null;
@@ -135,26 +152,26 @@ class _DoctorVisitAppointPageState extends State<DoctorVisitAppointPage> {
                         valueColor:
                             new AlwaysStoppedAnimation<Color>(kPrimaryColor),
                       )
-                : Text('Past no implemented yet')
+                :
 
-            // pastDocVisitList.isNotEmpty
-            //         ? ListView.builder(
-            //             // scrollDirection: Axis.vertical,
-            //             primary: true,
-            //             physics: NeverScrollableScrollPhysics(),
-            //             itemCount: pastDocVisitList.length,
-            //             shrinkWrap: true,
-            //             itemBuilder: (BuildContext context, int i) {
-            //               print('FOR CHOICE PAST');
-            //               print(
-            //                   'VISIT TYPE----${pastDocVisitList[i].otherBookingDeatils.visitType}');
-            //               return DoctorVisitMyAppointmentItems(
-            //                   pastDocVisitList[i]);
-            //             })
-            //         : CircularProgressIndicator(
-            //             valueColor:
-            //                 new AlwaysStoppedAnimation<Color>(kPrimaryColor),
-            //           )
+            pastDocVisitList.isNotEmpty
+                    ? ListView.builder(
+                        // scrollDirection: Axis.vertical,
+                        primary: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: pastDocVisitList.length,
+                        shrinkWrap: true,
+                        itemBuilder: (BuildContext context, int i) {
+                          print('FOR CHOICE PAST');
+                          print(
+                              'VISIT TYPE----${pastDocVisitList[i].otherBookingDeatils.visitType}');
+                          return DoctorVisitMyAppointmentItems(
+                              pastDocVisitList[i]);
+                        })
+                    : CircularProgressIndicator(
+                        valueColor:
+                            new AlwaysStoppedAnimation<Color>(kPrimaryColor),
+                      )
             // : Text('No Data');
           ],
         ),
