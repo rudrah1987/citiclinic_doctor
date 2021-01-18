@@ -66,7 +66,7 @@ class _DoctorVisitAppointPageState extends State<DoctorVisitAppointPage> {
       switch (value) {
         case 'one':
           choice = value;
-          _myAppointmentBloc.getOnGoingAppointments(currentUser.value.user.userId);
+          // _myAppointmentBloc.getOnGoingAppointments(currentUser.value.user.userId);
 
 
           break;
@@ -74,6 +74,7 @@ class _DoctorVisitAppointPageState extends State<DoctorVisitAppointPage> {
           choice = value;
           pastDocVisitList.clear();
           _myAppointmentBloc.getPastAppointments(currentUser.value.user.userId);
+          // _myAppointmentBloc.pastAppointmentStream.
           _myAppointmentBloc.pastAppointmentStream.listen((event) {
             print("Listing PAST ${event.data}");
             for (var i in event.data.bookingList) {
@@ -84,7 +85,7 @@ class _DoctorVisitAppointPageState extends State<DoctorVisitAppointPage> {
                 });
               }
             }
-            print('DOCVISIT PAST--$pastDocVisitList');
+            print('DOCVISIT PAST--${pastDocVisitList.toSet().toList()}');
           });
 
           break;
@@ -140,13 +141,13 @@ class _DoctorVisitAppointPageState extends State<DoctorVisitAppointPage> {
                         // scrollDirection: Axis.vertical,
                         primary: true,
                         physics: NeverScrollableScrollPhysics(),
-                        itemCount: onGoingDocVisitList.length,
+                        itemCount: onGoingDocVisitList.toSet().toList().length,
                         shrinkWrap: true,
                         itemBuilder: (BuildContext context, int i) {
                           print('FOR CHOICE ONGOING');
                           // print('VISIT TYPE----${onGoingDocVisitList[i].otherBookingDeatils.visitType}');
                           return DoctorVisitMyAppointmentItems(
-                              onGoingDocVisitList[i]);
+                              onGoingDocVisitList.toSet().toList()[i]);
                         })
                     : CircularProgressIndicator(
                         valueColor:
@@ -159,14 +160,14 @@ class _DoctorVisitAppointPageState extends State<DoctorVisitAppointPage> {
                         // scrollDirection: Axis.vertical,
                         primary: true,
                         physics: NeverScrollableScrollPhysics(),
-                        itemCount: pastDocVisitList.length,
+                        itemCount: pastDocVisitList.toSet().toList().length,
                         shrinkWrap: true,
                         itemBuilder: (BuildContext context, int i) {
                           print('FOR CHOICE PAST');
                           print(
-                              'VISIT TYPE----${pastDocVisitList[i].otherBookingDeatils.visitType}');
+                              'VISIT TYPE----${pastDocVisitList.toSet().toList()[i].otherBookingDeatils.visitType}');
                           return DoctorVisitMyAppointmentItems(
-                              pastDocVisitList[i]);
+                              pastDocVisitList.toSet().toList()[i]);
                         })
                     : CircularProgressIndicator(
                         valueColor:
