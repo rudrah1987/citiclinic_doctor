@@ -1173,4 +1173,45 @@ class ApiProvider {
 
 //   }
 // }
+
+  Future<AppointmentListResponse> getNotifications() async {
+    Dio _dioClient = Dio(BaseOptions(
+      baseUrl: TESTING_BASE_URL,
+      connectTimeout: 5000,
+      receiveTimeout: 5000,
+      headers: {
+        'Appversion': '1.0',
+        'Ostype': Platform.isAndroid ? 'android' : 'ios',
+        'Accesstoken': currentUser.value.user.accessToken,
+        'Userid': currentUser.value.user.userId
+      },
+    ));
+    try {
+      // print('-------------getAppointments Called--$docId');
+      Response response =
+      await _dioClient.get('getnotifications');
+      dynamic json = jsonDecode(response.toString());
+      print(response.data);
+      if (response.data != "") {
+        print("dataValue :- ${json['success']}");
+        if (json['success'] == true)
+          return AppointmentListResponse.fromJson(json);
+        else
+          return AppointmentListResponse.fromError(
+              json['message'] /*,
+            response.data['error_code'],*/
+          );
+      } else {
+        return AppointmentListResponse.fromError("No data" /*, 396*/);
+      }
+    } catch (error, stacktrace) {
+      print("Exception occured: $error stackTrace: $stacktrace");
+      var e = error;
+      if (error is DioError) {
+        e = getErrorMsg(e.type);
+      }
+      print("Error -> $e");
+      return AppointmentListResponse.fromError("$e" /*, 397*/);
+    }
+  }
 }
