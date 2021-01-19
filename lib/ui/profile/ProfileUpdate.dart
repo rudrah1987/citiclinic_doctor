@@ -89,6 +89,8 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
   List<DropdownMenuItem<String>> _dropdownBankData;
   SpecialityData _selectedSpecialityData;
   String _selectedBankData;
+  String _profileImageUrl = '';
+  String _bannerImageUrl = '';
 
   String _radioValue,
       _consultRadioValue; //Initial definition of radio button value
@@ -104,7 +106,7 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
     dobTextFieldController.text = "${myFormat.format(currentDate)}";
     getData();
     _user = AppUtils.currentUser;
-    _profileImage = null;
+    // _profileImage = null;
 
     _specialityBloc.specialityStream.listen((event) {
       if (event.success == true) {
@@ -187,9 +189,6 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
           .then((value) => _user = value.user);
     }
 
-    String _profileImageUrl = '';
-    String _bannerImageUrl = '';
-
     setState(() {
       _radioValue = "1";
       _consultRadioValue = "video";
@@ -203,7 +202,9 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
       _bankNameController.text = _user?.userBanks?.bankName ?? "Select Bank";
       accNameFieldController.text = _user?.userBanks?.accountHolderName ?? '';
       ifscFieldController.text = _user?.userBanks?.ifscCode ?? '';
-      _profileImageUrl = _user.profileImage ?? '';
+      _bannerImageUrl = IMG_TESTING_BASE_PATH;
+      _profileImageUrl =
+          PROFILE_IMG_TESTING_BASE_PATH + _user.profileImage ?? '';
       addressFieldController.text = _user?.address1 ?? '';
       localityFieldController.text = _user?.address2 ?? '';
       print('profileImgUrl---------${_user.profileImage})');
@@ -375,6 +376,9 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
   Widget build(BuildContext context) {
     // print(_user.accessToken);
     // print(_user.user_id);
+    print('---------------');
+    print(_profileImageUrl);
+    print(_bannerImageUrl);
     return Scaffold(
       key: _globalKey,
       body: SingleChildScrollView(
@@ -384,139 +388,74 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
             color: Colors.white,
             padding: EdgeInsets.all(16),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
-                  width: double.infinity,
-                  height: 210,
-                  child: Stack(
-                    children: [
-                      Positioned(
+                width: 120,
+                height: 120,
+                margin: EdgeInsets.only(right: 8),
+                // color: Color(0xFFF2F2F2),
+                decoration: BoxDecoration(
+                  color: Color(
+                      0xFFF2F2F2), //new Color.fromRGBO(255, 0, 0, 0.0),
+                  borderRadius:
+                      new BorderRadius.all(Radius.circular(8.0))),
+                child: Stack(
+                //alignment:new Alignment(x, y)
+                children: <Widget>[
+                  Positioned(
+                    child: Center(
+                        child: _profileImage != null
+                            ? Image.file(_profileImage,
+                                errorBuilder: (_, __, ___) {
+                                return SvgPicture.asset(
+                                  home_account,
+                                  height: 48,
+                                  width: 48,
+                                );
+                              })
+                            : Image.network(_profileImageUrl,
+                                errorBuilder: (_, __, ___) {
+                                return SvgPicture.asset(
+                                  home_account,
+                                  height: 48,
+                                  width: 48,
+                                );
+                              })),
+                  ),
+                  Positioned(
+                    child: new Align(
+                        alignment: FractionalOffset.bottomCenter,
+                        child: InkWell(
+                          onTap: () {
+                            _showImagePicker(context);
+                            setState(() {
+                              isProfileImageUpdate = true;
+                            });
+                          },
                           child: Container(
-                        height: 180,
-                        decoration: BoxDecoration(
-                            color: Color(
-                                0xFFF2F2F2), //new Color.fromRGBO(255, 0, 0, 0.0),
-                            borderRadius:
-                                new BorderRadius.all(Radius.circular(8.0))),
-                        child: Stack(
-                          //alignment:new Alignment(x, y)
-                          children: <Widget>[
-                            Positioned(
-                              child: Center(
-                                child: _coverImage != null
-                                    ? FittedBox(
-                                        child: Image.file(
-                                          _coverImage,
-                                        ),
-                                        fit: BoxFit.fill,
-                                      )
-                                    : SvgPicture.asset(
-                                        doctorBannerBGImage,
-                                        height: 48,
-                                        width: 48,
-                                      ),
+                            height: 24,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                                color: Color(
+                                    0xFF777777), //new Color.fromRGBO(255, 0, 0, 0.0),
+                                borderRadius: new BorderRadius.only(
+                                    bottomLeft:
+                                        Radius.circular(8.0),
+                                    bottomRight:
+                                        Radius.circular(8.0))),
+                            child: Center(
+                              child: Icon(
+                                Icons.camera_alt_outlined,
+                                color: Colors.white,
+                                size: 12,
                               ),
                             ),
-                            Positioned(
-                              child: new Align(
-                                  alignment: FractionalOffset.bottomCenter,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      print(_profileImage.path);
-                                      _showImagePicker(context);
-                                      setState(() {
-                                        isProfileImageUpdate = false;
-                                      });
-                                    },
-                                    child: Container(
-                                      height: 32,
-                                      decoration: BoxDecoration(
-                                          color: Color(
-                                              0xFF777777), //new Color.fromRGBO(255, 0, 0, 0.0),
-                                          borderRadius: new BorderRadius.only(
-                                              bottomLeft: Radius.circular(8.0),
-                                              bottomRight:
-                                                  Radius.circular(8.0))),
-                                      child: Center(
-                                        child: Icon(
-                                          Icons.camera_alt_outlined,
-                                          color: Colors.white,
-                                          size: 18,
-                                        ),
-                                      ),
-                                    ),
-                                  )),
-                            )
-                          ],
-                        ),
-                      )),
-                      Positioned(
-                          child: Align(
-                        alignment: FractionalOffset.bottomRight,
-                        child: Container(
-                          width: 120,
-                          height: 120,
-                          margin: EdgeInsets.only(right: 8),
-                          // color: Color(0xFFF2F2F2),
-                          decoration: BoxDecoration(
-                              color: Color(
-                                  0xFFF2F2F2), //new Color.fromRGBO(255, 0, 0, 0.0),
-                              borderRadius:
-                                  new BorderRadius.all(Radius.circular(8.0))),
-                          child: Stack(
-                            //alignment:new Alignment(x, y)
-                            children: <Widget>[
-                              Positioned(
-                                child: Center(
-                                  child: _profileImage != null
-                                      ? Image.file(
-                                          _profileImage,
-                                        )
-                                      : SvgPicture.asset(
-                                          home_account,
-                                          height: 48,
-                                          width: 48,
-                                        ),
-                                ),
-                              ),
-                              Positioned(
-                                child: new Align(
-                                    alignment: FractionalOffset.bottomCenter,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        _showImagePicker(context);
-                                        setState(() {
-                                          isProfileImageUpdate = true;
-                                        });
-                                      },
-                                      child: Container(
-                                        height: 24,
-                                        width: double.infinity,
-                                        decoration: BoxDecoration(
-                                            color: Color(
-                                                0xFF777777), //new Color.fromRGBO(255, 0, 0, 0.0),
-                                            borderRadius: new BorderRadius.only(
-                                                bottomLeft:
-                                                    Radius.circular(8.0),
-                                                bottomRight:
-                                                    Radius.circular(8.0))),
-                                        child: Center(
-                                          child: Icon(
-                                            Icons.camera_alt_outlined,
-                                            color: Colors.white,
-                                            size: 12,
-                                          ),
-                                        ),
-                                      ),
-                                    )),
-                              )
-                            ],
                           ),
-                        ),
-                      )),
-                    ],
-                  ),
+                        )),
+                  )
+                ],
+                ),
                 ),
                 SizedBox(
                   height: 12,
@@ -1417,8 +1356,8 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                                       Border.all(width: 1, color: Colors.grey)),
                               child: TextField(
                                   controller: _bankNameController,
-                              
-                                  decoration: InputDecoration(border: InputBorder.none),
+                                  decoration:
+                                      InputDecoration(border: InputBorder.none),
                                   onTap: () => showSheet(
                                         bankDataList,
                                         'Bank',
@@ -1608,6 +1547,7 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
     setState(() {
       if (isProfileImageUpdate) {
         _profileImage = image;
+        print('--------selected profile image path $_profileImage');
         Navigator.pop(context);
         _profileImageBloc.profileORCoverImage(
             _user.accessToken, _user.userId, PROFILE_IMAGE, _profileImage);

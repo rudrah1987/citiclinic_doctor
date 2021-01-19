@@ -116,7 +116,7 @@ class _DoctorVisitMyAppointmentItemsState extends State<DoctorVisitMyAppointment
               ),
               color: Colors.white,
               onPressed: () {
-                tGotoPush(context, UploadPrescriptionPage());
+                tGotoPush(context, UploadPrescriptionPage(widget.data.patient));
               },
               height: 42,
               child: Text(

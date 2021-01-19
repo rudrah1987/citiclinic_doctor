@@ -113,332 +113,328 @@ class _SettingsState extends State<Settings> {
             },
           ),
         ),
-        body: SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.fromLTRB(12.0, 8.0, 12.0, 5.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: 8,
+        body: Container(
+          padding: EdgeInsets.fromLTRB(12.0, 8.0, 12.0, 5.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: 8,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(30),
+                    child: Image.network(
+                      "$PROFILE_IMG_TESTING_BASE_PATH${_user.profileImage}",
+                      errorBuilder: (_, __, ___) {
+                        return CircleAvatar(
+                          radius: 30.0,
+                          backgroundColor: kPrimaryColor,
+                          child: Text(
+                            "${_user?.name[0]}",
+                          ),
+                        );
+                      },
+                      loadingBuilder: (_, __, ___) {
+                        return CircleAvatar(
+                          radius: 30.0,
+                          backgroundColor: kPrimaryColor,
+                          child: Text(
+                            "${_user?.name[0]}",
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  SizedBox(
+                    width: 20,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _user.name,
+                        style: TextStyle(
+                            fontSize: 18.0,
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.w600),
+                      ),
+                      SizedBox(
+                        height: 2,
+                      ),
+                      Text(
+                        "+91 ${_user.phoneNumber}",
+                        style: TextStyle(
+                            fontSize: 14.0,
+                            fontFamily: 'Poppins',
+                            color: kAuthTextGreyColor,
+                            fontWeight: FontWeight.w600,
+                            decoration: TextDecoration.underline),
+                      ),
+                      SizedBox(
+                        height: 2,
+                      ),
+                      Text(
+                        "View Profile",
+                        style: TextStyle(
+                            fontSize: 14.0,
+                            color: kPrimaryColor,
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.w600,
+                            decoration: TextDecoration.underline),
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    child: SvgPicture.asset(
+                      edit_profile,
+                      height: 24,
+                      width: 24,
+                      alignment: Alignment.topRight,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 6,
+                  )
+                ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Divider(
+                color: kAuthTextGreyColor,
+                thickness: 0.7,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Container(
+                margin: EdgeInsets.only(left: 12),
+                child: Text(
+                  "My Account",
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                      fontSize: 14.0,
+                      color: kPrimaryColor,
+                      fontWeight: FontWeight.w600,
+                      decoration: TextDecoration.underline),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(30),
-                      child: Image.network(
-                        "$TESTING_BASE_URL${_user.profileImage}",
-                        errorBuilder: (_, __, ___) {
-                          return CircleAvatar(
-                            radius: 30.0,
-                            backgroundColor: kPrimaryColor,
-                            child: Text(
-                              "${_user?.name[0]}",
-                            ),
-                          );
-                        },
-                        loadingBuilder: (_, __, ___) {
-                          return CircleAvatar(
-                            radius: 30.0,
-                            backgroundColor: kPrimaryColor,
-                            child: Text(
-                              "${_user?.name[0]}",
-                            ),
-                          );
-                        },
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Container(
+                height: 140,
+                child: ListView(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  children: <Widget>[
+                    ListTile(
+                      visualDensity:
+                          VisualDensity(horizontal: 0, vertical: -3),
+                      leading: SvgPicture.asset(
+                        myConsultant,
+                        height: 20,
+                        width: 20,
+                      ),
+                      title: Text(
+                        'My Consults',
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: kPrimaryColor),
+                      ),
+                      trailing: SvgPicture.asset(
+                        circleArrow,
+                        height: 18,
+                        width: 18,
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => MyConsultsPage()));
+                      },
+                    ),
+                    ListTile(
+                      visualDensity:
+                          VisualDensity(horizontal: 0, vertical: -3),
+                      leading: SvgPicture.asset(
+                        myAppointment,
+                        height: 20,
+                        width: 20,
+                      ),
+                      title: Text(
+                        'My Appointments',
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: kPrimaryColor),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => MyAppointmentsPage()));
+                      },
+                      trailing: SvgPicture.asset(
+                        circleArrow,
+                        height: 18,
+                        width: 18,
                       ),
                     ),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          _user.name,
-                          style: TextStyle(
-                              fontSize: 18.0,
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.w600),
-                        ),
-                        SizedBox(
-                          height: 2,
-                        ),
-                        Text(
-                          "+91 ${_user.phoneNumber}",
-                          style: TextStyle(
-                              fontSize: 14.0,
-                              fontFamily: 'Poppins',
-                              color: kAuthTextGreyColor,
-                              fontWeight: FontWeight.w600,
-                              decoration: TextDecoration.underline),
-                        ),
-                        SizedBox(
-                          height: 2,
-                        ),
-                        Text(
-                          "View Profile",
-                          style: TextStyle(
-                              fontSize: 14.0,
-                              color: kPrimaryColor,
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.w600,
-                              decoration: TextDecoration.underline),
-                        ),
-                      ],
-                    ),
-                    Expanded(
-                      child: SvgPicture.asset(
-                        edit_profile,
-                        height: 24,
-                        width: 24,
-                        alignment: Alignment.topRight,
+                    ListTile(
+                      visualDensity:
+                          VisualDensity(horizontal: 0, vertical: -3),
+                      leading: SvgPicture.asset(
+                        myPrescription,
+                        height: 20,
+                        width: 20,
                       ),
+                      trailing: SvgPicture.asset(
+                        circleArrow,
+                        height: 18,
+                        width: 18,
+                      ),
+                      title: Text(
+                        'My Prescription',
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: kPrimaryColor),
+                      ),
+                      onTap: () {
+                        // successDialog(context: context,svgName: successSignUp);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => PrescriptionPageWithAppBar()));
+                      },
                     ),
-                    SizedBox(
-                      width: 6,
-                    )
                   ],
                 ),
-                SizedBox(
-                  height: 10,
+              ),
+              Divider(
+                color: kAuthTextGreyColor,
+                thickness: 0.7,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Container(
+                margin: EdgeInsets.only(left: 12),
+                child: Text(
+                  "App Settings",
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                      fontSize: 14.0,
+                      color: kPrimaryColor,
+                      fontWeight: FontWeight.w600,
+                      decoration: TextDecoration.underline),
                 ),
-                Divider(
-                  color: kAuthTextGreyColor,
-                  thickness: 0.7,
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Container(
-                  margin: EdgeInsets.only(left: 12),
-                  child: Text(
-                    "My Account",
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                        fontSize: 14.0,
-                        color: kPrimaryColor,
-                        fontWeight: FontWeight.w600,
-                        decoration: TextDecoration.underline),
-                  ),
-                ),
-                SizedBox(
-                  height: 5,
-                ),
-                Container(
-                  height: 140,
-                  child: ListView(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    children: <Widget>[
-                      ListTile(
-                        visualDensity:
-                            VisualDensity(horizontal: 0, vertical: -3),
-                        leading: SvgPicture.asset(
-                          myConsultant,
-                          height: 20,
-                          width: 20,
-                        ),
-                        title: Text(
-                          'My Consults',
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                              color: kPrimaryColor),
-                        ),
-                        trailing: SvgPicture.asset(
-                          circleArrow,
-                          height: 18,
-                          width: 18,
-                        ),
-                        onTap: () {
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Container(
+                height: 220,
+                child: ListView(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  children: <Widget>[
+                    ListTile(
+                      visualDensity:
+                          VisualDensity(horizontal: 0, vertical: -3),
+                      title: Text('Terms & Conditions'),
+                      trailing: Icon(Icons.chevron_right),
+                      onTap: () {
+                        if (_staticPageResponse.data != null) {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (_) => MyConsultsPage()));
-                        },
-                      ),
-                      ListTile(
-                        visualDensity:
-                            VisualDensity(horizontal: 0, vertical: -3),
-                        leading: SvgPicture.asset(
-                          myAppointment,
-                          height: 20,
-                          width: 20,
-                        ),
-                        title: Text(
-                          'My Appointments',
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                              color: kPrimaryColor),
-                        ),
-                        onTap: () {
+                                  builder: (_) => TermConditionPage(
+                                      _staticPageResponse?.data[2])));
+                        } else
+                          Fluttertoast.showToast(msg: 'No Data');
+                      },
+                    ),
+                    ListTile(
+                      visualDensity:
+                          VisualDensity(horizontal: 0, vertical: -3),
+                      title: Text('FAQ’s'),
+                      trailing: Icon(Icons.chevron_right),
+                      onTap: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (_) => FaqsPage()));
+                      },
+                    ),
+                    ListTile(
+                      visualDensity:
+                          VisualDensity(horizontal: 0, vertical: -3),
+                      trailing: Icon(Icons.chevron_right),
+                      title: Text('Privacy Policy'),
+                      onTap: () {
+                        if (_staticPageResponse.data != null) {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (_) => MyAppointmentsPage()));
-                        },
-                        trailing: SvgPicture.asset(
-                          circleArrow,
-                          height: 18,
-                          width: 18,
-                        ),
-                      ),
-                      ListTile(
-                        visualDensity:
-                            VisualDensity(horizontal: 0, vertical: -3),
-                        leading: SvgPicture.asset(
-                          myPrescription,
-                          height: 20,
-                          width: 20,
-                        ),
-                        trailing: SvgPicture.asset(
-                          circleArrow,
-                          height: 18,
-                          width: 18,
-                        ),
-                        title: Text(
-                          'My Prescription',
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                              color: kPrimaryColor),
-                        ),
-                        onTap: () {
-                          // successDialog(context: context,svgName: successSignUp);
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => PrescriptionPageWithAppBar()));
-                        },
-                      ),
-                    ],
-                  ),
+                                  builder: (_) => PrivacyPolicy(
+                                      _staticPageResponse?.data[1])));
+                        } else
+                          Fluttertoast.showToast(msg: 'No Data');
+                      },
+                    ),
+                    ListTile(
+                      visualDensity:
+                          VisualDensity(horizontal: 0, vertical: -3),
+                      trailing: Icon(Icons.chevron_right),
+                      title: Text('Contact Us'),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => ContactUsPage()));
+                      },
+                    ),
+                    ListTile(
+                      visualDensity:
+                          VisualDensity(horizontal: 0, vertical: -3),
+                      trailing: Icon(Icons.chevron_right),
+                      title: Text('Change Password'),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => ChangePasswordPage()));
+                      },
+                    ),
+                  ],
                 ),
-                Divider(
-                  color: kAuthTextGreyColor,
-                  thickness: 0.7,
+              ),
+              Spacer(),
+              FlatButton(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25.0)),
+                color: Colors.red,
+                onPressed: () {
+                  getLogoutValue();
+                },
+                minWidth: double.infinity,
+                height: 45,
+                child: Text(
+                  "Logout".toUpperCase(),
+                  style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
-                SizedBox(
-                  height: 10,
-                ),
-                Container(
-                  margin: EdgeInsets.only(left: 12),
-                  child: Text(
-                    "App Settings",
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                        fontSize: 14.0,
-                        color: kPrimaryColor,
-                        fontWeight: FontWeight.w600,
-                        decoration: TextDecoration.underline),
-                  ),
-                ),
-                SizedBox(
-                  height: 5,
-                ),
-                Container(
-                  height: 220,
-                  child: ListView(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    children: <Widget>[
-                      ListTile(
-                        visualDensity:
-                            VisualDensity(horizontal: 0, vertical: -3),
-                        title: Text('Terms & Conditions'),
-                        trailing: Icon(Icons.chevron_right),
-                        onTap: () {
-                          if (_staticPageResponse.data != null) {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => TermConditionPage(
-                                        _staticPageResponse?.data[2])));
-                          } else
-                            Fluttertoast.showToast(msg: 'No Data');
-                        },
-                      ),
-                      ListTile(
-                        visualDensity:
-                            VisualDensity(horizontal: 0, vertical: -3),
-                        title: Text('FAQ’s'),
-                        trailing: Icon(Icons.chevron_right),
-                        onTap: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (_) => FaqsPage()));
-                        },
-                      ),
-                      ListTile(
-                        visualDensity:
-                            VisualDensity(horizontal: 0, vertical: -3),
-                        trailing: Icon(Icons.chevron_right),
-                        title: Text('Privacy Policy'),
-                        onTap: () {
-                          if (_staticPageResponse.data != null) {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => PrivacyPolicy(
-                                        _staticPageResponse?.data[1])));
-                          } else
-                            Fluttertoast.showToast(msg: 'No Data');
-                        },
-                      ),
-                      ListTile(
-                        visualDensity:
-                            VisualDensity(horizontal: 0, vertical: -3),
-                        trailing: Icon(Icons.chevron_right),
-                        title: Text('Contact Us'),
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => ContactUsPage()));
-                        },
-                      ),
-                      ListTile(
-                        visualDensity:
-                            VisualDensity(horizontal: 0, vertical: -3),
-                        trailing: Icon(Icons.chevron_right),
-                        title: Text('Change Password'),
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => ChangePasswordPage()));
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 25,
-                ),
-                FlatButton(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25.0)),
-                  color: Colors.red,
-                  onPressed: () {
-                    getLogoutValue();
-                  },
-                  minWidth: double.infinity,
-                  height: 45,
-                  child: Text(
-                    "Logout".toUpperCase(),
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                ),
-                SizedBox(
-                  height: 14,
-                ),
-              ],
-            ),
+              ),
+              SizedBox(
+                height: 14,
+              ),
+            ],
           ),
         ));
   }

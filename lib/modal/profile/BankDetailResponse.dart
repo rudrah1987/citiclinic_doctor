@@ -8,8 +8,8 @@ class BankResponse {
     // scalar.add(json.map((key, value) => null));
     // for (int i = 0; i < json.length; i++) {
       json.forEach((value) {
-        print('111111112112121212121221');
-        print(value);
+        // print('111111112112121212121221');
+        // print(value);
         scalar.add(value['scalar']);
       });
     // }

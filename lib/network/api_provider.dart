@@ -615,6 +615,52 @@ class ApiProvider {
     }
   }
 
+  Future<String> uploadPrescriptions( String msg,String medicine, File imageFile) async {
+    Dio _dioClient = Dio(BaseOptions(
+      baseUrl: TESTING_BASE_URL,
+      connectTimeout: 5000,
+      receiveTimeout: 5000,
+      headers: {
+        'Appversion': '1.0',
+        'Ostype': Platform.isAndroid ? 'android' : 'ios',
+        'Accesstoken': currentUser.value.user.accessToken,
+        'Userid': currentUser.value.user.userId
+      },
+    ));
+
+    print(
+        "profileImage -> userID -> ${currentUser.value.user.accessToken} :: accessToken -> ${currentUser.value.user.userId}");
+
+    String fileName = imageFile.path.split('/').last;
+    FormData formData = FormData.fromMap({
+      "medicines": medicine,
+      "message": msg,
+      "image": await MultipartFile.fromFile(
+        imageFile.path,
+        filename: fileName,
+      ),
+    });
+    String k='';
+    try{
+      Response response =
+      await _dioClient.post('uploadprescription', data: formData);
+      dynamic json = jsonDecode(response.toString());
+      print(response.data);
+      k=json['message'];
+      return k;
+
+    }catch (error, stacktrace) {
+      print("Exception occured: $error stackTrace: $stacktrace");
+      var e = error;
+      if (error is DioError) {
+        e = getErrorMsg(e.type);
+      }
+      return 'Something went wrong';
+    }
+
+
+  }
+
   Future<ProfileImageResponse> profileORCoverImage(
       String accessToken, int userID, String keyword, File imageFile) async {
     Dio _dioClient = Dio(BaseOptions(
@@ -940,6 +986,50 @@ class ApiProvider {
     }
   }
 
+  Future<String> contactUsSubmit(
+    String accessToken,
+    String name,
+    String email,
+    String phone,
+    String msg,
+    int userID,
+  ) async {
+    Dio _dioClient = Dio(BaseOptions(
+      baseUrl: TESTING_BASE_URL,
+      connectTimeout: 5000,
+      receiveTimeout: 5000,
+      headers: {
+        'Appversion': '1.0',
+        'Ostype': Platform.isAndroid ? 'android' : 'ios',
+        'Accesstoken': accessToken,
+        'Userid': userID
+      },
+    ));
+    final _map = Map();
+    _map['name'] = name;
+    _map['email'] = email;
+    _map['phone'] = phone;
+    _map['message'] = msg;
+    print("Contact us  -> $_map :: ${userID} :: ${accessToken}");
+    String k = '';
+
+    try {
+      Response response =
+          await _dioClient.post('contactus', data: _map);
+      dynamic json = jsonDecode(response.toString());
+      print("dataValue :- ${json}");
+      k = json['message'];
+      return k;
+    } catch (error, stacktrace) {
+      print("Exception occured: $error stackTrace: $stacktrace");
+      var e = error;
+      if (error is DioError) {
+        e = getErrorMsg(e.type);
+      }
+      return 'Something went wrong';
+    }
+  }
+
   Future<AddAppointmentScheduleResponse> addAppointmentScheduleTesting(
       String accessToken,
       int userID,
@@ -1019,7 +1109,8 @@ class ApiProvider {
   Future<AppointmentListResponse> getAppointments(int docId) async {
     try {
       print('-------------getAppointments Called--$docId');
-      Response response = await _dioClient.get('bookinglist?for=doctor&id=$docId');
+      Response response =
+          await _dioClient.get('bookinglist?for=doctor&id=$docId');
       dynamic json = jsonDecode(response.toString());
       print(response.data);
       if (response.data != "") {
@@ -1045,10 +1136,12 @@ class ApiProvider {
     }
   }
 
-  Future<AppointmentListResponse> getOnGoingOrUpcomingAppointments(int docId ,String timeFrame) async {
+  Future<AppointmentListResponse> getOnGoingOrUpcomingAppointments(
+      int docId, String timeFrame) async {
     try {
       print('-------------getAppointments Called--$docId');
-      Response response = await _dioClient.get('bookinglist?for=doctor&id=$docId&time_frame=$timeFrame');
+      Response response = await _dioClient
+          .get('bookinglist?for=doctor&id=$docId&time_frame=$timeFrame');
       dynamic json = jsonDecode(response.toString());
       print("-------------------------------------");
       print(response.data);
@@ -1061,7 +1154,7 @@ class ApiProvider {
           return AppointmentListResponse.fromError(
               json['message'] /*,
             response.data['error_code'],*/
-          );
+              );
       } else {
         return AppointmentListResponse.fromError("No data" /*, 396*/);
       }
