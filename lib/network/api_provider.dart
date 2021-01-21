@@ -10,6 +10,7 @@ import 'package:city_clinic_doctor/modal/auth/ResetPassResponse.dart';
 import 'package:city_clinic_doctor/modal/auth/SignUpResponse.dart';
 import 'package:city_clinic_doctor/modal/auth/VerifyOtpResponse.dart';
 import 'package:city_clinic_doctor/modal/home/AddAppointmentScheduleResponse.dart';
+import 'package:city_clinic_doctor/modal/notifications/notifications_response.dart';
 import 'package:city_clinic_doctor/modal/profile/BankDetailResponse.dart';
 import 'package:city_clinic_doctor/modal/profile/ProfileImageResponse.dart';
 import 'package:city_clinic_doctor/modal/profile/ProfileUpdateResponse.dart';
@@ -615,7 +616,8 @@ class ApiProvider {
     }
   }
 
-  Future<String> uploadPrescriptions( String msg,String medicine, File imageFile) async {
+  Future<String> uploadPrescriptions(
+      String msg, String medicine, File imageFile) async {
     Dio _dioClient = Dio(BaseOptions(
       baseUrl: TESTING_BASE_URL,
       connectTimeout: 5000,
@@ -640,16 +642,15 @@ class ApiProvider {
         filename: fileName,
       ),
     });
-    String k='';
-    try{
+    String k = '';
+    try {
       Response response =
-      await _dioClient.post('uploadprescription', data: formData);
+          await _dioClient.post('uploadprescription', data: formData);
       dynamic json = jsonDecode(response.toString());
       print(response.data);
-      k=json['message'];
+      k = json['message'];
       return k;
-
-    }catch (error, stacktrace) {
+    } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
       var e = error;
       if (error is DioError) {
@@ -657,8 +658,6 @@ class ApiProvider {
       }
       return 'Something went wrong';
     }
-
-
   }
 
   Future<ProfileImageResponse> profileORCoverImage(
@@ -1014,8 +1013,7 @@ class ApiProvider {
     String k = '';
 
     try {
-      Response response =
-          await _dioClient.post('contactus', data: _map);
+      Response response = await _dioClient.post('contactus', data: _map);
       dynamic json = jsonDecode(response.toString());
       print("dataValue :- ${json}");
       k = json['message'];
@@ -1174,7 +1172,7 @@ class ApiProvider {
 //   }
 // }
 
-  Future<AppointmentListResponse> getNotifications() async {
+  Future<NotificationsResponse> getNotifications() async {
     Dio _dioClient = Dio(BaseOptions(
       baseUrl: TESTING_BASE_URL,
       connectTimeout: 5000,
@@ -1188,21 +1186,21 @@ class ApiProvider {
     ));
     try {
       // print('-------------getAppointments Called--$docId');
-      Response response =
-      await _dioClient.get('getnotifications');
+      Response response = await _dioClient.get('getnotifications');
       dynamic json = jsonDecode(response.toString());
+      print('--------------------');
       print(response.data);
       if (response.data != "") {
         print("dataValue :- ${json['success']}");
         if (json['success'] == true)
-          return AppointmentListResponse.fromJson(json);
+          return NotificationsResponse.fromJson(json);
         else
-          return AppointmentListResponse.fromError(
+          return NotificationsResponse.fromError(
               json['message'] /*,
             response.data['error_code'],*/
-          );
+              );
       } else {
-        return AppointmentListResponse.fromError("No data" /*, 396*/);
+        return NotificationsResponse.fromError("No data" /*, 396*/);
       }
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
@@ -1211,7 +1209,75 @@ class ApiProvider {
         e = getErrorMsg(e.type);
       }
       print("Error -> $e");
-      return AppointmentListResponse.fromError("$e" /*, 397*/);
+      return NotificationsResponse.fromError("$e" /*, 397*/);
+    }
+  }
+
+  Future<bool> deleteNotifications(notificationId) async {
+    Dio _dioClient = Dio(BaseOptions(
+      baseUrl: TESTING_BASE_URL,
+      connectTimeout: 5000,
+      receiveTimeout: 5000,
+      headers: {
+        'Appversion': '1.0',
+        'Ostype': Platform.isAndroid ? 'android' : 'ios',
+        'Accesstoken': currentUser.value.user.accessToken,
+        'Userid': currentUser.value.user.userId
+      },
+    ));
+    // var _map={
+    //   'id':notificationId
+    // };
+    try {
+      // print('-------------getAppointments Called--$docId');
+      Response response =
+          await _dioClient.get('removenotifications?id=$notificationId');
+      dynamic json = jsonDecode(response.toString());
+      print(response.data);
+      if (json['success']) {
+        return true;
+      } else
+        return false;
+    } catch (error, stacktrace) {
+      print("Exception occured: $error stackTrace: $stacktrace");
+      var e = error;
+      if (error is DioError) {
+        e = getErrorMsg(e.type);
+      }
+      print("Error -> $e");
+      return false;
+    }
+  }
+
+  Future<bool> deleteAllNotifications() async {
+    Dio _dioClient = Dio(BaseOptions(
+      baseUrl: TESTING_BASE_URL,
+      connectTimeout: 5000,
+      receiveTimeout: 5000,
+      headers: {
+        'Appversion': '1.0',
+        'Ostype': Platform.isAndroid ? 'android' : 'ios',
+        'Accesstoken': currentUser.value.user.accessToken,
+        'Userid': currentUser.value.user.userId
+      },
+    ));
+    try {
+      // print('-------------getAppointments Called--$docId');
+      Response response = await _dioClient.get('removeallnotifications');
+      dynamic json = jsonDecode(response.toString());
+      print(response.data);
+      if (json['success']) {
+        return true;
+      } else
+        return false;
+    } catch (error, stacktrace) {
+      print("Exception occured: $error stackTrace: $stacktrace");
+      var e = error;
+      if (error is DioError) {
+        e = getErrorMsg(e.type);
+      }
+      print("Error -> $e");
+      return false;
     }
   }
 }

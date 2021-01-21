@@ -1,5 +1,6 @@
 
 
+import 'package:city_clinic_doctor/utils/Colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -23,5 +24,10 @@ void successDialog({@required context,@required svgName}) {
           ),
         );
       }
+  );
+}
+circulerLoading() {
+  return CircularProgressIndicator(
+      valueColor: new AlwaysStoppedAnimation<Color>(kPrimaryColor)
   );
 }
