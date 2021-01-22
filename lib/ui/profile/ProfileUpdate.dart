@@ -1,18 +1,22 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:city_clinic_doctor/modal/auth/user.dart';
+import 'package:city_clinic_doctor/modal/profile/BankDetailResponse.dart';
 import 'package:city_clinic_doctor/modal/profile/CityResponse.dart';
 import 'package:city_clinic_doctor/modal/profile/CountryResponse.dart';
 import 'package:city_clinic_doctor/modal/profile/DegreeListItem.dart';
 import 'package:city_clinic_doctor/modal/profile/SpecialityResponse.dart';
-import 'package:city_clinic_doctor/preference/CCDoctorPrefs.dart';
-import 'package:city_clinic_doctor/preference/PreferenceKeys.dart';
+import 'package:city_clinic_doctor/modal/profile/UserDetailResponse.dart';
+import 'package:city_clinic_doctor/network/api_provider.dart';
+import 'package:city_clinic_doctor/new/constants/string_constants.dart';
+import 'package:city_clinic_doctor/new/customs/my_methods.dart';
+import 'package:city_clinic_doctor/ui/auth/bloc/LoginBloc.dart';
 import 'package:city_clinic_doctor/ui/dialogs/CityDialog.dart';
 import 'package:city_clinic_doctor/ui/dialogs/CountryDialog.dart';
 import 'package:city_clinic_doctor/ui/dialogs/StateDialog.dart';
 import 'package:city_clinic_doctor/ui/profile/EducationQualificationPage.dart';
 import 'package:city_clinic_doctor/ui/profile/RegistrationDetailsPage.dart';
+import 'package:city_clinic_doctor/ui/profile/bloc/BnakDataBloc.dart';
 import 'package:city_clinic_doctor/ui/profile/bloc/ProfileImageBloc.dart';
 import 'package:city_clinic_doctor/ui/profile/bloc/ProfileUpdateBloc.dart';
 import 'package:city_clinic_doctor/ui/profile/bloc/SpecialityBloc.dart';
@@ -34,7 +38,7 @@ class ProfileUpdatPage extends StatefulWidget {
 }
 
 class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
-
+  var _apiProvider = ApiProvider();
   bool isProfileImageUpdate;
   File _coverImage, _profileImage;
   DateTime dobSelectedDate;
@@ -43,7 +47,7 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
   final GlobalKey<FormState> _formKey = GlobalKey();
   GlobalKey<ScaffoldState> _globalKey = GlobalKey();
   String genderValue = "";
-  TextEditingController nameFieldController = TextEditingController();
+  TextEditingController di = TextEditingController();
   TextEditingController emailFieldController = TextEditingController();
   TextEditingController phoneFieldController = TextEditingController();
   TextEditingController dobTextFieldController = TextEditingController();
@@ -56,12 +60,15 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
   TextEditingController addressFieldController = TextEditingController();
   TextEditingController localityFieldController = TextEditingController();
   TextEditingController experienceFieldController = TextEditingController();
+  TextEditingController _bankNameController = TextEditingController();
 
   List<CityData> cityList;
   List<CountryData> countryList;
   List<SpecialityData> specialityList;
+  List<String> bankDataList = [];
 
   SpecialityBloc _specialityBloc = SpecialityBloc();
+  BankDataBloc _bankBloc = BankDataBloc();
   ProfileImageBloc _profileImageBloc = ProfileImageBloc();
   ProfileUpdateBloc _profileUpdateBloc = ProfileUpdateBloc();
 
@@ -79,9 +86,14 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
   DegreeList _selectedItem;
 
   List<DropdownMenuItem<SpecialityData>> _dropdownSpecialityData;
+  List<DropdownMenuItem<String>> _dropdownBankData;
   SpecialityData _selectedSpecialityData;
+  String _selectedBankData;
+  String _profileImageUrl = '';
+  String _bannerImageUrl = '';
 
-  String _radioValue, _consultRadioValue; //Initial definition of radio button value
+  String _radioValue,
+      _consultRadioValue; //Initial definition of radio button value
   String choice;
 
   void initState() {
@@ -94,7 +106,7 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
     dobTextFieldController.text = "${myFormat.format(currentDate)}";
     getData();
     _user = AppUtils.currentUser;
-    _profileImage = null;
+    // _profileImage = null;
 
     _specialityBloc.specialityStream.listen((event) {
       if (event.success == true) {
@@ -104,6 +116,21 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
           _selectedSpecialityData = _dropdownSpecialityData[0].value;
         });
         print("specialityList -> ${event.specialities.length}");
+      } else {
+        AppUtils.showError(event.message, _globalKey);
+        print(event.message);
+      }
+    });
+    _bankBloc.bankStream.listen((event) {
+      print('=======fbgfb===${event.scalar}');
+      if (event.scalar.length > 0) {
+        bankDataList = event.scalar.toSet().toList();
+        print("lalalalalalalalalala -----$bankDataList");
+        // setState(() {
+        //   _dropdownBankData = buildDropDownBankData(bankDataList);
+        //   _selectedBankData = _dropdownBankData[0].value;
+        // });
+        // print("specialityList -> $event");
       } else {
         AppUtils.showError(event.message, _globalKey);
         print(event.message);
@@ -127,7 +154,6 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
 
     _profileImageBloc.profileImageStream.listen((event) {
       if (event.success == true) {
-
       } else {
         AppUtils.showError(event.message, _globalKey);
         print(event.message);
@@ -148,21 +174,50 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
         }
       }
     });
+    _profileUpdateBloc.loadingStream.listen((event) {
+      if (context != null) {
+        if (event) {
+          AppUtils.showLoadingDialog(context);
+        } else {
+          Navigator.of(context, rootNavigator: true).pop();
+        }
+      }
+    });
+    _fetchUserData() {
+      _apiProvider
+          .getUserDetails(_user.accessToken, _user.userId)
+          .then((value) => _user = value.user);
+    }
 
     setState(() {
       _radioValue = "1";
       _consultRadioValue = "video";
-      nameFieldController.text = _user.name;
-      phoneFieldController.text = _user.phone_number;
+      _fetchUserData();
+      di.text = _user.name;
+      phoneFieldController.text = _user.phoneNumber;
       emailFieldController.text = _user.email;
-      countryFieldController.text = _user.country;
-      stateFieldController.text = _user.state;
-      cityFieldController.text = _user.city;
+      dobTextFieldController.text = _user?.dob?.substring(0, 10) ?? '';
+      // experienceFieldController.text=_user.
+      accNumberFieldController.text = _user?.userBanks?.accountNumber ?? '';
+      _bankNameController.text = _user?.userBanks?.bankName ?? "Select Bank";
+      accNameFieldController.text = _user?.userBanks?.accountHolderName ?? '';
+      ifscFieldController.text = _user?.userBanks?.ifscCode ?? '';
+      _bannerImageUrl = IMG_TESTING_BASE_PATH;
+      _profileImageUrl =
+          PROFILE_IMG_TESTING_BASE_PATH + _user.profileImage ?? '';
+      addressFieldController.text = _user?.address1 ?? '';
+      localityFieldController.text = _user?.address2 ?? '';
+      print('profileImgUrl---------${_user.profileImage})');
+      // _profileImageUrl = _user.;
+      // _profileImageBloc.prof
+      countryFieldController.text = _user.country ?? '';
+      stateFieldController.text = _user.state ?? '';
+      cityFieldController.text = _user.city ?? '';
       genderValue = _user.gender;
     });
   }
 
-  User _user;
+  UserData _user;
   Future<String> _loadFromAsset() async {
     return await rootBundle.loadString("assets/country.json");
   }
@@ -171,8 +226,8 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
   List<Map<String, List<String>>> stateMapData;
   List<Map<String, List<String>>> stateCityMapListData;
 
-  List<Map<String, List<Map<String, List<String>>>>> countryMapDat
-  = List<Map<String, List<Map<String, List<String>>>>>();
+  List<Map<String, List<Map<String, List<String>>>>> countryMapDat =
+      List<Map<String, List<Map<String, List<String>>>>>();
 
   Map<String, List<String>> stateCityMapData;
   Map<String, List<Map<String, List<String>>>> countryStateMapData;
@@ -191,11 +246,11 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
       stateCityMapListData = List<Map<String, List<String>>>();
       Map<String, dynamic> stateResponse = value;
       stateResponse.forEach((stateKey, value) {
-         stateCityMapData = Map<String, List<String>>();
+        stateCityMapData = Map<String, List<String>>();
         stateNames.add(stateKey);
         List<String> cityList = value != null ? List.from(value) : null;
-         stateCityMapData[stateKey] = cityList;
-         stateCityMapListData.add(stateCityMapData);
+        stateCityMapData[stateKey] = cityList;
+        stateCityMapListData.add(stateCityMapData);
       });
       countryStateMapData[countryKey] = stateCityMapListData;
       countryMapDat.add(countryStateMapData);
@@ -204,6 +259,8 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
 
   void getData() async {
     await parseJson();
+    await _bankBloc.getBankList();
+
     await _specialityBloc.getSpecialityData();
   }
 
@@ -280,12 +337,26 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
     return items;
   }
 
-  List<DropdownMenuItem<SpecialityData>> buildDropDownSpecialityData(List listItems) {
+  List<DropdownMenuItem<SpecialityData>> buildDropDownSpecialityData(
+      List listItems) {
     List<DropdownMenuItem<SpecialityData>> items = List();
     for (SpecialityData listItem in listItems) {
       items.add(
         DropdownMenuItem(
           child: Text(listItem.speciality_type),
+          value: listItem,
+        ),
+      );
+    }
+    return items;
+  }
+
+  List<DropdownMenuItem<String>> buildDropDownBankData(List listItems) {
+    List<DropdownMenuItem<String>> items = List();
+    for (String listItem in listItems) {
+      items.add(
+        DropdownMenuItem(
+          child: Text(listItem),
           value: listItem,
         ),
       );
@@ -303,6 +374,11 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
 
   @override
   Widget build(BuildContext context) {
+    // print(_user.accessToken);
+    // print(_user.user_id);
+    print('---------------');
+    print(_profileImageUrl);
+    print(_bannerImageUrl);
     return Scaffold(
       key: _globalKey,
       body: SingleChildScrollView(
@@ -312,124 +388,86 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
             color: Colors.white,
             padding: EdgeInsets.all(16),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
-                  width: double.infinity,
-                  height: 210,
-                  child: Stack(
-                    children: [
-                      Positioned(
-                          child: Container(
-                            height: 180,
-                            decoration: BoxDecoration(
-                                color: Color(0xFFF2F2F2), //new Color.fromRGBO(255, 0, 0, 0.0),
-                                borderRadius: new BorderRadius.all(Radius.circular(8.0))
-                            ),
-                            child: Stack(
-                              //alignment:new Alignment(x, y)
-                              children: <Widget>[
-                                Positioned(
-                                  child: Center(
-                                    child: _coverImage != null ? FittedBox(child: Image.file(_coverImage,),
-                                      fit: BoxFit.fill,)
-                                        : SvgPicture.asset(doctorBannerBGImage, height:48, width:48,),
-                                  ),
-                                ),
-                                Positioned(
-                                  child: new Align(
-                                      alignment: FractionalOffset.bottomCenter,
-                                      child: GestureDetector(
-                                        onTap: (){
-                                          _showImagePicker(context);
-                                          setState(() {
-                                            isProfileImageUpdate = false;
-                                          });
-                                        },
-                                        child: Container(
-                                          height: 32,
-                                          decoration: BoxDecoration(
-                                              color: Color(0xFF777777), //new Color.fromRGBO(255, 0, 0, 0.0),
-                                              borderRadius: new BorderRadius.only(
-                                                  bottomLeft:Radius.circular(8.0),
-                                                  bottomRight: Radius.circular(8.0))
-                                          ),
-                                          child:  Center(
-                                            child: Icon(Icons.camera_alt_outlined, color: Colors.white,size: 18,),
-                                          ),
-                                        ),
-                                      )
-                                  ),
-                                )
-                              ],
-                            ),
-                          )),
-                      Positioned(
-                          child: Align(
-                            alignment: FractionalOffset.bottomRight,
-                            child: Container(
-                              width: 120,
-                              height: 120,
-                              margin: EdgeInsets.only(right: 8),
-                              // color: Color(0xFFF2F2F2),
-                              decoration: BoxDecoration(
-                                  color: Color(0xFFF2F2F2), //new Color.fromRGBO(255, 0, 0, 0.0),
-                                  borderRadius: new BorderRadius.all(Radius.circular(8.0))
-                              ),
-                              child: Stack(
-                                //alignment:new Alignment(x, y)
-                                children: <Widget>[
-                                  Positioned(
-                                    child: Center(
-                                      child: _profileImage != null
-                                          ? FittedBox(child: Image.file(_profileImage,), fit: BoxFit.cover,)
-                                          : SvgPicture.asset(home_account, height:48, width:48,),
-                                    ),
-                                  ),
-                                  Positioned(
-                                    child: new Align(
-                                        alignment: FractionalOffset.bottomCenter,
-                                        child: GestureDetector(
-                                          onTap: (){
-                                            _showImagePicker(context);
-                                            setState(() {
-                                              isProfileImageUpdate = true;
-                                            });
-                                          },
-                                          child: Container(
-                                            height: 24,
-                                            width: double.infinity,
-                                            decoration: BoxDecoration(
-                                                color: Color(0xFF777777), //new Color.fromRGBO(255, 0, 0, 0.0),
-                                                borderRadius: new BorderRadius.only(
-                                                    bottomLeft:Radius.circular(8.0),
-                                                    bottomRight: Radius.circular(8.0))
-                                            ),
-                                            child:  Center(
-                                              child: Icon(Icons.camera_alt_outlined, color: Colors.white,size: 12,),
-                                            ),
-                                          ),
-                                        )
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          )
-                      ),
-                    ],
+                width: 120,
+                height: 120,
+                margin: EdgeInsets.only(right: 8),
+                // color: Color(0xFFF2F2F2),
+                decoration: BoxDecoration(
+                  color: Color(
+                      0xFFF2F2F2), //new Color.fromRGBO(255, 0, 0, 0.0),
+                  borderRadius:
+                      new BorderRadius.all(Radius.circular(8.0))),
+                child: Stack(
+                //alignment:new Alignment(x, y)
+                children: <Widget>[
+                  Positioned(
+                    child: Center(
+                        child: _profileImage != null
+                            ? Image.file(_profileImage,
+                                errorBuilder: (_, __, ___) {
+                                return SvgPicture.asset(
+                                  home_account,
+                                  height: 48,
+                                  width: 48,
+                                );
+                              })
+                            : Image.network(_profileImageUrl,
+                                errorBuilder: (_, __, ___) {
+                                return SvgPicture.asset(
+                                  home_account,
+                                  height: 48,
+                                  width: 48,
+                                );
+                              })),
                   ),
+                  Positioned(
+                    child: new Align(
+                        alignment: FractionalOffset.bottomCenter,
+                        child: InkWell(
+                          onTap: () {
+                            _showImagePicker(context);
+                            setState(() {
+                              isProfileImageUpdate = true;
+                            });
+                          },
+                          child: Container(
+                            height: 24,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                                color: Color(
+                                    0xFF777777), //new Color.fromRGBO(255, 0, 0, 0.0),
+                                borderRadius: new BorderRadius.only(
+                                    bottomLeft:
+                                        Radius.circular(8.0),
+                                    bottomRight:
+                                        Radius.circular(8.0))),
+                            child: Center(
+                              child: Icon(
+                                Icons.camera_alt_outlined,
+                                color: Colors.white,
+                                size: 12,
+                              ),
+                            ),
+                          ),
+                        )),
+                  )
+                ],
                 ),
-                SizedBox(height: 12,),
+                ),
+                SizedBox(
+                  height: 12,
+                ),
                 TextFormField(
-                  controller: nameFieldController,
+                  controller: di,
                   keyboardType: TextInputType.name,
                   textCapitalization: TextCapitalization.words,
                   style: TextStyle(
                       fontSize: 16.0,
                       color: Colors.black,
-                      fontWeight: FontWeight.w400
-                  ),
+                      fontWeight: FontWeight.w400),
                   decoration: const InputDecoration(
                     // hintText: '-Enter Full Name-',
                     labelText: 'Full Name',
@@ -441,14 +479,18 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                     return null;
                   },
                 ),
-                SizedBox(height: 20,),
+                SizedBox(
+                  height: 20,
+                ),
                 Container(
-                  child:  Column(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
                         margin: EdgeInsets.only(left: 8),
-                        child: Text("Speciality", textDirection: TextDirection.ltr,
+                        child: Text(
+                          "Speciality",
+                          textDirection: TextDirection.ltr,
                           style: TextStyle(
                               fontSize: 12,
                               fontFamily: 'Poppins',
@@ -456,7 +498,9 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                               color: Colors.black),
                         ),
                       ),
-                      SizedBox(height: 6,),
+                      SizedBox(
+                        height: 6,
+                      ),
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.only(left: 10.0, right: 10.0),
@@ -478,14 +522,16 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                     ],
                   ),
                 ),
-                SizedBox(height: 12),//Email Id Widget
+                SizedBox(height: 12), //Email Id Widget
                 Container(
-                  child:  Column(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
                         margin: EdgeInsets.only(left: 8),
-                        child: Text("Gender", textDirection: TextDirection.ltr,
+                        child: Text(
+                          "Gender",
+                          textDirection: TextDirection.ltr,
                           style: TextStyle(
                               fontSize: 12,
                               fontFamily: 'Poppins',
@@ -493,63 +539,79 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                               color: Colors.black),
                         ),
                       ),
-                      SizedBox(height: 6,),
+                      SizedBox(
+                        height: 6,
+                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Expanded(
                               child: InkWell(
-                                child: Container(
-                                  margin: EdgeInsets.only(top: 10.0),
-                                  padding: EdgeInsets.all(10.0),
-                                  decoration: BoxDecoration(
-                                      color: genderValue == "male"?kPrimaryColor:Colors.transparent,
-                                      border: Border.all(
-                                          width: 1, color: genderValue == "male"?Colors.transparent:kPrimaryColor),
-                                      borderRadius:
+                            child: Container(
+                              margin: EdgeInsets.only(top: 10.0),
+                              padding: EdgeInsets.all(10.0),
+                              decoration: BoxDecoration(
+                                  color: genderValue == "male"
+                                      ? kPrimaryColor
+                                      : Colors.transparent,
+                                  border: Border.all(
+                                      width: 1,
+                                      color: genderValue == "male"
+                                          ? Colors.transparent
+                                          : kPrimaryColor),
+                                  borderRadius:
                                       BorderRadius.all(Radius.circular(20))),
-                                  child: Text(
-                                    "Male",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: genderValue == "male"?Colors.white:kPrimaryColor,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
+                              child: Text(
+                                "Male",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: genderValue == "male"
+                                      ? Colors.white
+                                      : kPrimaryColor,
                                 ),
-                                onTap: (){
-                                  setState(() {
-                                    genderValue = "male";
-                                  });
-                                },
-                              )),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            onTap: () {
+                              setState(() {
+                                genderValue = "male";
+                              });
+                            },
+                          )),
                           SizedBox(width: 20),
                           Expanded(
                               child: InkWell(
-                                child: Container(
-                                  margin: EdgeInsets.only(top: 10.0),
-                                  padding: EdgeInsets.all(10.0),
-                                  decoration: BoxDecoration(
-                                      color: genderValue == "female"?kPrimaryColor:Colors.transparent,
-                                      border: Border.all(
-                                          width: 1, color: genderValue == "female"?Colors.transparent:kPrimaryColor),
-                                      borderRadius:
+                            child: Container(
+                              margin: EdgeInsets.only(top: 10.0),
+                              padding: EdgeInsets.all(10.0),
+                              decoration: BoxDecoration(
+                                  color: genderValue == "female"
+                                      ? kPrimaryColor
+                                      : Colors.transparent,
+                                  border: Border.all(
+                                      width: 1,
+                                      color: genderValue == "female"
+                                          ? Colors.transparent
+                                          : kPrimaryColor),
+                                  borderRadius:
                                       BorderRadius.all(Radius.circular(20))),
-                                  child: Text(
-                                    "Female",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: genderValue == "female"?Colors.white:kPrimaryColor,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
+                              child: Text(
+                                "Female",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: genderValue == "female"
+                                      ? Colors.white
+                                      : kPrimaryColor,
                                 ),
-                                onTap: (){
-                                  setState(() {
-                                    genderValue = "female";
-                                  });
-                                },
-                              )),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            onTap: () {
+                              setState(() {
+                                genderValue = "female";
+                              });
+                            },
+                          )),
                         ],
                       ),
                     ],
@@ -586,7 +648,7 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                               // obscureText: true,
                               decoration: InputDecoration(
                                   contentPadding:
-                                  const EdgeInsets.fromLTRB(12, 6, 48, 6),
+                                      const EdgeInsets.fromLTRB(12, 6, 48, 6),
                                   border: OutlineInputBorder(
                                     borderRadius: const BorderRadius.all(
                                       const Radius.circular(25.0),
@@ -594,12 +656,12 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                                   ),
                                   filled: true,
                                   hintStyle:
-                                  new TextStyle(color: Colors.grey[800]),
+                                      new TextStyle(color: Colors.grey[800]),
                                   hintText: "-Select Date-",
                                   fillColor: Colors.white70)),
                           IconButton(
-                            icon:
-                            Icon(Icons.calendar_today, color: kPrimaryColor),
+                            icon: Icon(Icons.calendar_today,
+                                color: kPrimaryColor),
                             onPressed: () async {
                               DateTime toDate = DateTime(1900);
                               FocusScope.of(context)
@@ -616,7 +678,7 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                                   dobSelectedDate = toDate;
                                   print('${myFormat.format(dobSelectedDate)}');
                                   dobTextFieldController.text =
-                                  '${myFormat.format(dobSelectedDate)}';
+                                      '${myFormat.format(dobSelectedDate)}';
                                 });
                             },
                           ),
@@ -633,8 +695,7 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                   style: TextStyle(
                       fontSize: 16.0,
                       color: Colors.black,
-                      fontWeight: FontWeight.w400
-                  ),
+                      fontWeight: FontWeight.w400),
                   decoration: const InputDecoration(
                     // hintText: '-Enter Email Id-',
                     labelText: 'Email Id',
@@ -646,7 +707,7 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                     return null;
                   },
                 ),
-                SizedBox(height: 12),//Mobile Number Widget
+                SizedBox(height: 12), //Mobile Number Widget
                 TextFormField(
                   enabled: false,
                   controller: phoneFieldController,
@@ -654,8 +715,7 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                   style: TextStyle(
                       fontSize: 16.0,
                       color: Colors.black,
-                      fontWeight: FontWeight.w400
-                  ),
+                      fontWeight: FontWeight.w400),
                   decoration: const InputDecoration(
                     // hintText: '-Enter Mobile Number-',
                     labelText: 'Mobile Number',
@@ -667,15 +727,14 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                     return null;
                   },
                 ),
-                SizedBox(height: 12),//Years of Experience widget
+                SizedBox(height: 12), //Years of Experience widget
                 TextFormField(
                   controller: experienceFieldController,
                   keyboardType: TextInputType.number,
                   style: TextStyle(
                       fontSize: 16.0,
                       color: Colors.black,
-                      fontWeight: FontWeight.w400
-                  ),
+                      fontWeight: FontWeight.w400),
                   decoration: const InputDecoration(
                     // hintText: '-Enter Year of experience-',
                     labelText: 'Year of experience (in yrs)',
@@ -689,12 +748,14 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                 ),
                 SizedBox(height: 12),
                 Container(
-                  child:  Column(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
                         margin: EdgeInsets.only(left: 8),
-                        child: Text("Educational Qualification", textDirection: TextDirection.ltr,
+                        child: Text(
+                          "Educational Qualification",
+                          textDirection: TextDirection.ltr,
                           style: TextStyle(
                               fontSize: 12,
                               fontFamily: 'Poppins',
@@ -702,13 +763,16 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                               color: Colors.black),
                         ),
                       ),
-                      SizedBox(height: 6,),
+                      SizedBox(
+                        height: 6,
+                      ),
                       InkWell(
-                        onTap: (){
+                        onTap: () {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (_) => EducationQualificationPage()));
+                                  builder: (_) =>
+                                      EducationQualificationPage()));
                         },
                         child: Stack(
                           alignment: Alignment.centerRight,
@@ -718,19 +782,26 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                                 keyboardType: TextInputType.text,
                                 obscureText: true,
                                 decoration: InputDecoration(
-                                    contentPadding: const EdgeInsets.fromLTRB(12, 6, 48, 6),
+                                    contentPadding:
+                                        const EdgeInsets.fromLTRB(12, 6, 48, 6),
                                     border: OutlineInputBorder(
                                       borderRadius: const BorderRadius.all(
                                         const Radius.circular(25.0),
                                       ),
                                     ),
                                     filled: true,
-                                    hintStyle: new TextStyle(color: Colors.grey[800]),
+                                    hintStyle:
+                                        new TextStyle(color: Colors.grey[800]),
                                     hintText: "Enter Details",
-                                    fillColor: Colors.white70)
-                            ),
-                            Padding(padding: EdgeInsets.all(10),
-                              child: SvgPicture.asset(circleArrow, height:18, width:18,),)
+                                    fillColor: Colors.white70)),
+                            Padding(
+                              padding: EdgeInsets.all(10),
+                              child: SvgPicture.asset(
+                                circleArrow,
+                                height: 18,
+                                width: 18,
+                              ),
+                            )
                             /*IconButton(
                           icon: ,
                           onPressed: () {
@@ -746,12 +817,14 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                 ),
                 SizedBox(height: 12),
                 Container(
-                  child:  Column(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
                         margin: EdgeInsets.only(left: 8),
-                        child: Text("Registration Details", textDirection: TextDirection.ltr,
+                        child: Text(
+                          "Registration Details",
+                          textDirection: TextDirection.ltr,
                           style: TextStyle(
                               fontSize: 12,
                               fontFamily: 'Poppins',
@@ -759,9 +832,11 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                               color: Colors.black),
                         ),
                       ),
-                      SizedBox(height: 6,),
+                      SizedBox(
+                        height: 6,
+                      ),
                       InkWell(
-                        onTap: (){
+                        onTap: () {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -775,19 +850,26 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                                 keyboardType: TextInputType.text,
                                 obscureText: true,
                                 decoration: InputDecoration(
-                                    contentPadding: const EdgeInsets.fromLTRB(12, 6, 48, 6),
+                                    contentPadding:
+                                        const EdgeInsets.fromLTRB(12, 6, 48, 6),
                                     border: OutlineInputBorder(
                                       borderRadius: const BorderRadius.all(
                                         const Radius.circular(25.0),
                                       ),
                                     ),
                                     filled: true,
-                                    hintStyle: new TextStyle(color: Colors.grey[800]),
+                                    hintStyle:
+                                        new TextStyle(color: Colors.grey[800]),
                                     hintText: "Enter Details",
-                                    fillColor: Colors.white70)
-                            ),
-                            Padding(padding: EdgeInsets.all(10),
-                              child: SvgPicture.asset(circleArrow, height:18, width:18,),)
+                                    fillColor: Colors.white70)),
+                            Padding(
+                              padding: EdgeInsets.all(10),
+                              child: SvgPicture.asset(
+                                circleArrow,
+                                height: 18,
+                                width: 18,
+                              ),
+                            )
                             /*IconButton(
                           icon: ,
                           onPressed: () {
@@ -809,8 +891,7 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                   style: TextStyle(
                       fontSize: 16.0,
                       color: Colors.black,
-                      fontWeight: FontWeight.w400
-                  ),
+                      fontWeight: FontWeight.w400),
                   decoration: const InputDecoration(
                     hintText: '-Enter Street Address-',
                     labelText: 'Hospital / Clinic Address',
@@ -830,8 +911,7 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                   style: TextStyle(
                       fontSize: 16.0,
                       color: Colors.black,
-                      fontWeight: FontWeight.w400
-                  ),
+                      fontWeight: FontWeight.w400),
                   decoration: const InputDecoration(
                     hintText: '-Enter Nearby Landmark-',
                     labelText: 'Lankmark',
@@ -843,234 +923,18 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                     return null;
                   },
                 ),
-                SizedBox(height: 20,),
-                  Container(
-                    child:  Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(left: 8),
-                          child: Text("Country", textDirection: TextDirection.ltr,
-                            style: TextStyle(
-                                fontSize: 12,
-                                fontFamily: 'Poppins',
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black),
-                          ),
-                        ),
-                        SizedBox(height: 6,),
-                        InkWell(
-                          child: Stack(
-                            alignment: Alignment.centerRight,
-                            children: <Widget>[
-                              TextField(
-                                  enabled: false,
-                                  controller: countryFieldController,
-                                  keyboardType: TextInputType.text,
-                                  style: Theme.of(context).textTheme.body1,
-                                  decoration: InputDecoration(
-                                      contentPadding: const EdgeInsets.fromLTRB(12, 6, 48, 6),
-                                      border: OutlineInputBorder(
-                                        borderRadius: const BorderRadius.all(
-                                          const Radius.circular(25.0),
-                                        ),
-                                      ),
-                                      filled: true,
-                                      hintStyle: new TextStyle(color: Colors.grey[800]),
-                                      hintText: "Select Country",
-                                      fillColor: Colors.white70)
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.keyboard_arrow_down_rounded), onPressed: () {
-                                FocusScope.of(context).requestFocus(FocusNode());
-                                showCountryDialog();
-                              },
-                              ),
-                            ],
-                          ),
-                          onTap: (){
-                            FocusScope.of(context).requestFocus(FocusNode());
-                            showCountryDialog();
-                          },
-                        )
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 20,),
-                  Container(
-                    child:  Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(left: 8),
-                          child: Text("State", textDirection: TextDirection.ltr,
-                            style: TextStyle(
-                                fontSize: 12,
-                                fontFamily: 'Poppins',
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black),
-                          ),
-                        ),
-                        SizedBox(height: 6,),
-                        InkWell(
-                          child: Stack(
-                            alignment: Alignment.centerRight,
-                            children: <Widget>[
-                              TextField(
-                                  enabled: false,
-                                  controller: stateFieldController,
-                                  keyboardType: TextInputType.text,
-                                  style: Theme.of(context).textTheme.body1,
-                                  // obscureText: true,
-                                  decoration: InputDecoration(
-                                      contentPadding: const EdgeInsets.fromLTRB(12, 6, 48, 6),
-                                      border: OutlineInputBorder(
-                                        borderRadius: const BorderRadius.all(
-                                          const Radius.circular(25.0),
-                                        ),
-                                      ),
-                                      filled: true,
-                                      hintStyle: new TextStyle(color: Colors.grey[800]),
-                                      hintText: "Select State",
-                                      fillColor: Colors.white70)
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.keyboard_arrow_down_rounded),
-                                onPressed: () {
-                                  List<String> stateNames = List<String>();
-                                  var countryData = countryFieldController.text.toString();
-                                  if(countryData.isEmpty){
-                                    Fluttertoast.showToast(
-                                        msg: "Please select country",
-                                        toastLength: Toast.LENGTH_SHORT,
-                                        gravity: ToastGravity.BOTTOM,
-                                        timeInSecForIos: 1, // also possible "TOP" and "CENTER"
-                                        backgroundColor: kBackgroundColor,
-                                        textColor: Colors.white);
-                                  }else{
-                                    FocusScope.of(context).requestFocus(FocusNode());
-                                    for(int i=0; i<stateCityListMapData.length; i++){
-                                      stateCityListMapData[i].forEach((key, value) {
-                                        stateNames.add(key);
-                                      });
-                                    }
-                                    showStateDialog(stateNames);
-                                  }
-                                },
-                              ),
-                            ],
-                          ),
-                          onTap: (){
-                            List<String> stateNames = List<String>();
-                            var countryData = countryFieldController.text.toString();
-                            if(countryData.isEmpty){
-                              Fluttertoast.showToast(
-                                  msg: "Please select country",
-                                  toastLength: Toast.LENGTH_SHORT,
-                                  gravity: ToastGravity.BOTTOM,
-                                  timeInSecForIos: 1, // also possible "TOP" and "CENTER"
-                                  backgroundColor: kBackgroundColor,
-                                  textColor: Colors.white);
-                            }else{
-                              FocusScope.of(context).requestFocus(FocusNode());
-                              for(int i=0; i<stateCityListMapData.length; i++){
-                                stateCityListMapData[i].forEach((key, value) {
-                                  stateNames.add(key);
-                                });
-                              }
-                              showStateDialog(stateNames);
-                            }
-                          },
-                        )
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 20,),
-                  Container(
-                    child:  Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(left: 8),
-                          child: Text("City", textDirection: TextDirection.ltr,
-                            style: TextStyle(
-                                fontSize: 12,
-                                fontFamily: 'Poppins',
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black),
-                          ),
-                        ),
-                        SizedBox(height: 6,),
-                        InkWell(
-                          child: Stack(
-                            alignment: Alignment.centerRight,
-                            children: <Widget>[
-                              TextField(
-                                  enabled: false,
-                                  controller: cityFieldController,
-                                  keyboardType: TextInputType.text,
-                                  style: Theme.of(context).textTheme.body1,
-                                  // obscureText: true,
-                                  decoration: InputDecoration(
-                                      contentPadding: const EdgeInsets.fromLTRB(12, 6, 48, 6),
-                                      border: OutlineInputBorder(
-                                        borderRadius: const BorderRadius.all(
-                                          const Radius.circular(25.0),
-                                        ),
-                                      ),
-                                      filled: true,
-                                      hintStyle: new TextStyle(color: Colors.grey[800]),
-                                      hintText: "Select City",
-                                      fillColor: Colors.white70)
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.keyboard_arrow_down_rounded),
-                                onPressed: () {
-                                  var stateData = stateFieldController.text.toString();
-                                  if(stateData.isEmpty){
-                                    Fluttertoast.showToast(
-                                        msg: "Please select state",
-                                        toastLength: Toast.LENGTH_SHORT,
-                                        gravity: ToastGravity.BOTTOM,
-                                        timeInSecForIos: 1, // also possible "TOP" and "CENTER"
-                                        backgroundColor: kBackgroundColor,
-                                        textColor: Colors.white);
-                                  }else{
-                                    FocusScope.of(context).requestFocus(FocusNode());
-                                    showCityDialog(cityListData);
-                                  }
-                                },
-                              ),
-                            ],
-                          ),
-                          onTap: (){
-                            var stateData = stateFieldController.text.toString();
-                            if(stateData.isEmpty){
-                              Fluttertoast.showToast(
-                                  msg: "Please select state",
-                                  toastLength: Toast.LENGTH_SHORT,
-                                  gravity: ToastGravity.BOTTOM,
-                                  timeInSecForIos: 1, // also possible "TOP" and "CENTER"
-                                  backgroundColor: kBackgroundColor,
-                                  textColor: Colors.white);
-                            }else{
-                              FocusScope.of(context).requestFocus(FocusNode());
-                              showCityDialog(cityListData);
-                            }
-                          },
-                        )
-                      ],
-                    ),
-                  ),
-
-                SizedBox(height: 10),
+                SizedBox(
+                  height: 20,
+                ),
                 Container(
-                  child:  Column(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        margin: EdgeInsets.only(left: 6),
-                        child: Text("Available for Home Visit?", textDirection: TextDirection.ltr,
+                        margin: EdgeInsets.only(left: 8),
+                        child: Text(
+                          "Country",
+                          textDirection: TextDirection.ltr,
                           style: TextStyle(
                               fontSize: 12,
                               fontFamily: 'Poppins',
@@ -1078,7 +942,264 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                               color: Colors.black),
                         ),
                       ),
-                      SizedBox(height: 6,),
+                      SizedBox(
+                        height: 6,
+                      ),
+                      InkWell(
+                        child: Stack(
+                          alignment: Alignment.centerRight,
+                          children: <Widget>[
+                            TextField(
+                                enabled: false,
+                                controller: countryFieldController,
+                                keyboardType: TextInputType.text,
+                                style: Theme.of(context).textTheme.body1,
+                                decoration: InputDecoration(
+                                    contentPadding:
+                                        const EdgeInsets.fromLTRB(12, 6, 48, 6),
+                                    border: OutlineInputBorder(
+                                      borderRadius: const BorderRadius.all(
+                                        const Radius.circular(25.0),
+                                      ),
+                                    ),
+                                    filled: true,
+                                    hintStyle:
+                                        new TextStyle(color: Colors.grey[800]),
+                                    hintText: "Select Country",
+                                    fillColor: Colors.white70)),
+                            IconButton(
+                              icon: Icon(Icons.keyboard_arrow_down_rounded),
+                              onPressed: () {
+                                FocusScope.of(context)
+                                    .requestFocus(FocusNode());
+                                showCountryDialog();
+                              },
+                            ),
+                          ],
+                        ),
+                        onTap: () {
+                          FocusScope.of(context).requestFocus(FocusNode());
+                          showCountryDialog();
+                        },
+                      )
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(left: 8),
+                        child: Text(
+                          "State",
+                          textDirection: TextDirection.ltr,
+                          style: TextStyle(
+                              fontSize: 12,
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 6,
+                      ),
+                      InkWell(
+                        child: Stack(
+                          alignment: Alignment.centerRight,
+                          children: <Widget>[
+                            TextField(
+                                enabled: false,
+                                controller: stateFieldController,
+                                keyboardType: TextInputType.text,
+                                style: Theme.of(context).textTheme.body1,
+                                // obscureText: true,
+                                decoration: InputDecoration(
+                                    contentPadding:
+                                        const EdgeInsets.fromLTRB(12, 6, 48, 6),
+                                    border: OutlineInputBorder(
+                                      borderRadius: const BorderRadius.all(
+                                        const Radius.circular(25.0),
+                                      ),
+                                    ),
+                                    filled: true,
+                                    hintStyle:
+                                        new TextStyle(color: Colors.grey[800]),
+                                    hintText: "Select State",
+                                    fillColor: Colors.white70)),
+                            IconButton(
+                              icon: Icon(Icons.keyboard_arrow_down_rounded),
+                              onPressed: () {
+                                List<String> stateNames = List<String>();
+                                var countryData =
+                                    countryFieldController.text.toString();
+                                if (countryData.isEmpty) {
+                                  Fluttertoast.showToast(
+                                      msg: "Please select country",
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.BOTTOM,
+                                      timeInSecForIos:
+                                          1, // also possible "TOP" and "CENTER"
+                                      backgroundColor: kBackgroundColor,
+                                      textColor: Colors.white);
+                                } else {
+                                  FocusScope.of(context)
+                                      .requestFocus(FocusNode());
+                                  for (int i = 0;
+                                      i < stateCityListMapData.length;
+                                      i++) {
+                                    stateCityListMapData[i]
+                                        .forEach((key, value) {
+                                      stateNames.add(key);
+                                    });
+                                  }
+                                  showStateDialog(stateNames);
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                        onTap: () {
+                          List<String> stateNames = List<String>();
+                          var countryData =
+                              countryFieldController.text.toString();
+                          if (countryData.isEmpty) {
+                            Fluttertoast.showToast(
+                                msg: "Please select country",
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIos:
+                                    1, // also possible "TOP" and "CENTER"
+                                backgroundColor: kBackgroundColor,
+                                textColor: Colors.white);
+                          } else {
+                            FocusScope.of(context).requestFocus(FocusNode());
+                            for (int i = 0;
+                                i < stateCityListMapData.length;
+                                i++) {
+                              stateCityListMapData[i].forEach((key, value) {
+                                stateNames.add(key);
+                              });
+                            }
+                            showStateDialog(stateNames);
+                          }
+                        },
+                      )
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(left: 8),
+                        child: Text(
+                          "City",
+                          textDirection: TextDirection.ltr,
+                          style: TextStyle(
+                              fontSize: 12,
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 6,
+                      ),
+                      InkWell(
+                        child: Stack(
+                          alignment: Alignment.centerRight,
+                          children: <Widget>[
+                            TextField(
+                                enabled: false,
+                                controller: cityFieldController,
+                                keyboardType: TextInputType.text,
+                                style: Theme.of(context).textTheme.body1,
+                                // obscureText: true,
+                                decoration: InputDecoration(
+                                    contentPadding:
+                                        const EdgeInsets.fromLTRB(12, 6, 48, 6),
+                                    border: OutlineInputBorder(
+                                      borderRadius: const BorderRadius.all(
+                                        const Radius.circular(25.0),
+                                      ),
+                                    ),
+                                    filled: true,
+                                    hintStyle:
+                                        new TextStyle(color: Colors.grey[800]),
+                                    hintText: "Select City",
+                                    fillColor: Colors.white70)),
+                            IconButton(
+                              icon: Icon(Icons.keyboard_arrow_down_rounded),
+                              onPressed: () {
+                                var stateData =
+                                    stateFieldController.text.toString();
+                                if (stateData.isEmpty) {
+                                  Fluttertoast.showToast(
+                                      msg: "Please select state",
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.BOTTOM,
+                                      timeInSecForIos:
+                                          1, // also possible "TOP" and "CENTER"
+                                      backgroundColor: kBackgroundColor,
+                                      textColor: Colors.white);
+                                } else {
+                                  FocusScope.of(context)
+                                      .requestFocus(FocusNode());
+                                  showCityDialog(cityListData);
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                        onTap: () {
+                          var stateData = stateFieldController.text.toString();
+                          if (stateData.isEmpty) {
+                            Fluttertoast.showToast(
+                                msg: "Please select state",
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIos:
+                                    1, // also possible "TOP" and "CENTER"
+                                backgroundColor: kBackgroundColor,
+                                textColor: Colors.white);
+                          } else {
+                            FocusScope.of(context).requestFocus(FocusNode());
+                            showCityDialog(cityListData);
+                          }
+                        },
+                      )
+                    ],
+                  ),
+                ),
+
+                SizedBox(height: 10),
+                Container(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(left: 6),
+                        child: Text(
+                          "Available for Home Visit?",
+                          textDirection: TextDirection.ltr,
+                          style: TextStyle(
+                              fontSize: 12,
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 6,
+                      ),
                       Row(
                         children: [
                           Radio(
@@ -1089,7 +1210,9 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                           Text(
                             "Yes",
                           ),
-                          SizedBox(width: 50,),
+                          SizedBox(
+                            width: 50,
+                          ),
                           Radio(
                             value: '0',
                             groupValue: _radioValue,
@@ -1105,12 +1228,14 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                 ),
                 SizedBox(height: 10),
                 Container(
-                  child:  Column(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
                         margin: EdgeInsets.only(left: 6),
-                        child: Text("Select Consultation Type you provide?", textDirection: TextDirection.ltr,
+                        child: Text(
+                          "Select Consultation Type you provide?",
+                          textDirection: TextDirection.ltr,
                           style: TextStyle(
                               fontSize: 12,
                               fontFamily: 'Poppins',
@@ -1118,7 +1243,9 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                               color: Colors.black),
                         ),
                       ),
-                      SizedBox(height: 6,),
+                      SizedBox(
+                        height: 6,
+                      ),
                       Row(
                         children: [
                           Radio(
@@ -1129,7 +1256,9 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                           Text(
                             "Audio",
                           ),
-                          SizedBox(width: 50,),
+                          SizedBox(
+                            width: 50,
+                          ),
                           Radio(
                             value: 'video',
                             groupValue: _consultRadioValue,
@@ -1154,7 +1283,9 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                         children: [
                           Container(
                             // margin: EdgeInsets.only(left: 8),
-                            child: Text("Bank Details", textDirection: TextDirection.ltr,
+                            child: Text(
+                              "Bank Details",
+                              textDirection: TextDirection.ltr,
                               style: TextStyle(
                                   fontSize: 12,
                                   fontFamily: 'Poppins',
@@ -1164,13 +1295,14 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                           ),
                           Expanded(
                               child: SizedBox(
-                                height: 1.0,
-                                child: Container(
-                                  margin: new EdgeInsetsDirectional.only(start: 1.0, end: 1.0),
-                                  height: 5.0,
-                                  color: kPrimaryColor,
-                                ),
-                              ))
+                            height: 1.0,
+                            child: Container(
+                              margin: new EdgeInsetsDirectional.only(
+                                  start: 1.0, end: 1.0),
+                              height: 5.0,
+                              color: kPrimaryColor,
+                            ),
+                          ))
                         ],
                       ),
                       SizedBox(height: 16),
@@ -1181,8 +1313,7 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                         style: TextStyle(
                             fontSize: 16.0,
                             color: Colors.black,
-                            fontWeight: FontWeight.w400
-                        ),
+                            fontWeight: FontWeight.w400),
                         decoration: const InputDecoration(
                           hintText: '-Enter Name-',
                           labelText: 'Account Holder Name',
@@ -1196,12 +1327,14 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                       ),
                       SizedBox(height: 10),
                       Container(
-                        child:  Column(
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(
                               margin: EdgeInsets.only(left: 6),
-                              child: Text("Bank Name", textDirection: TextDirection.ltr,
+                              child: Text(
+                                "Bank Name",
+                                textDirection: TextDirection.ltr,
                                 style: TextStyle(
                                     fontSize: 12,
                                     fontFamily: 'Poppins',
@@ -1209,24 +1342,39 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                                     color: Colors.black),
                               ),
                             ),
-                            SizedBox(height: 6,),
+                            SizedBox(
+                              height: 6,
+                            ),
                             Container(
                               width: double.infinity,
-                              padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                              padding: const EdgeInsets.only(
+                                  left: 10.0, right: 10.0),
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(25.0),
                                   color: Color(0xFFF2F2F2),
-                                  border: Border.all(width: 1, color: Colors.grey)),
-                              child: DropdownButtonHideUnderline(
-                                child: DropdownButton(
-                                    value: _selectedItem,
-                                    items: _dropdownMenuItems,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _selectedItem = value;
-                                      });
-                                    }),
-                              ),
+                                  border:
+                                      Border.all(width: 1, color: Colors.grey)),
+                              child: TextField(
+                                  controller: _bankNameController,
+                                  decoration:
+                                      InputDecoration(border: InputBorder.none),
+                                  onTap: () => showSheet(
+                                        bankDataList,
+                                        'Bank',
+                                        context,
+                                      ).then((value) =>
+                                          _bankNameController.text = value),
+                                  readOnly: true),
+                              // DropdownButtonHideUnderline(
+                              //   child: DropdownButton(
+                              //       value: _selectedBankData,
+                              //       items: _dropdownBankData,
+                              //       onChanged: (value) {
+                              //         setState(() {
+                              //           _selectedBankData = value;
+                              //         });
+                              //       }),
+                              // ),
                             ),
                           ],
                         ),
@@ -1238,8 +1386,7 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                         style: TextStyle(
                             fontSize: 16.0,
                             color: Colors.black,
-                            fontWeight: FontWeight.w400
-                        ),
+                            fontWeight: FontWeight.w400),
                         decoration: const InputDecoration(
                           hintText: '-Enter Account Number-',
                           labelText: 'Account Number',
@@ -1259,8 +1406,7 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                         style: TextStyle(
                             fontSize: 16.0,
                             color: Colors.black,
-                            fontWeight: FontWeight.w400
-                        ),
+                            fontWeight: FontWeight.w400),
                         decoration: const InputDecoration(
                           hintText: '-Enter IFSC Code-',
                           labelText: 'IFSC Code',
@@ -1272,56 +1418,87 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
                           return null;
                         },
                       ),
-                      SizedBox(height: 50,),
+                      SizedBox(
+                        height: 50,
+                      ),
                       FlatButton(
                         minWidth: double.infinity,
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25.0)
-                        ),
+                            borderRadius: BorderRadius.circular(25.0)),
                         color: kPrimaryColor,
                         onPressed: () {
-                          if(_formKey.currentState.validate()){
-                            if(genderValue.isEmpty){
+                          if (_formKey.currentState.validate()) {
+                            if (genderValue.isEmpty) {
                               Fluttertoast.showToast(
                                   msg: "Please select your gender",
                                   toastLength: Toast.LENGTH_SHORT,
                                   gravity: ToastGravity.BOTTOM,
-                                  timeInSecForIos: 1, // also possible "TOP" and "CENTER"
+                                  timeInSecForIos:
+                                      1, // also possible "TOP" and "CENTER"
                                   backgroundColor: kBackgroundColor,
                                   textColor: Colors.white);
-                            }else if(countryFieldController.text.toString().isEmpty){
+                            } else if (countryFieldController.text
+                                .toString()
+                                .isEmpty) {
                               Fluttertoast.showToast(
                                   msg: "Please select country",
                                   toastLength: Toast.LENGTH_SHORT,
                                   gravity: ToastGravity.BOTTOM,
-                                  timeInSecForIos: 1, // also possible "TOP" and "CENTER"
+                                  timeInSecForIos:
+                                      1, // also possible "TOP" and "CENTER"
                                   backgroundColor: kBackgroundColor,
                                   textColor: Colors.white);
-                            }else if(stateFieldController.text.toString().isEmpty){
+                            } else if (stateFieldController.text
+                                .toString()
+                                .isEmpty) {
                               Fluttertoast.showToast(
                                   msg: "Please select state",
                                   toastLength: Toast.LENGTH_SHORT,
                                   gravity: ToastGravity.BOTTOM,
-                                  timeInSecForIos: 1, // also possible "TOP" and "CENTER"
+                                  timeInSecForIos:
+                                      1, // also possible "TOP" and "CENTER"
                                   backgroundColor: kBackgroundColor,
                                   textColor: Colors.white);
-                            }else if(cityFieldController.text.toString().isEmpty){
+                            } else if (cityFieldController.text
+                                .toString()
+                                .isEmpty) {
                               Fluttertoast.showToast(
                                   msg: "Please select city",
                                   toastLength: Toast.LENGTH_SHORT,
                                   gravity: ToastGravity.BOTTOM,
-                                  timeInSecForIos: 1, // also possible "TOP" and "CENTER"
+                                  timeInSecForIos:
+                                      1, // also possible "TOP" and "CENTER"
                                   backgroundColor: kBackgroundColor,
                                   textColor: Colors.white);
-                            }else{
-                              _profileUpdateBloc.profileUpdate(_user.accessToken, _user.user_id,
-                                  nameFieldController.text.toString(), genderValue, dobTextFieldController.text.toString(),
-                                  experienceFieldController.text.toString(), _selectedSpecialityData.id, addressFieldController.text.toString(),
-                                  localityFieldController.text.toString(), _radioValue, _consultRadioValue,
-                                  cityFieldController.text.toString(), stateFieldController.text.toString(),
-                                  countryFieldController.text.toString(),
-                                  "SBI", accNameFieldController.text.toString(),
-                                  accNumberFieldController.text.toString(), ifscFieldController.text.toString());
+                            } else {
+                              print('-------Profile Update Clicked-------');
+                              _profileUpdateBloc
+                                  .profileUpdate(
+                                      _user.accessToken,
+                                      _user.userId,
+                                      di.text.toString(),
+                                      genderValue,
+                                      dobTextFieldController.text.toString(),
+                                      experienceFieldController.text.toString(),
+                                      _selectedSpecialityData.id,
+                                      addressFieldController.text.toString(),
+                                      localityFieldController.text.toString(),
+                                      _radioValue,
+                                      _consultRadioValue,
+                                      cityFieldController.text.toString(),
+                                      stateFieldController.text.toString(),
+                                      countryFieldController.text.toString(),
+                                      _bankNameController.text.toString(),
+                                      accNameFieldController.text.toString(),
+                                      accNumberFieldController.text.toString(),
+                                      ifscFieldController.text.toString())
+                                  .then((value) {
+                                if (value) {
+                                  Fluttertoast.showToast(msg: tUpdateSuccess);
+                                }
+                                // if(value)_settingModalBottomSheet(context);
+                                // else Fluttertoast.showToast(msg: 'Something Went Wrong');
+                              });
                             }
                           }
 
@@ -1344,87 +1521,41 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
     );
   }
 
-
-  void _settingModalBottomSheet(context) {
-    showModalBottomSheet(
-        context: context,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20.0),
-        ),
-        builder: (BuildContext bc) {
-          return Container(
-              height: 280.0,
-              padding: EdgeInsets.all(12),
-              decoration: new BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: new BorderRadius.only(
-                      topLeft: const Radius.circular(20.0),
-                      topRight: const Radius.circular(10.0))),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  SvgPicture.asset(successSignUp, height:100, width:100,),
-                  SizedBox(height: 10,),
-                  ListTile(
-                    contentPadding: EdgeInsets.all(0),
-                    title: Text(
-                      "Request Sent for Approval",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w700,
-                          color: Colors.black),
-                    ),
-                    subtitle: Text(
-                      "Admin will verify your account details once approved from our end we will send you an email for account approval that your account is being verified.",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 12,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w400,
-                          color: kAuthTextGreyColor),
-                    ),),
-                ],
-              )
-          );
-        }
-    );
-  }
-
   _imgFromCamera() async {
     File image = await ImagePicker.pickImage(
-        source: ImageSource.camera, imageQuality: 50
-    );
+        source: ImageSource.camera, imageQuality: 50);
 
     setState(() {
-      if(isProfileImageUpdate){
+      if (isProfileImageUpdate) {
         _profileImage = image;
         Navigator.pop(context);
-        _profileImageBloc.profileORCoverImage(_user.accessToken, _user.user_id, PROFILE_IMAGE, _profileImage);
-      }else{
+        _profileImageBloc.profileORCoverImage(
+            _user.accessToken, _user.userId, PROFILE_IMAGE, _profileImage);
+      } else {
         _coverImage = image;
         Navigator.pop(context);
-        _profileImageBloc.profileORCoverImage(_user.accessToken, _user.user_id, COVER_IMAGE, _coverImage);
+        _profileImageBloc.profileORCoverImage(
+            _user.accessToken, _user.userId, COVER_IMAGE, _coverImage);
       }
     });
   }
 
   _imgFromGallery() async {
-    File image = await  ImagePicker.pickImage(
-        source: ImageSource.gallery, imageQuality: 50
-    );
+    File image = await ImagePicker.pickImage(
+        source: ImageSource.gallery, imageQuality: 50);
 
     setState(() {
-      if(isProfileImageUpdate){
+      if (isProfileImageUpdate) {
         _profileImage = image;
+        print('--------selected profile image path $_profileImage');
         Navigator.pop(context);
-        _profileImageBloc.profileORCoverImage(_user.accessToken, _user.user_id, PROFILE_IMAGE, _profileImage);
-      }else{
+        _profileImageBloc.profileORCoverImage(
+            _user.accessToken, _user.userId, PROFILE_IMAGE, _profileImage);
+      } else {
         _coverImage = image;
         Navigator.pop(context);
-        _profileImageBloc.profileORCoverImage(_user.accessToken, _user.user_id, COVER_IMAGE, _coverImage);
+        _profileImageBloc.profileORCoverImage(
+            _user.accessToken, _user.userId, COVER_IMAGE, _coverImage);
       }
     });
   }
@@ -1440,63 +1571,83 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
               child: Center(
                 child: Container(
                   padding: EdgeInsets.all(12),
-                  child:  Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Expanded(child:
-                      InkWell(
-                        child:  Container(
+                      Expanded(
+                          child: InkWell(
+                        child: Container(
                           child: Column(
                             children: [
-                              Image.asset(gallImage, width: 60, height: 60, fit: BoxFit.fill,),
-                              SizedBox(height: 10,),
-                              Text("Gallery",
+                              Image.asset(
+                                gallImage,
+                                width: 60,
+                                height: 60,
+                                fit: BoxFit.fill,
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                "Gallery",
                                 textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 16, color: Colors.black),)
+                                style: TextStyle(
+                                    fontSize: 16, color: Colors.black),
+                              )
                             ],
                           ),
                         ),
-                        onTap: (){
+                        onTap: () {
                           _imgFromGallery();
                         },
-                      )
-                      ),
-                      Expanded(child:
-                      InkWell(
-                        child:  Container(
+                      )),
+                      Expanded(
+                          child: InkWell(
+                        child: Container(
                           child: Column(
                             children: [
-                              Image.asset(camImage, width: 60, height: 60, fit: BoxFit.fill,),
-                              SizedBox(height: 10,),
-                              Text("Camera",
+                              Image.asset(
+                                camImage,
+                                width: 60,
+                                height: 60,
+                                fit: BoxFit.fill,
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                "Camera",
                                 textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 16, color: Colors.black),)
-
+                                style: TextStyle(
+                                    fontSize: 16, color: Colors.black),
+                              )
                             ],
                           ),
                         ),
-                        onTap: (){
+                        onTap: () {
                           _imgFromCamera();
                         },
-                      )
-                      )
+                      ))
                     ],
                   ),
                 ),
               ),
             ),
           );
-        }
-    );
+        });
   }
 
   List<Map<String, List<String>>> stateCityListMapData;
   Future<Null> showCountryDialog() async {
     print("countryData :: ${countryNames.length}");
-    String returnVal = await showDialog(context: context, builder: (_){return CountryDialog(countryNames);});
+    String returnVal = await showDialog(
+        context: context,
+        builder: (_) {
+          return CountryDialog(countryNames);
+        });
     print("countrySelectionValue -> $returnVal :: ${stateMapData.length}");
-    for(int i=0; i<countryMapDat.length; i++){
-      if(countryMapDat[i].keys.contains(returnVal)){
+    for (int i = 0; i < countryMapDat.length; i++) {
+      if (countryMapDat[i].keys.contains(returnVal)) {
         countryMapDat[i].forEach((key, value) {
           print("stateList -> $key :: $value");
           stateCityListMapData = List<Map<String, List<String>>>();
@@ -1512,10 +1663,14 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
   List<String> cityListData;
   Future<Null> showStateDialog(List<String> stateList) async {
     print("stateData :: ${stateList.length}");
-    String returnVal = await showDialog(context: context, builder: (_){return StateDialog(stateList);});
+    String returnVal = await showDialog(
+        context: context,
+        builder: (_) {
+          return StateDialog(stateList);
+        });
     print("stateSelectionValue -> $returnVal");
-    for(int i=0; i<stateCityListMapData.length; i++){
-      if(stateCityListMapData[i].keys.contains(returnVal)){
+    for (int i = 0; i < stateCityListMapData.length; i++) {
+      if (stateCityListMapData[i].keys.contains(returnVal)) {
         stateCityListMapData[i].forEach((key, value) {
           print("stateList -> $key :: $value");
           cityListData = List<String>();
@@ -1530,7 +1685,11 @@ class _ProfileUpdatPageState extends State<ProfileUpdatPage> {
 
   Future<Null> showCityDialog(List<String> cityList) async {
     print("cityData :: ${cityList.length}");
-    String returnVal = await showDialog(context: context, builder: (_){return CityDialog(cityList);});
+    String returnVal = await showDialog(
+        context: context,
+        builder: (_) {
+          return CityDialog(cityList);
+        });
     print("citySelectionValue -> $returnVal");
 
     cityFieldController.text = returnVal;

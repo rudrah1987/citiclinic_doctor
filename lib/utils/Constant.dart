@@ -6,6 +6,16 @@ const int USER_ALREADY_EXIST = 300;
 const String COVER_IMAGE = "cover_image";
 const String PROFILE_IMAGE = "profile_image";
 
+const String IMG_LIVE_BASE_PATH =
+    "http://projects.adsandurl.com/cityclinics/webroot/Admin/img/";
+const String PROFILE_IMG_LIVE_BASE_PATH =
+
+    "http://projects.adsandurl.com/cityclinics/img/";
+const String IMG_TESTING_BASE_PATH =
+    "https://demo.mbrcables.com/cityclinics/webroot/Admin/img/";
+const String PROFILE_IMG_TESTING_BASE_PATH =
+    "https://demo.mbrcables.com/cityclinics/img/";
+
 //Login role type constant here...
 const int DOCTOR_ROLE_TYPE = 3;
 

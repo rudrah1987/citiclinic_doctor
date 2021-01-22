@@ -1,13 +1,18 @@
-import 'package:city_clinic_doctor/modal/auth/LoginResponse.dart';
+
+import 'package:city_clinic_doctor/modal/profile/UserDetailResponse.dart';
+import 'package:city_clinic_doctor/new/customs/logger_global.dart';
 import 'package:city_clinic_doctor/repository/base.dart';
+import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
+ValueNotifier<UserDetailResponse> currentUser = new ValueNotifier(UserDetailResponse());
+
 class LoginBloc extends BaseBloc {
-  final _loginStream = PublishSubject<LoginResponse>();
+  final _loginStream = PublishSubject<UserDetailResponse>();
   final _loadingStream = PublishSubject<bool>();
   final _errorStream = PublishSubject<Error>();
 
-  Stream<LoginResponse> get loginStream => _loginStream.stream;
+  Stream<UserDetailResponse> get loginStream => _loginStream.stream;
 
   Stream<bool> get loadingStream => _loadingStream.stream;
 
@@ -22,20 +27,39 @@ class LoginBloc extends BaseBloc {
     _errorStream?.close();
   }
 
-  void login(String phone,
-      String password, String longitude, String latitude, int roleType) async {
+  //
+
+  void login(String phone, String password, String longitude, String latitude,
+      int roleType) async {
     print("calling");
     if (isLoading) return;
     isLoading = true;
     _loadingStream.sink.add(true);
-    await repository.login(phone, password, longitude, latitude, roleType).then((value){
+    await repository
+        .login(phone, password, longitude, latitude, roleType)
+        .then((value) {
+      isLoading = false;
+      if (value.success) {
+        // setCurrentUser(value);
+        _loadingStream.sink.add(isLoading);
+        _loginStream.sink.add(value);
+        // if(value.user!=null){
+        //   PreferenceHelper.saveUser(value.user);
+        // }
+        // PreferenceHelper.getUser().then((value) {
+
+
+          currentUser.value.user = value.user;
+          currentUser.notifyListeners();
+          gLogger.i('UserName getUser-${currentUser.value.user.name}');
+        //
+        // });
+        // gLogger.i('UserName-${currentUser.value.user.name}');
+      }
+    }).catchError((error) {
       isLoading = false;
       _loadingStream.sink.add(isLoading);
-      _loginStream.sink.add(value);
-    }).catchError((error){
-      isLoading = false;
-     _loadingStream.sink.add(isLoading);
-     _errorStream.add(error);
+      _errorStream.add(error);
     });
   }
 }

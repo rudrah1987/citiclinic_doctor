@@ -1,9 +1,10 @@
-import 'dart:convert';
-
 import 'package:city_clinic_doctor/modal/auth/SignUpResponse.dart';
+import 'package:city_clinic_doctor/new/customs/logger_global.dart';
+import 'package:city_clinic_doctor/new/utils/prefrence_helper.dart';
 import 'package:city_clinic_doctor/preference/CCDoctorPrefs.dart';
-import 'package:city_clinic_doctor/preference/PreferenceKeys.dart';
+import 'package:city_clinic_doctor/routes/Routes.dart';
 import 'package:city_clinic_doctor/ui/auth/Login.dart';
+import 'package:city_clinic_doctor/ui/auth/bloc/LoginBloc.dart';
 import 'package:city_clinic_doctor/ui/dialogs/VerifyOtpDialog.dart';
 import 'package:city_clinic_doctor/ui/dialogs/bloc/ResendOtpBloc.dart';
 import 'package:city_clinic_doctor/ui/dialogs/bloc/VerifyOtpBloc.dart';
@@ -15,7 +16,7 @@ import 'package:flutter/material.dart';
 import 'SuccessSignUpPage.dart';
 import 'bloc/SignUpBloc.dart';
 
-class SignUp extends StatefulWidget{
+class SignUp extends StatefulWidget {
   @override
   SignUpState createState() => SignUpState();
 }
@@ -46,7 +47,12 @@ class SignUpState extends State<SignUp> {
 
     user = null;
     _bloc.signUpStream.listen((event) {
+
+      gLogger.i('----------signUpStream.listen------------${event.otp}');
+
       if (event.user != null) {
+        print('EventUser--${event.user}');
+
         user = event.user;
         getVerifyOtpValue(event.user);
       } else {
@@ -70,12 +76,17 @@ class SignUpState extends State<SignUp> {
     });
 
     _verifyOtpBloc.otpVerifyStream.listen((event) {
+      gLogger.i('----------otpVerifyStream.listen------------${event.user.accessToken.toString()}');
+
       if (event.user != null) {
         AppUtils.currentUser = event.user;
-        CCDoctorPrefs.saveUser(userKeys, jsonEncode(event.user.toJson()));
-        print("userAccessToken -> ${event.user.accessToken}");
-        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-            SuccessSignUpPage()), (Route<dynamic> route) => false);
+        PreferenceHelper.saveUser(event.user);
+        currentUser.value.user=event.user;
+        // CCDoctorPrefs.saveUser(userKeys, jsonEncode(event.user.toJson()));
+        print("otpVerifyStream.listen--userAccessTokenSignUp -> ${event.user.accessToken}");
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => SuccessSignUpPage()),
+            (Route<dynamic> route) => false);
       } else {
         AppUtils.showError(event.message, _globalKey);
         print("Error msg : ${event.message}");
@@ -125,13 +136,18 @@ class SignUpState extends State<SignUp> {
   }
 
   Future<Null> getVerifyOtpValue(UserSignUpData user) async {
-    String returnVal = await showDialog(context: context, builder: (_){return VerifyOtpDialog(user);});
+    print('----------getVerifyOtpValue------------${user.email}');
 
-    if(returnVal == 'success'){
+    String returnVal = await showDialog(
+        context: context,
+        builder: (_) {
+          return VerifyOtpDialog(user);
+        });
+
+    if (returnVal == 'success') {
       _verifyOtpBloc.verifyOtp(user.phone_number, user.otp,
           user.user_log_id.toString(), user.user_id);
-
-    }else if(returnVal == 'resend'){
+    } else if (returnVal == 'resend') {
       print("phone -> ${user.phone_number} :: userID -> ${user.user_id}");
       _resendOtpBloc.resendOtp(user.phone_number, user.user_id);
     }
@@ -182,11 +198,13 @@ class SignUpState extends State<SignUp> {
                         fontWeight: FontWeight.w700,
                         color: Colors.black),
                   ),
-                  subtitle: Text("Enter your details to continue.",
+                  subtitle: Text(
+                    "Enter your details to continue.",
                     style: TextStyle(
                         fontSize: 12,
                         fontFamily: 'Poppins',
-                        color: kAuthTextGreyColor),),
+                        color: kAuthTextGreyColor),
+                  ),
                 ),
                 SizedBox(
                   height: 25,
@@ -205,8 +223,7 @@ class SignUpState extends State<SignUp> {
                             style: TextStyle(
                                 fontSize: 16.0,
                                 color: Colors.black,
-                                fontWeight: FontWeight.w400
-                            ),
+                                fontWeight: FontWeight.w400),
                             decoration: const InputDecoration(
                               // hintText: '-Enter Full Name-',
                               labelText: 'Full Name',
@@ -222,7 +239,9 @@ class SignUpState extends State<SignUp> {
                               return null;
                             },
                           ),
-                          SizedBox(height: 12,),
+                          SizedBox(
+                            height: 12,
+                          ),
                           TextFormField(
                             controller: _phoneController,
                             cursorColor: kPrimaryColor,
@@ -230,8 +249,7 @@ class SignUpState extends State<SignUp> {
                             style: TextStyle(
                                 fontSize: 16.0,
                                 color: Colors.black,
-                                fontWeight: FontWeight.w400
-                            ),
+                                fontWeight: FontWeight.w400),
                             decoration: const InputDecoration(
                               // hintText: '-Enter Mobile Number-',
                               counterText: "",
@@ -246,7 +264,8 @@ class SignUpState extends State<SignUp> {
 
                               if (v.isEmpty) {
                                 return 'Mobile Number should be mandatory';
-                              }/* else if (v.length != 10) {
+                              }
+                              /* else if (v.length != 10) {
                                 return 'Mobile Number should be 10 digits';
                               }else if (!regExp.hasMatch(v)) {
                                 return 'Mobile Number should be valid';
@@ -254,7 +273,9 @@ class SignUpState extends State<SignUp> {
                               return null;
                             },
                           ),
-                          SizedBox(height: 12,),
+                          SizedBox(
+                            height: 12,
+                          ),
                           TextFormField(
                             controller: _emailController,
                             cursorColor: kPrimaryColor,
@@ -262,8 +283,7 @@ class SignUpState extends State<SignUp> {
                             style: TextStyle(
                                 fontSize: 16.0,
                                 color: Colors.black,
-                                fontWeight: FontWeight.w400
-                            ),
+                                fontWeight: FontWeight.w400),
                             decoration: const InputDecoration(
                               // hintText: '-Enter Email ID-',
                               labelText: 'Email ID',
@@ -271,20 +291,22 @@ class SignUpState extends State<SignUp> {
                               contentPadding: EdgeInsets.symmetric(vertical: 5),
                             ),
                             validator: (v) {
-
-                              String pattern = r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
+                              String pattern =
+                                  r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
                               RegExp regExp = new RegExp(pattern);
 
                               if (v.isEmpty) {
                                 return 'Email should be mandatory';
-                              }else if (!regExp.hasMatch(v)) {
+                              } else if (!regExp.hasMatch(v)) {
                                 return 'Email should be Valid';
                               }
 
                               return null;
                             },
                           ),
-                          SizedBox(height: 12,),
+                          SizedBox(
+                            height: 12,
+                          ),
                           TextFormField(
                             controller: _passwordController,
                             cursorColor: kPrimaryColor,
@@ -293,32 +315,37 @@ class SignUpState extends State<SignUp> {
                             style: TextStyle(
                                 fontSize: 16.0,
                                 color: Colors.black,
-                                fontWeight: FontWeight.w400
-                            ),
+                                fontWeight: FontWeight.w400),
                             decoration: InputDecoration(
-                              // hintText: '-Enter Password-',
-                              labelText: 'Create Password',
-                              // prefixIcon: Icon(Icons.mail_outline),
-                              contentPadding: EdgeInsets.symmetric(vertical: 5),
-                              suffixIcon: IconButton(
-                                  icon: Icon(passwordVisible ? Icons.visibility : Icons.visibility_off,
-                                    color: Theme.of(context).primaryColorDark,),
-                                  onPressed: (){
-                                    setState(() {
-                                      passwordVisible = !passwordVisible;
-                                    });
-                              })
-                            ),
+                                // hintText: '-Enter Password-',
+                                labelText: 'Create Password',
+                                // prefixIcon: Icon(Icons.mail_outline),
+                                contentPadding:
+                                    EdgeInsets.symmetric(vertical: 5),
+                                suffixIcon: IconButton(
+                                    icon: Icon(
+                                      passwordVisible
+                                          ? Icons.visibility
+                                          : Icons.visibility_off,
+                                      color: Theme.of(context).primaryColorDark,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        passwordVisible = !passwordVisible;
+                                      });
+                                    })),
                             validator: (v) {
                               if (v.isEmpty) {
                                 return 'Password should be mandatory';
-                              }else if(v.length < 8){
+                              } else if (v.length < 8) {
                                 return 'Password should be atleast 8 characters';
                               }
                               return null;
                             },
                           ),
-                          SizedBox(height: 8,),
+                          SizedBox(
+                            height: 8,
+                          ),
                           Container(
                             width: double.infinity,
                             child: Row(
@@ -330,7 +357,8 @@ class SignUpState extends State<SignUp> {
                                       setState(() {
                                         checkedValue = newValue;
                                       });
-                                    },),
+                                    },
+                                  ),
                                   padding: EdgeInsets.all(3),
                                 ),
                                 RichText(
@@ -343,13 +371,15 @@ class SignUpState extends State<SignUp> {
                                     ),
                                     children: <TextSpan>[
                                       TextSpan(text: 'I agree to all '),
-                                      TextSpan(text: 'Terms & Conditions',
+                                      TextSpan(
+                                          text: 'Terms & Conditions',
                                           style: new TextStyle(
-                                          color: kPrimaryColor,
-                                          fontWeight: FontWeight.w600,
-                                          decoration: TextDecoration.underline,
-                                          fontSize: 14.0
-                                        /*fontWeight: FontWeight.bold*/)),
+                                              color: kPrimaryColor,
+                                              fontWeight: FontWeight.w600,
+                                              decoration:
+                                                  TextDecoration.underline,
+                                              fontSize: 14.0
+                                              /*fontWeight: FontWeight.bold*/)),
                                       TextSpan(text: ' of city clinic.'),
                                     ],
                                   ),
@@ -362,30 +392,39 @@ class SignUpState extends State<SignUp> {
                           ),
                           FlatButton(
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(25.0)
-                            ),
+                                borderRadius: BorderRadius.circular(25.0)),
                             color: kPrimaryColor,
                             onPressed: () {
                               if (_formKey.currentState.validate()) {
-                              String fullName = _nameController.text.toString();
-                              String email = _emailController.text.toString();
-                              String phone = _phoneController.text.toString();
-                              String password = _passwordController.text.toString();
-                              if(checkedValue){
-                                _bloc.signUp(fullName, phone, email, password, fbToken,
-                                    locLongitude.toString(), locLatitude.toString());
-                              }else{
-                                _globalKey.currentState.showSnackBar(SnackBar(
-                                    content: new Text("Please accept our Terms & Conditions"),
-                                    duration: const Duration(milliseconds: 1200)));
-                              }
+                                String fullName =
+                                    _nameController.text.toString();
+                                String email = _emailController.text.toString();
+                                String phone = _phoneController.text.toString();
+                                String password =
+                                    _passwordController.text.toString();
+                                if (checkedValue) {
+                                  _bloc.signUp(
+                                      fullName,
+                                      phone,
+                                      email,
+                                      password,
+                                      fbToken,
+                                      locLongitude.toString(),
+                                      locLatitude.toString());
+                                } else {
+                                  _globalKey.currentState.showSnackBar(SnackBar(
+                                      content: new Text(
+                                          "Please accept our Terms & Conditions"),
+                                      duration:
+                                          const Duration(milliseconds: 1200)));
+                                }
                               }
                             },
                             height: 50,
                             child: Text(
                               "Sign Up",
-                              style: TextStyle(color: Colors.white,
-                              fontSize: 16),
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 16),
                             ),
                           )
                         ],
@@ -395,7 +434,8 @@ class SignUpState extends State<SignUp> {
                   margin: EdgeInsets.only(top: 50),
                   child: RichText(
                     text: TextSpan(
-                        style: TextStyle(fontSize: 12, color: kAuthTextGreyColor),
+                        style:
+                            TextStyle(fontSize: 12, color: kAuthTextGreyColor),
                         text: "Already a Member? ",
                         children: [
                           TextSpan(
@@ -407,8 +447,8 @@ class SignUpState extends State<SignUp> {
                                           builder: (_) => Login()));
                                 },
                               text: "Sign In",
-                              style: TextStyle(color: Colors.red,
-                              fontSize: 14.0))
+                              style:
+                                  TextStyle(color: Colors.red, fontSize: 14.0))
                         ]),
                   ),
                 )

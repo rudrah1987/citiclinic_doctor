@@ -29,11 +29,13 @@ class VerifyOtpBloc extends BaseBloc {
     isLoading = true;
     _loadingStream.sink.add(true);
 
-    VerifyOtpResponse r =  await repository.verifyOtp(phone, otp, userLogID, userID);
+    VerifyOtpResponse r =
+        await repository.verifyOtp(phone, otp, userLogID, userID);
     isLoading = false;
     _loadingStream.sink.add(isLoading);
     _otpVerifyStream.sink.add(r);
-   /*.then((value) {
+    // return r.success;
+    /*.then((value) {
       print(value);
 
     }).catchError((error) {

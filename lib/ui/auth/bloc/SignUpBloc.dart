@@ -1,5 +1,6 @@
 import 'package:city_clinic_doctor/modal/auth/SignUpResponse.dart';
 import 'package:city_clinic_doctor/repository/base.dart';
+import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
 class SignUpBloc extends BaseBloc {
@@ -29,6 +30,7 @@ class SignUpBloc extends BaseBloc {
       isLoading = true;
       _loadingStream.sink.add(isLoading);
       SignUpResponse r = await repository.signUp(name, phone, email, password, fb_token, longitude, latitude);
+      // _signUpStream.sink.add(r);
       isLoading = false;
       _loadingStream.sink.add(isLoading);
       _signUpStream.sink.add(r);

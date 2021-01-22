@@ -1,7 +1,5 @@
 import 'package:city_clinic_doctor/modal/auth/SignUpResponse.dart';
 import 'package:city_clinic_doctor/network/ApiRepository.dart';
-import 'package:city_clinic_doctor/network/ApiResult.dart';
-import 'package:city_clinic_doctor/network/NetworkExceptions.dart';
 import 'package:city_clinic_doctor/network/movie_event.dart';
 import 'package:city_clinic_doctor/network/result_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

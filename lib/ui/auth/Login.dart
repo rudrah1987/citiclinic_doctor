@@ -1,9 +1,11 @@
 import 'dart:convert';
 
+import 'package:city_clinic_doctor/chat_section/utils/application.dart';
 import 'package:city_clinic_doctor/modal/auth/ForgotPassData.dart';
 import 'package:city_clinic_doctor/modal/auth/ForgotPassResponse.dart';
+import 'package:city_clinic_doctor/new/customs/logger_global.dart';
+import 'package:city_clinic_doctor/new/utils/prefrence_helper.dart';
 import 'package:city_clinic_doctor/preference/CCDoctorPrefs.dart';
-import 'package:city_clinic_doctor/preference/PreferenceKeys.dart';
 import 'package:city_clinic_doctor/ui/auth/bloc/LoginBloc.dart';
 import 'package:city_clinic_doctor/ui/dialogs/CreateNewPasswordDialog.dart';
 import 'package:city_clinic_doctor/ui/dialogs/ForgotPassOtpVerifyDialog.dart';
@@ -56,10 +58,16 @@ class LoginState extends State<Login>{
     user = null;
 
     _loginBloc.loginStream.listen((event) {
+      gLogger.i('----------loginStream.listen------------${event}');
+
       if (event.user != null) {
         AppUtils.currentUser = event.user;
-        CCDoctorPrefs.saveUser(userKeys, jsonEncode(event.user.toJson()));
-        print("userAccessToken -> ${event.user.accessToken}");
+        PreferenceHelper.saveUser(event.user);
+        PreferenceHelper.saveString("cUser", event.user.quickLogin,);
+        PreferenceHelper.saveString("cPass", event.user.quickPassword,);
+        PreferenceHelper.saveString("cid", event.user.quickId,);
+        Application().initApp();
+        print("userAccessTokenAtLoginInit -> ${event.user.accessToken}");
         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
             Dashboard()), (Route<dynamic> route) => false);
       } else {
@@ -290,14 +298,14 @@ class LoginState extends State<Login>{
                               });
                             })
                     ),
-                    validator: (v) {
-                      if (v.isEmpty) {
-                        return 'password is required';
-                      }else if(v.length < 8){
-                        return 'password should be atleast 8 characters';
-                      }
-                      return null;
-                    },
+                    // validator: (v) {
+                    //   if (v.isEmpty) {
+                    //     return 'password is required';
+                    //   }else if(v.length < 8){
+                    //     return 'password should be atleast 8 characters';
+                    //   }
+                    //   return null;
+                    // },
                   ),
                           SizedBox(height: 16,),
                   InkWell(

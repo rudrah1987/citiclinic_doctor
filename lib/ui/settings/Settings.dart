@@ -1,7 +1,8 @@
-import 'package:city_clinic_doctor/helper/DialogHelper.dart';
 import 'package:city_clinic_doctor/modal/auth/user.dart';
-import 'package:city_clinic_doctor/preference/CCDoctorPrefs.dart';
-import 'package:city_clinic_doctor/preference/PreferenceKeys.dart';
+import 'package:city_clinic_doctor/modal/profile/UserDetailResponse.dart';
+import 'package:city_clinic_doctor/modal/staticResponse/staticResponse.dart';
+import 'package:city_clinic_doctor/network/api_provider.dart';
+import 'package:city_clinic_doctor/new/utils/prefrence_helper.dart';
 import 'package:city_clinic_doctor/ui/dialogs/LogoutDialog.dart';
 import 'package:city_clinic_doctor/ui/drawer/prescriptionManagement/PrescriptionPage.dart';
 import 'package:city_clinic_doctor/ui/settings/ChangePasswordPage.dart';
@@ -12,6 +13,7 @@ import 'package:city_clinic_doctor/ui/settings/bloc/LogoutBloc.dart';
 import 'package:city_clinic_doctor/ui/settings/myAppointments/MyAppointmentsPage.dart';
 import 'package:city_clinic_doctor/ui/settings/myConsults/MyConsultsPage.dart';
 import 'package:city_clinic_doctor/ui/splash/Splash2.dart';
+import 'package:city_clinic_doctor/utils/Constant.dart';
 import 'package:city_clinic_doctor/utils/SvgImages.dart';
 import 'package:city_clinic_doctor/utils/Colors.dart';
 import 'package:city_clinic_doctor/utils/app_utils.dart';
@@ -19,10 +21,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
+import '../../utils/SvgImages.dart';
+import '../../utils/SvgImages.dart';
 import 'ContactUsPage.dart';
+import 'my_prescriptions.dart';
 
 var globalContext;
+
 class Settings extends StatefulWidget {
   static const String routeName = '/settings';
   @override
@@ -30,20 +37,23 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
-
-  User _user;
+  UserData _user;
   LogoutBloc _logoutBloc = LogoutBloc();
   GlobalKey<ScaffoldState> _globalKey = GlobalKey();
+  StaticPageResponse _staticPageResponse = StaticPageResponse();
 
   @override
   void initState() {
     super.initState();
+    getStaticData();
     _user = AppUtils.currentUser;
     _logoutBloc.logoutStream.listen((event) {
       if (event.success == true) {
-        CCDoctorPrefs.deleteUser(userKeys);
-        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-            Splash2()), (Route<dynamic> route) => false);
+        // CCDoctorPrefs.deleteUser(userKeys);
+        PreferenceHelper.logout();
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => Splash2()),
+            (Route<dynamic> route) => false);
         AppUtils.showError(event.message, _globalKey);
       } else {
         AppUtils.showError(event.message, _globalKey);
@@ -66,6 +76,14 @@ class _SettingsState extends State<Settings> {
     });
   }
 
+  getStaticData() {
+    ApiProvider().getStaticPages().then((value) {
+      setState(() {
+        _staticPageResponse = value;
+      });
+    });
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -76,110 +94,167 @@ class _SettingsState extends State<Settings> {
   Widget build(BuildContext context) {
     globalContext = context;
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: kPrimaryColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            bottom: Radius.circular(14),
+        appBar: AppBar(
+          backgroundColor: kPrimaryColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(
+              bottom: Radius.circular(14),
+            ),
+          ),
+          title: Text("Settings"),
+          //Ternery operator use for condition check
+          elevation:
+              defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
+          centerTitle: false,
+          leading: new IconButton(
+            icon: new Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context);
+            },
           ),
         ),
-        title: Text("Settings"),
-        //Ternery operator use for condition check
-        elevation: defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
-        centerTitle: false,
-        leading: new IconButton(
-          icon: new Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Container(
+        body: Container(
           padding: EdgeInsets.fromLTRB(12.0, 8.0, 12.0, 5.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-//            SizedBox(height: 8,),
+              SizedBox(
+                height: 8,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  SvgPicture.asset(profile_placeholder, height:64, width:64,),
-                  SizedBox(width: 20,),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(30),
+                    child: Image.network(
+                      "$PROFILE_IMG_TESTING_BASE_PATH${_user.profileImage}",
+                      errorBuilder: (_, __, ___) {
+                        return CircleAvatar(
+                          radius: 30.0,
+                          backgroundColor: kPrimaryColor,
+                          child: Text(
+                            "${_user?.name[0]}",
+                          ),
+                        );
+                      },
+                      loadingBuilder: (_, __, ___) {
+                        return CircleAvatar(
+                          radius: 30.0,
+                          backgroundColor: kPrimaryColor,
+                          child: Text(
+                            "${_user?.name[0]}",
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  SizedBox(
+                    width: 20,
+                  ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(_user.name,
+                      Text(
+                        _user.name,
                         style: TextStyle(
                             fontSize: 18.0,
                             fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w600
-                        ),),
-                      SizedBox(height: 2,),
-                      Text("+91 ${_user.phone_number}",
+                            fontWeight: FontWeight.w600),
+                      ),
+                      SizedBox(
+                        height: 2,
+                      ),
+                      Text(
+                        "+91 ${_user.phoneNumber}",
                         style: TextStyle(
                             fontSize: 14.0,
                             fontFamily: 'Poppins',
                             color: kAuthTextGreyColor,
                             fontWeight: FontWeight.w600,
-                            decoration: TextDecoration.underline
-                        ),),
-                      SizedBox(height: 2,),
-                      Text("View Profile",
+                            decoration: TextDecoration.underline),
+                      ),
+                      SizedBox(
+                        height: 2,
+                      ),
+                      Text(
+                        "View Profile",
                         style: TextStyle(
                             fontSize: 14.0,
                             color: kPrimaryColor,
                             fontFamily: 'Poppins',
                             fontWeight: FontWeight.w600,
-                            decoration: TextDecoration.underline
-                        ),),
+                            decoration: TextDecoration.underline),
+                      ),
                     ],
                   ),
                   Expanded(
-                    child: SvgPicture.asset(edit_profile, height:24, width:24,
-                      alignment: Alignment.topRight,),
+                    child: SvgPicture.asset(
+                      edit_profile,
+                      height: 24,
+                      width: 24,
+                      alignment: Alignment.topRight,
+                    ),
                   ),
-                  SizedBox(width: 6,)
+                  SizedBox(
+                    width: 6,
+                  )
                 ],
               ),
-              SizedBox(height: 10,),
+              SizedBox(
+                height: 10,
+              ),
               Divider(
                 color: kAuthTextGreyColor,
                 thickness: 0.7,
               ),
-              SizedBox(height: 10,),
+              SizedBox(
+                height: 10,
+              ),
               Container(
                 margin: EdgeInsets.only(left: 12),
-                child: Text("My Account",
+                child: Text(
+                  "My Account",
                   textAlign: TextAlign.left,
                   style: TextStyle(
                       fontSize: 14.0,
                       color: kPrimaryColor,
                       fontWeight: FontWeight.w600,
-                      decoration: TextDecoration.underline
-                  ),),
+                      decoration: TextDecoration.underline),
+                ),
               ),
-              SizedBox(height: 5,),
+              SizedBox(
+                height: 5,
+              ),
               Container(
                 height: 140,
-                child:  ListView(
+                child: ListView(
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
                   children: <Widget>[
                     ListTile(
-                      visualDensity: VisualDensity(horizontal: 0, vertical: -3),
-                      leading: SvgPicture.asset(myConsultant, height:20, width:20,),
-                      title: Text('My Consults',
+                      visualDensity:
+                          VisualDensity(horizontal: 0, vertical: -3),
+                      leading: SvgPicture.asset(
+                        myConsultant,
+                        height: 20,
+                        width: 20,
+                      ),
+                      title: Text(
+                        'My Consults',
                         style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
-                            color: kPrimaryColor
-                        ),),
-                      trailing: SvgPicture.asset(circleArrow, height:18, width:18,),
-                      onTap: (){
+                            color: kPrimaryColor),
+                      ),
+                      trailing: SvgPicture.asset(
+                        circleArrow,
+                        height: 18,
+                        width: 18,
+                      ),
+                      onTap: () {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -187,37 +262,58 @@ class _SettingsState extends State<Settings> {
                       },
                     ),
                     ListTile(
-                      visualDensity: VisualDensity(horizontal: 0, vertical: -3),
-                      leading: SvgPicture.asset(myAppointment, height:20, width:20,),
-                      title: Text('My Appointments',
+                      visualDensity:
+                          VisualDensity(horizontal: 0, vertical: -3),
+                      leading: SvgPicture.asset(
+                        myAppointment,
+                        height: 20,
+                        width: 20,
+                      ),
+                      title: Text(
+                        'My Appointments',
                         style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
-                            color: kPrimaryColor
-                        ),),
-                      onTap: (){
+                            color: kPrimaryColor),
+                      ),
+                      onTap: () {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (_) => MyAppointmentsPage()));
                       },
-                      trailing: SvgPicture.asset(circleArrow, height:18, width:18,),
+                      trailing: SvgPicture.asset(
+                        circleArrow,
+                        height: 18,
+                        width: 18,
+                      ),
                     ),
                     ListTile(
-                      visualDensity: VisualDensity(horizontal: 0, vertical: -3),
-                      leading: SvgPicture.asset(myPrescription, height:20, width:20,),
-                      trailing: SvgPicture.asset(circleArrow, height:18, width:18,),
-                      title: Text('My Prescription',
+                      visualDensity:
+                          VisualDensity(horizontal: 0, vertical: -3),
+                      leading: SvgPicture.asset(
+                        myPrescription,
+                        height: 20,
+                        width: 20,
+                      ),
+                      trailing: SvgPicture.asset(
+                        circleArrow,
+                        height: 18,
+                        width: 18,
+                      ),
+                      title: Text(
+                        'My Prescription',
                         style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
-                            color: kPrimaryColor
-                        ),),
-                      onTap: (){
+                            color: kPrimaryColor),
+                      ),
+                      onTap: () {
+                        // successDialog(context: context,svgName: successSignUp);
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (_) => PrescriptionPage()));
+                                builder: (_) => PrescriptionPageWithAppBar()));
                       },
                     ),
                   ],
@@ -227,63 +323,78 @@ class _SettingsState extends State<Settings> {
                 color: kAuthTextGreyColor,
                 thickness: 0.7,
               ),
-              SizedBox(height: 10,),
+              SizedBox(
+                height: 10,
+              ),
               Container(
                 margin: EdgeInsets.only(left: 12),
-                child: Text("App Settings",
+                child: Text(
+                  "App Settings",
                   textAlign: TextAlign.left,
                   style: TextStyle(
                       fontSize: 14.0,
                       color: kPrimaryColor,
                       fontWeight: FontWeight.w600,
-                      decoration: TextDecoration.underline
-                  ),),
+                      decoration: TextDecoration.underline),
+                ),
               ),
-              SizedBox(height: 5,),
+              SizedBox(
+                height: 5,
+              ),
               Container(
                 height: 220,
-                child:  ListView(
+                child: ListView(
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
                   children: <Widget>[
                     ListTile(
-                      visualDensity: VisualDensity(horizontal: 0, vertical: -3),
+                      visualDensity:
+                          VisualDensity(horizontal: 0, vertical: -3),
                       title: Text('Terms & Conditions'),
                       trailing: Icon(Icons.chevron_right),
-                      onTap: (){
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => TermConditionPage()));
+                      onTap: () {
+                        if (_staticPageResponse.data != null) {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => TermConditionPage(
+                                      _staticPageResponse?.data[2])));
+                        } else
+                          Fluttertoast.showToast(msg: 'No Data');
                       },
                     ),
                     ListTile(
-                      visualDensity: VisualDensity(horizontal: 0, vertical: -3),
+                      visualDensity:
+                          VisualDensity(horizontal: 0, vertical: -3),
                       title: Text('FAQ’s'),
                       trailing: Icon(Icons.chevron_right),
-                      onTap: (){
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => FaqsPage()));
+                      onTap: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (_) => FaqsPage()));
                       },
                     ),
                     ListTile(
-                      visualDensity: VisualDensity(horizontal: 0, vertical: -3),
+                      visualDensity:
+                          VisualDensity(horizontal: 0, vertical: -3),
                       trailing: Icon(Icons.chevron_right),
                       title: Text('Privacy Policy'),
-                      onTap: (){
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => PrivacyPolicy()));
+                      onTap: () {
+                        if (_staticPageResponse.data != null) {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => PrivacyPolicy(
+                                      _staticPageResponse?.data[1])));
+                        } else
+                          Fluttertoast.showToast(msg: 'No Data');
                       },
                     ),
                     ListTile(
-                      visualDensity: VisualDensity(horizontal: 0, vertical: -3),
+                      visualDensity:
+                          VisualDensity(horizontal: 0, vertical: -3),
                       trailing: Icon(Icons.chevron_right),
                       title: Text('Contact Us'),
-                      onTap: (){
+                      onTap: () {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -291,10 +402,11 @@ class _SettingsState extends State<Settings> {
                       },
                     ),
                     ListTile(
-                      visualDensity: VisualDensity(horizontal: 0, vertical: -3),
+                      visualDensity:
+                          VisualDensity(horizontal: 0, vertical: -3),
                       trailing: Icon(Icons.chevron_right),
                       title: Text('Change Password'),
-                      onTap: (){
+                      onTap: () {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -304,13 +416,10 @@ class _SettingsState extends State<Settings> {
                   ],
                 ),
               ),
-              SizedBox(
-                height: 25,
-              ),
+              Spacer(),
               FlatButton(
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25.0)
-                ),
+                    borderRadius: BorderRadius.circular(25.0)),
                 color: Colors.red,
                 onPressed: () {
                   getLogoutValue();
@@ -319,9 +428,7 @@ class _SettingsState extends State<Settings> {
                 height: 45,
                 child: Text(
                   "Logout".toUpperCase(),
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16),
+                  style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
               ),
               SizedBox(
@@ -329,18 +436,18 @@ class _SettingsState extends State<Settings> {
               ),
             ],
           ),
-        ),
-      )
-    );
+        ));
   }
 
   Future<Null> getLogoutValue() async {
-    String returnVal = await showDialog(context: context, builder: (_) {
-      return LogoutDialog();
-    });
+    String returnVal = await showDialog(
+        context: context,
+        builder: (_) {
+          return LogoutDialog();
+        });
 
     if (returnVal == 'logout') {
-      _logoutBloc.logoutUser(_user.accessToken,  _user.user_id);
+      _logoutBloc.logoutUser(_user.accessToken, _user.userId);
     }
   }
 }

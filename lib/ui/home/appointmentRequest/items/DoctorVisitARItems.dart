@@ -1,9 +1,14 @@
+import 'package:city_clinic_doctor/modal/apointmentList/apointmentListResponse.dart';
 import 'package:city_clinic_doctor/utils/Colors.dart';
+import 'package:city_clinic_doctor/utils/Constant.dart';
 import 'package:city_clinic_doctor/utils/SvgImages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class DoctorVisitARItems extends StatefulWidget {
+  final BookingList data;
+  DoctorVisitARItems({this.data});
+
   @override
   _DoctorVisitARItemsState createState() => _DoctorVisitARItemsState();
 }
@@ -17,60 +22,78 @@ class _DoctorVisitARItemsState extends State<DoctorVisitARItems> {
       width: double.infinity,
       decoration: BoxDecoration(
           border: Border.all(width: 1, color: Colors.grey[400]),
-          borderRadius: BorderRadius.all(Radius.circular(5.0))
-      ),
+          borderRadius: BorderRadius.all(Radius.circular(5.0))),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.max,
         children: [
-          SvgPicture.asset(profile_placeholder, height:42, width:42),
-          SizedBox(width: 16,),
-          Expanded(child: Column(
+          ClipRRect(
+            child: Image.network(
+              "$TESTING_BASE_URL${widget.data.patient.profileImage}",
+              errorBuilder: (_, __, ___) {
+                return CircleAvatar(
+                  backgroundColor: kPrimaryColor,
+                  child: Text(
+                    "${widget.data?.patient?.name[0]}",
+                  ),
+                );
+              },
+              loadingBuilder: (_, __, ___) {
+                return CircleAvatar(
+                  backgroundColor: kPrimaryColor,
+                  child: Text(
+                    "${widget.data?.patient?.name[0]}",
+                  ),
+                );
+              },
+            ),
+          ),
+          // SvgPicture.asset(profile_placeholder, height: 42, width: 42),
+          SizedBox(
+            width: 16,
+          ),
+          Expanded(
+              child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Patient Name : John Doe",
-                style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.black87
-                ),),
+              Text(
+                "Patient Name : ${widget.data.patient.name}",
+                style: TextStyle(fontSize: 16, color: Colors.black87),
+              ),
               SizedBox(height: 2),
-              Text("Email id: johndoe@email.com",
-                style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey
-                ),),
+              Text(
+                "Email id: ${widget.data.patient.email ?? ''}",
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
               SizedBox(height: 2),
-              Text("Mobile Number: 98765 43210",
-                style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey
-                ),),
+              Text(
+                "Mobile Number: ${widget.data.patient.phoneNumber ?? ''}",
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
               SizedBox(height: 2),
-              Text("Gender: Male",
-                style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey
-                ),),
+              Text(
+                "Gender: Male",
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
               SizedBox(height: 12),
-              Text("APPOINTMENT DETAILS",
+              Text(
+                "APPOINTMENT DETAILS",
                 style: TextStyle(
                     fontSize: 14,
                     decoration: TextDecoration.underline,
-                    color: kPrimaryColor
-                ),),
+                    color: kPrimaryColor),
+              ),
               SizedBox(height: 4),
-              Text("Appointment ID: CD1379",
-                style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey
-                ),),
+              Text(
+                "Appointment ID: CCD00${widget.data.bookBy.id ?? ''}",
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
               SizedBox(height: 2),
-              Text("Appointment Date & Time: 06/09/2020 07:58:00 PM",
-                style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey
-                ),),
+              Text(
+                "Appointment Date & Time: ${widget.data.otherBookingDeatils?.datetimeStart?.substring(0, 10)??''} ${widget.data.otherBookingDeatils?.datetimeStart?.substring(11, 16)??''}",
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
             ],
           ))
         ],

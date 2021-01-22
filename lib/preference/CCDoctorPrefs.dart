@@ -9,6 +9,7 @@ class CCDoctorPrefs{
     prefs.setString(key, userData);
   }
 
+
   static Future<Map> getLoggedUser(String key) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return jsonDecode(prefs.getString(key));

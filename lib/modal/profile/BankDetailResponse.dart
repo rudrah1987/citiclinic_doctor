@@ -1,51 +1,27 @@
-class BankDetailResponse{
-  bool success;
+class BankResponse {
+  List<String> scalar = [];
   String message;
-  List<SpecialityData> specialities;
 
-  BankDetailResponse(this.success, this.message, this.specialities);
+  BankResponse({this.scalar});
 
-  BankDetailResponse.fromJson(Map<String, dynamic> json){
-    success = json['success'];
-    message = json['message'];
-    specialities = (json['specialities'] as List).map((i) => SpecialityData.fromJson(i)).toList();
+  BankResponse.fromJson(List<dynamic> json) {
+    // scalar.add(json.map((key, value) => null));
+    // for (int i = 0; i < json.length; i++) {
+      json.forEach((value) {
+        // print('111111112112121212121221');
+        // print(value);
+        scalar.add(value['scalar']);
+      });
+    // }
   }
 
-  BankDetailResponse.fromError(String errorValue) {
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['scalar'] = this.scalar;
+    return data;
+  }
+
+  BankResponse.fromError(String errorValue) {
     this.message = errorValue;
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['success'] = success;
-    data['message'] = message;
-  }
-
-
-}
-
-extension MyIterable<E> on Iterable<E> {
-  Iterable<E> sortedBy(Comparable key(E e)) =>
-      toList()..sort((a, b) => key(a).compareTo(key(b)));
-}
-
-class SpecialityData{
-  int id;
-  String speciality_type;
-  String status;
-
-  SpecialityData(this.id, this.speciality_type, this.status);
-
-  SpecialityData.fromJson(Map<String, dynamic> json){
-    id = json['id'];
-    speciality_type = json['speciality_type'];
-    status = json['status'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['id'] = id;
-    data['speciality_type'] = speciality_type;
-    data['status'] = status;
   }
 }

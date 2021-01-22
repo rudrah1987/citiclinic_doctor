@@ -1,14 +1,15 @@
-class SpecialityResponse{
+class SpecialityResponse {
   bool success;
   String message;
   List<SpecialityData> specialities;
 
   SpecialityResponse(this.success, this.message, this.specialities);
 
-  SpecialityResponse.fromJson(Map<String, dynamic> json){
+  SpecialityResponse.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     message = json['message'];
-    specialities = (json['specialities'] as List).map((i) => SpecialityData.fromJson(i)).toList();
+    specialities =
+        (json['data'] as List).map((i) => SpecialityData.fromJson(i)).toList();
   }
 
   SpecialityResponse.fromError(String errorValue) {
@@ -20,8 +21,6 @@ class SpecialityResponse{
     data['success'] = success;
     data['message'] = message;
   }
-
-
 }
 
 extension MyIterable<E> on Iterable<E> {
@@ -29,14 +28,14 @@ extension MyIterable<E> on Iterable<E> {
       toList()..sort((a, b) => key(a).compareTo(key(b)));
 }
 
-class SpecialityData{
+class SpecialityData {
   int id;
   String speciality_type;
   String status;
 
   SpecialityData(this.id, this.speciality_type, this.status);
 
-  SpecialityData.fromJson(Map<String, dynamic> json){
+  SpecialityData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     speciality_type = json['speciality_type'];
     status = json['status'];

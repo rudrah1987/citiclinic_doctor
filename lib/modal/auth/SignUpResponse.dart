@@ -10,7 +10,7 @@ class SignUpResponse {
     this.success = json['success'];
     this.message = json['message'];
     this.otp = json['otp'];
-    this.user = json['user'] != null ? new UserSignUpData.fromJson(json['user']) : null;
+    this.user = json['data'] != null ? new UserSignUpData.fromJson(json['data']) : null;
   }
 
   SignUpResponse.fromError(String errorValue, int statusCode) {
