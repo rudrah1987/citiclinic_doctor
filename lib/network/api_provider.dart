@@ -11,6 +11,7 @@ import 'package:city_clinic_doctor/modal/auth/SignUpResponse.dart';
 import 'package:city_clinic_doctor/modal/auth/VerifyOtpResponse.dart';
 import 'package:city_clinic_doctor/modal/home/AddAppointmentScheduleResponse.dart';
 import 'package:city_clinic_doctor/modal/notifications/notifications_response.dart';
+import 'package:city_clinic_doctor/modal/prescriptions/prescriptions.dart';
 import 'package:city_clinic_doctor/modal/profile/BankDetailResponse.dart';
 import 'package:city_clinic_doctor/modal/profile/ProfileImageResponse.dart';
 import 'package:city_clinic_doctor/modal/profile/ProfileUpdateResponse.dart';
@@ -1278,6 +1279,48 @@ class ApiProvider {
       }
       print("Error -> $e");
       return false;
+    }
+  }
+
+  Future<PrescriptionsResponse> getAllPrescriptions() async {
+    Dio _dioClient = Dio(BaseOptions(
+      baseUrl: TESTING_BASE_URL,
+      connectTimeout: 5000,
+      receiveTimeout: 5000,
+      headers: {
+        'Appversion': '1.0',
+        'Ostype': Platform.isAndroid ? 'android' : 'ios',
+        'Accesstoken': currentUser.value.user.accessToken,
+        'Userid': currentUser.value.user.userId
+      },
+    ));
+    try {
+      Response response = await _dioClient
+          .get('getprescription');
+      dynamic json = jsonDecode(response.toString());
+      print("-----------------PrescriptionsResponse--------------------");
+      print(response.data);
+      if (response.data != "") {
+        print("dataValue :- ${json['success']}");
+        if (json['success'] == true) {
+          print('SUCCCscscscs');
+          return PrescriptionsResponse.fromJson(json);
+        } else
+          return PrescriptionsResponse.fromError(
+              json['message'] /*,
+            response.data['error_code'],*/
+          );
+      } else {
+        return PrescriptionsResponse.fromError("No data" /*, 396*/);
+      }
+    } catch (error, stacktrace) {
+      print("Exception occured: $error stackTrace: $stacktrace");
+      var e = error;
+      if (error is DioError) {
+        e = getErrorMsg(e.type);
+      }
+      print("Error -> $e");
+      return PrescriptionsResponse.fromError("$e" /*, 397*/);
     }
   }
 }
