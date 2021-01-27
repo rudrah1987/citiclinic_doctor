@@ -111,11 +111,11 @@ class ApiProvider {
           return UserDetailResponse.fromJson(json);
         else
           return UserDetailResponse.fromError(
-              json['message'] /*,
+              json['message'],json['success'] /*,
             response.data['error_code'],*/
               );
       } else {
-        return UserDetailResponse.fromError("No data" /*, 396*/);
+        return UserDetailResponse.fromError("No data" ,false/*, 396*/);
       }
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
@@ -123,7 +123,7 @@ class ApiProvider {
       if (error is DioError) {
         e = getErrorMsg(e.type);
       }
-      return UserDetailResponse.fromError("$e" /*, 397*/);
+      return UserDetailResponse.fromError("$e" ,false/*, 397*/);
     }
   }
 
@@ -466,9 +466,9 @@ class ApiProvider {
 
           return data;
         } else
-          return UserDetailResponse.fromError(json['message']);
+          return UserDetailResponse.fromError(json['message'],json['success']);
       } else {
-        return UserDetailResponse.fromError("No data" /*, 396*/);
+        return UserDetailResponse.fromError("No data",json['success'] /*, 396*/);
       }
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
@@ -476,7 +476,7 @@ class ApiProvider {
       if (error is DioError) {
         e = getErrorMsg(e.type);
       }
-      return UserDetailResponse.fromError("$e" /*, 397*/);
+      return UserDetailResponse.fromError("$e",false /*, 397*/);
     }
   }
 

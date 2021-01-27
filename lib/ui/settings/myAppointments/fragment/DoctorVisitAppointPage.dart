@@ -136,8 +136,8 @@ class _DoctorVisitAppointPageState extends State<DoctorVisitAppointPage> {
               ],
             ),
             choice == 'one'
-                ? onGoingDocVisitList.isNotEmpty
-                    ? ListView.builder(
+                ? onGoingDocVisitList!=null
+                    ? onGoingDocVisitList.isNotEmpty?ListView.builder(
                         // scrollDirection: Axis.vertical,
                         primary: true,
                         physics: NeverScrollableScrollPhysics(),
@@ -148,15 +148,15 @@ class _DoctorVisitAppointPageState extends State<DoctorVisitAppointPage> {
                           // print('VISIT TYPE----${onGoingDocVisitList[i].otherBookingDeatils.visitType}');
                           return DoctorVisitMyAppointmentItems(
                               onGoingDocVisitList.toSet().toList()[i]);
-                        })
+                        }):Center(child: Text('No Appointments'),)
                     : CircularProgressIndicator(
                         valueColor:
                             new AlwaysStoppedAnimation<Color>(kPrimaryColor),
                       )
                 :
 
-            pastDocVisitList.isNotEmpty
-                    ? ListView.builder(
+            pastDocVisitList!=null
+                    ? pastDocVisitList.isNotEmpty?ListView.builder(
                         // scrollDirection: Axis.vertical,
                         primary: true,
                         physics: NeverScrollableScrollPhysics(),
@@ -168,7 +168,7 @@ class _DoctorVisitAppointPageState extends State<DoctorVisitAppointPage> {
                               'VISIT TYPE----${pastDocVisitList.toSet().toList()[i].otherBookingDeatils.visitType}');
                           return DoctorVisitMyAppointmentItems(
                               pastDocVisitList.toSet().toList()[i]);
-                        })
+                        }):Center(child: Text('No Appointments'))
                     : CircularProgressIndicator(
                         valueColor:
                             new AlwaysStoppedAnimation<Color>(kPrimaryColor),

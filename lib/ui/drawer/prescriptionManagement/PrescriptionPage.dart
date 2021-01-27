@@ -2,8 +2,6 @@ import 'package:city_clinic_doctor/modal/prescriptions/prescriptions.dart';
 import 'package:city_clinic_doctor/network/api_provider.dart';
 import 'package:city_clinic_doctor/new/customs/custom_methods.dart';
 import 'package:city_clinic_doctor/ui/drawer/prescriptionManagement/PrescriptionItems.dart';
-import 'package:city_clinic_doctor/utils/Colors.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class PrescriptionPage extends StatefulWidget {
