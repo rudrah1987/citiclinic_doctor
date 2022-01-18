@@ -140,8 +140,8 @@ class _HomeVisitAppointPageState extends State<HomeVisitAppointPage> {
               ],
             ),
             choice == 'one'
-                ? onGoingHomeVisitList.isNotEmpty
-                ? ListView.builder(
+                ? onGoingHomeVisitList!=null
+                ? onGoingHomeVisitList.isNotEmpty?ListView.builder(
               // scrollDirection: Axis.vertical,
                 primary: true,
                 physics: NeverScrollableScrollPhysics(),
@@ -152,15 +152,15 @@ class _HomeVisitAppointPageState extends State<HomeVisitAppointPage> {
                   // print('VISIT TYPE----${onGoingDocVisitList[i].otherBookingDeatils.visitType}');
                   return DoctorVisitMyAppointmentItems(
                       onGoingHomeVisitList.toSet().toList()[i]);
-                })
+                }):Center(child: Text('No Appointments'))
                 : CircularProgressIndicator(
               valueColor:
               new AlwaysStoppedAnimation<Color>(kPrimaryColor),
             )
                 :
 
-            pastHomeVisitList.isNotEmpty
-                ? ListView.builder(
+            pastHomeVisitList!=null
+                ? pastHomeVisitList.isNotEmpty?ListView.builder(
               // scrollDirection: Axis.vertical,
                 primary: true,
                 physics: NeverScrollableScrollPhysics(),
@@ -172,7 +172,7 @@ class _HomeVisitAppointPageState extends State<HomeVisitAppointPage> {
                       'VISIT TYPE----${pastHomeVisitList.toSet().toList()[i].otherBookingDeatils.visitType}');
                   return HomeVisitMyAppointmentItems(
                       pastHomeVisitList.toSet().toList()[i]);
-                })
+                }):Center(child: Text('No Appointments'))
                 : CircularProgressIndicator(
               valueColor:
               new AlwaysStoppedAnimation<Color>(kPrimaryColor),

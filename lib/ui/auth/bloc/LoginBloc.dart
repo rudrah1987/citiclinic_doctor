@@ -3,6 +3,7 @@ import 'package:city_clinic_doctor/modal/profile/UserDetailResponse.dart';
 import 'package:city_clinic_doctor/new/customs/logger_global.dart';
 import 'package:city_clinic_doctor/repository/base.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rxdart/rxdart.dart';
 
 ValueNotifier<UserDetailResponse> currentUser = new ValueNotifier(UserDetailResponse());
@@ -39,6 +40,9 @@ class LoginBloc extends BaseBloc {
         .login(phone, password, longitude, latitude, roleType)
         .then((value) {
       isLoading = false;
+      if(value.success==null){
+
+      }
       if (value.success) {
         // setCurrentUser(value);
         _loadingStream.sink.add(isLoading);
@@ -56,7 +60,15 @@ class LoginBloc extends BaseBloc {
         // });
         // gLogger.i('UserName-${currentUser.value.user.name}');
       }
+      else{
+        Fluttertoast.showToast(msg: value.message);
+        print('------------------${value.message}');
+        isLoading = false;
+        _loadingStream.sink.add(isLoading);
+      }
     }).catchError((error) {
+      print('------------------${error}');
+
       isLoading = false;
       _loadingStream.sink.add(isLoading);
       _errorStream.add(error);

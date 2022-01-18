@@ -4,7 +4,8 @@ class UserDetailResponse {
   UserData user;
   UserDetailResponse({this.success, this.message, this.user});
   
-  UserDetailResponse.fromError(String errorValue) {
+  UserDetailResponse.fromError(String errorValue,bool success) {
+    this.success=success;
     this.message = errorValue;
   }
   UserDetailResponse.fromJson(Map<String, dynamic> json) {

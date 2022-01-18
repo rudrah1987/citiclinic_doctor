@@ -32,7 +32,7 @@ Future<CubeUser> getDataForChat(BuildContext context)async{
     //     ));
     return cuubeUser;
   } else {
-    Fluttertoast.showToast(msg: 'Please wait...');
+    // Fluttertoast.showToast(msg: 'Please wait...');
     return null;
   }
 }
